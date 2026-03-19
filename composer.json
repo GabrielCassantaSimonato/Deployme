@@ -1,0 +1,18 @@
+{
+    "name":"miniframework",
+    "require":{
+        "php":">=7.0"
+    },
+    "author":[
+        {
+            "name":"Gabriel Simonato",
+            "email":"simonato35@gmail.com"
+        }
+    ],
+    "autoload":{
+        "psr-4": {
+            "app\\":"app/",
+            "MF\\":"vendor/MF/"
+        }
+    }
+}
