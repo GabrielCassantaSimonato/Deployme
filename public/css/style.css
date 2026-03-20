@@ -1,0 +1,70 @@
+/* ==========================================
+           1. VARIÁVEIS E GERAL (GLOBAL)
+========================================== */
+        :root {
+            --brand-blue: #2563eb;
+            --brand-blue-soft: rgba(37, 99, 235, 0.1);
+            --brand-dark: #0f172a;
+            --brand-slate: #1e293b;
+            --brand-light: #f8fafc;
+            --text-main: #334155;
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            color: var(--text-main);
+            background-color: var(--brand-light);
+            overflow-x: hidden;
+            line-height: 1.6;
+            scroll-behavior: smooth;
+        }
+
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: var(--brand-light); }
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
+
+        .d-none { display: none !important; }
+        .view-transition { animation: fadeIn 0.4s ease; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+        /* Botões Globais */
+        .btn-primary {
+            background-color: var(--brand-blue);
+            border: none;
+            padding: 0.8rem 2.2rem;
+            font-weight: 600;
+            border-radius: 14px;
+            box-shadow: 0 4px 14px 0 rgba(37, 99, 235, 0.3);
+            transition: var(--transition);
+        }
+        .btn-primary:hover {
+            background-color: #1d4ed8;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(37, 99, 235, 0.2);
+            color: white;
+        }
+
+        /* ==========================================
+           2. BARRA DE NAVEGAÇÃO (NAVBAR)
+           ========================================== */
+        .navbar {
+            padding: 1.2rem 0;
+            transition: var(--transition);
+            z-index: 1050;
+            background: transparent;
+        }
+        
+        .navbar.scrolled {
+            padding: 0.8rem 0;
+            background: rgba(255, 255, 255, 0.98) !important;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+        }
+
+        .nav-link {
+            color: var(--brand-dark) !important;
+            font-weight: 600;
+            transition: var(--transition);
+        }
+        .nav-link:hover { color: var(--brand-blue) !important; }

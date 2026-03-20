@@ -7,5 +7,11 @@
         public function index(){
             $this->render('index');
         }
+        public function signUpStudent(){
+            $this->render('signUpstudent');
+        }
+        public function signUpRecruiter(){
+            $this->render('signUpRecruiter');
+        }
     }
 ?>

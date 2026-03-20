@@ -1,0 +1,121 @@
+ #signup-page {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #f1f5f9;
+            padding: 2rem;
+        }
+
+        .signup-card {
+            background: white;
+            border-radius: 36px;
+            box-shadow: 0 50px 100px -20px rgba(0,0,0,0.12);
+            width: 100%;
+            max-width: 1150px;
+            overflow: hidden;
+            display: flex;
+        }
+
+        .signup-side-info {
+            background: var(--brand-dark);
+            width: 40%;
+            padding: 5rem 4rem;
+            color: white;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .signup-form-side {
+            width: 60%;
+            padding: 5rem 6rem;
+            background: white;
+        }
+
+        /* Botão Voltar Estilizado */
+        .back-link {
+            text-decoration: none;
+            color: #64748b;
+            font-size: 0.95rem;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            padding: 10px 24px;
+            border-radius: 14px;
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            transition: var(--transition);
+            cursor: pointer;
+            margin-bottom: 2.5rem;
+        }
+        .back-link:hover {
+            color: var(--brand-blue);
+            background: white;
+            border-color: var(--brand-blue);
+            transform: translateX(-5px);
+            box-shadow: 0 4px 12px rgba(37, 99, 235, 0.1);
+        }
+
+        /* Campos de Formulário */
+        .form-floating > .form-control {
+            border: 1px solid #e2e8f0;
+            border-radius: 14px;
+            padding: 1.1rem 0.85rem;
+            height: calc(3.5rem + 2px);
+        }
+
+        /* Destaque para o Input do GitHub */
+        .github-input-group {
+            border: 2px solid #e2e8f0;
+            border-radius: 16px;
+            overflow: hidden;
+            transition: var(--transition);
+            background: #fff;
+        }
+        .github-input-group:focus-within {
+            border-color: var(--brand-blue);
+            box-shadow: 0 0 0 4px var(--brand-blue-soft);
+        }
+        .github-input-group .input-group-text {
+            background: var(--brand-light);
+            border: none;
+            padding: 0 20px;
+            font-size: 1.5rem;
+            color: var(--brand-dark);
+        }
+        .github-input-group .form-control {
+            border: none !important;
+            box-shadow: none !important;
+            padding: 1.2rem 1rem !important;
+            height: 65px !important;
+            font-weight: 600;
+        }
+
+        /* GitHub Feedback API */
+        #github-feedback {
+            display: none;
+            align-items: center;
+            padding: 1.2rem;
+            border-radius: 18px;
+            background: #f0f7ff;
+            border: 1px solid #dbeafe;
+            margin-top: 1rem;
+            animation: slideDown 0.3s ease;
+        }
+        @keyframes slideDown { from { transform: translateY(-10px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+        
+        #github-avatar { 
+            width: 52px; height: 52px; 
+            border-radius: 14px; 
+            object-fit: cover; 
+            border: 2px solid white; 
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08); 
+        }
+
+        /* Responsividade */
+        @media (max-width: 991px) {
+            .hero-title { font-size: 2.8rem; }
+            .signup-card { flex-direction: column; }
+            .signup-side-info, .signup-form-side { width: 100%; padding: 3rem 2rem; }
+            .signup-form-side { padding: 4rem 2rem; }
+        }
