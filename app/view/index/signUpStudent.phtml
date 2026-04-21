@@ -1,114 +1,172 @@
 <div id="signup-page">
     <div class="signup-card">
-
-        <!-- LADO INFORMATIVO -->
         <div class="signup-side-info">
-            <div class="mb-5">
-                <img src="Logo deployme.png" alt="Deployme" style="height: 38px; filter: brightness(0) invert(1);" onerror="this.style.display='none'">
-            </div>
+            <img src="/img/logo_deployme.png" alt="Deployme" style="height: 200px; filter: brightness(0) invert(1);"
+                class="mb-3" onerror="this.style.display='none'">
+            <h2 class="fw-800 mb-4" id="info-title">A tua jornada começa agora.</h2>
+            <p class="lead opacity-75 mb-5" id="info-subtitle">Acesso a talentos e vagas reais em um clique.</p>
 
-            <h2 class="display-6 fw-800 mb-4">
-                A sua jornada começa aqui.
-            </h2>
-
-            <p class="lead opacity-75 mb-5">
-                Acesso a vagas reais e networking especializado.
-            </p>
-
+            <!-- FRASES ATUALIZADAS CONFORME SOLICITADO -->
             <div class="d-flex flex-column gap-4">
                 <div class="d-flex align-items-center gap-3">
-                    <i class="bi bi-check-circle-fill text-primary"></i>
-                    <span>Perfil especializado em TI</span>
+                    <i class="bi bi-people-fill text-primary fs-4"></i>
+                    <span>conexões entre estudantes e recrutadores</span>
                 </div>
                 <div class="d-flex align-items-center gap-3">
-                    <i class="bi bi-check-circle-fill text-primary"></i>
-                    <span>Conexão direta mercado-aluno</span>
+                    <i class="bi bi-rocket-takeoff-fill text-primary fs-4"></i>
+                    <span>busca pela primeira vaga tech</span>
+                </div>
+                <div class="d-flex align-items-center gap-3">
+                    <i class="bi bi-shield-lock-fill text-primary fs-4"></i>
+                    <span>segurança de dados LGPD</span>
                 </div>
             </div>
 
-            <div class="mt-auto pt-5">
-                <small class="opacity-50">Lançamento em 2026 • Deployme Hub</small>
-            </div>
+            <div class="mt-auto pt-5 opacity-50 small">Deployme Hub &bull; Ver. 2.6</div>
         </div>
 
-        <!-- FORM -->
         <div class="signup-form-side">
-
             <a href="/" class="back-link">
                 <i class="bi bi-arrow-left me-2"></i> Voltar à Home
             </a>
-
-            <div class="mb-5">
-                <h3 class="fw-800 mb-2">Criar Conta</h3>
-                <p class="text-muted">Informe os dados do seu perfil abaixo.</p>
-            </div>
+            <h3 class="fw-800 mb-4" id="form-heading">Criar Conta</h3>
 
             <form id="registrationForm">
                 <input type="hidden" id="user-role" value="student">
 
-                <div class="row g-4">
-
-                    <div class="col-12">
+                <!-- Dados Pessoais -->
+                <div class="form-section-header">Dados Pessoais</div>
+                <div class="row g-3 mb-4">
+                    <div class="col-md-8">
+                        <div class="form-floating"><input type="text" class="form-control" id="fullName"
+                                placeholder="Nome" required><label>Nome Completo</label></div>
+                    </div>
+                    <div class="col-md-4">
                         <div class="form-floating">
-                            <input type="text" class="form-control" id="fullName" placeholder="Nome Completo" required>
-                            <label>Nome Completo</label>
+                            <select class="form-select" id="gender" required>
+                                <option value="" selected disabled>Escolha...</option>
+                                <option value="M">Masculino</option>
+                                <option value="F">Feminino</option>
+                                <option value="N">Não Informar</option>
+                            </select>
+                            <label>Género</label>
                         </div>
                     </div>
-
                     <div class="col-12">
-                        <div class="form-floating">
-                            <input type="email" class="form-control" id="email" placeholder="E-mail" required>
-                            <label>E-mail de Contato</label>
-                        </div>
+                        <div class="form-floating"><input type="email" class="form-control" id="email"
+                                placeholder="E-mail" required><label>E-mail de Acesso</label></div>
                     </div>
+                </div>
 
-                    <!-- CAMPOS ESTUDANTE -->
-                    <div class="col-12">
-                        <label class="form-label fw-700 text-dark mb-2">Seu Perfil Profissional</label>
-
-                        <div class="form-floating mb-3">
-                            <input type="text" class="form-control" id="course" placeholder="Curso">
-                            <label>Qual o seu curso atual?</label>
+                <!-- CAMPOS DINÂMICOS: ESTUDANTE -->
+                <div class="student-field">
+                    <div class="form-section-header">Vida Académica</div>
+                    <div class="row g-3 mb-4">
+                        <div class="col-md-6">
+                            <div class="form-floating"><input type="text" class="form-control" id="university"
+                                    placeholder="Instituição"><label>Universidade</label></div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-floating"><input type="text" class="form-control" id="course"
+                                    placeholder="Curso"><label>Curso</label></div>
+                        </div>
+                        <div class="col-md-2">
+                            <div class="form-floating"><select class="form-select" id="semester">
+                                    <option value="" selected disabled>...</option>
+                                    <option value="1">1º</option>
+                                    <option value="2">2º</option>
+                                    <option value="3">3º</option>
+                                    <option value="4">4º</option>
+                                    <option value="5+">5º</option>
+                                    <option value="5+">6º</option>
+                                    <option value="5+">7º</option>
+                                    <option value="5+">8º</option>
+                                </select><label>Sem.</label></div>
                         </div>
 
-                        <div class="github-input-group input-group">
-                            <span class="input-group-text"><i class="bi bi-github"></i></span>
-                            <div class="form-floating flex-grow-1">
-                                <input type="text" class="form-control" id="github-user" placeholder="GitHub User">
-                                <label>Username do GitHub</label>
+                        <div class="col-12 mt-2">
+                            <div class="github-modern-input input-group">
+                                <span class="input-group-text"><i class="bi bi-github"></i></span>
+                                <div class="form-floating flex-grow-1">
+                                    <input type="text" id="github-user" class="form-control" placeholder="User">
+                                    <label>Seu Username do GitHub</label>
+                                </div>
+                            </div>
+                            <div id="github-feedback" class="mt-2 d-none align-items-center p-3 bg-light rounded-4">
+                                <img id="github-avatar" src=""
+                                    style="width:40px; border-radius:50%; margin-right:15px; border: 2px solid white;">
+                                <span id="github-status" class="small fw-800"></span>
                             </div>
                         </div>
-
-                        <div id="github-feedback">
-                            <img id="github-avatar" src="" alt="">
-                            <div class="ms-3">
-                                <div id="github-status" class="small fw-800">Sincronizando...</div>
-                                <div class="text-muted" style="font-size: 0.75rem;">Perfil validado com sucesso!</div>
+                    </div>
+                </div>
+                <!-- Localização -->
+                <div class="form-section-header">Localização</div>
+                <div class="row g-3 mb-4">
+                    <div class="col-md-4">
+                        <div class="form-floating"><input type="text" class="form-control" id="cep"
+                                placeholder="00000-000" maxlength="9" onkeyup="mascaraCEP(this)"
+                                onblur="buscaViaCEP(this.value)"><label>CEP</label></div>
+                    </div>
+                    <div class="col-md-8">
+                        <div class="form-floating"><input type="text" class="form-control" id="rua"
+                                placeholder="Rua"><label>Rua / Logradouro</label></div>
+                    </div>
+                    <div class="col-md-5">
+                        <div class="form-floating"><input type="text" class="form-control" id="bairro"
+                                placeholder="Bairro"><label>Bairro</label></div>
+                    </div>
+                    <div class="col-md-5">
+                        <div class="form-floating"><input type="text" class="form-control" id="complemento"
+                                placeholder="Comp."><label>Complemento</label></div>
+                    </div>
+                    <div class="col-md-2">
+                        <div class="form-floating"><input type="text" class="form-control" id="uf"
+                                placeholder="UF"><label>UF</label></div>
+                    </div>
+                </div>
+                <!-- Ficheiros -->
+                <div class="form-section-header">Uploads e Segurança</div>
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <label class="upload-card" for="photo-file">
+                            <div class="upload-icon"><i class="bi bi-camera"></i></div>
+                            <div class="text-start">
+                                <div class="small fw-800 text-dark">Foto de Perfil</div>
+                                <div class="x-small text-muted" id="photo-text">JPG, PNG (Opcional)</div>
                             </div>
-                        </div>
+                        </label>
+                        <input type="file" id="photo-file" class="d-none" accept="image/*">
                     </div>
+                    <div class="col-md-6 student-field">
+                        <label class="upload-card" for="resume-file">
+                            <div class="upload-icon"><i class="bi bi-file-earmark-pdf text-danger"></i></div>
+                            <div class="text-start">
+                                <div class="small fw-800 text-dark">Currículo PDF</div>
+                                <div class="x-small text-muted" id="resume-text">Max 5MB</div>
+                            </div>
+                        </label>
+                        <input type="file" id="resume-file" class="d-none" accept="application/pdf">
+                        <button type="button" id="btnAnalyze" class="btn-ai-analyze w-100 d-none mt-2"
+                            onclick="runAgentAnalysis()"><i class="bi bi-stars me-1"></i> Analisar com IA</button>
+                    </div>
+                </div>
 
+                <div class="row mt-4">
                     <div class="col-12">
-                        <div class="form-floating">
-                            <input type="password" class="form-control" id="password" placeholder="Senha" required>
-                            <label>Defina uma Senha</label>
-                        </div>
+                        <div class="form-floating"><input type="password" class="form-control" placeholder="Senha"
+                                required><label>Defina sua Senha</label></div>
                     </div>
-
                 </div>
 
                 <div class="form-check my-4">
-                    <input class="form-check-input" type="checkbox" required>
-                    <label class="form-check-label text-muted small">
-                        Aceito as diretrizes da Deployme para 2026.
+                    <input class="form-check-input" type="checkbox" required id="termsCheck">
+                    <label class="form-check-label small text-muted" for="termsCheck">
+                        Li e concordo com a <a href="/lgpd"
+                            class="text-primary fw-bold text-decoration-none">Política de LGPD</a> da Deployme.
                     </label>
                 </div>
 
-                <button type="submit" class="btn btn-primary btn-lg w-100 py-3 shadow-lg">
-                    Criar Perfil Agora
-                </button>
-            </form>
-
-        </div>
-    </div>
-</div>
+                        <button type="submit" class="btn btn-primary btn-lg w-100 py-3 shadow-lg">Finalizar Cadastro</button>
+                    </form>
+                </div>

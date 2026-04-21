@@ -13,5 +13,8 @@
         public function signUpRecruiter(){
             $this->render('signUpRecruiter');
         }
+        public function lgpd(){
+            $this->render('lgpd');
+        }
     }
 ?>

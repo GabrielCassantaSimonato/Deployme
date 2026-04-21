@@ -1,62 +1,52 @@
- // Lógica da Navbar (Efeito de Scroll)
-        window.addEventListener('scroll', () => {
-            const nav = document.getElementById('mainNav');
-            if (nav.style.display !== 'none') {
-                if (window.scrollY > 40) nav.classList.add('scrolled');
-                else nav.classList.remove('scrolled');
-            }
-        });
-
-        // Validação API GitHub
-        const githubInput = document.getElementById('github-user');
-        const feedbackArea = document.getElementById('github-feedback');
-        const avatarImg = document.getElementById('github-avatar');
-        const statusSpan = document.getElementById('github-status');
-        let debounceTimer;
-
-        async function checkGitHubUser(username) {
-            let cleanUsername = username.trim().replace(/^@/, '');
-            if (!cleanUsername) { feedbackArea.style.display = 'none'; return; }
-
-            feedbackArea.style.display = 'flex';
-            statusSpan.innerText = 'Consultando GitHub...';
-            statusSpan.className = 'small fw-800 text-muted';
-            avatarImg.style.display = 'none';
-
-            try {
-                const response = await fetch(`https://api.github.com/users/${cleanUsername}`);
-                if (response.status === 200) {
-                    const data = await response.json();
-                    statusSpan.innerText = `Olá, ${data.name || cleanUsername}!`;
-                    statusSpan.className = 'small fw-800 text-success';
-                    avatarImg.src = data.avatar_url;
-                    avatarImg.style.display = 'block';
-                } else {
-                    statusSpan.innerText = 'Usuário não localizado';
-                    statusSpan.className = 'small fw-800 text-danger';
-                    avatarImg.style.display = 'none';
-                }
-            } catch (e) {
-                statusSpan.innerText = 'API Offline';
-            }
+// --- CEP E VIACEP ---
+        function mascaraCEP(campo) {
+            let v = campo.value.replace(/\D/g, "");
+            if (v.length > 5) v = v.substring(0, 5) + "-" + v.substring(5, 8);
+            campo.value = v;
         }
 
+        async function buscaViaCEP(cep) {
+            cep = cep.replace(/\D/g, "");
+            if (cep.length !== 8) return;
+            try {
+                const res = await fetch(`https://viacep.com.br/ws/${cep}/json/`);
+                const data = await res.json();
+                if (!data.erro) {
+                    document.getElementById('rua').value = data.logradouro;
+                    document.getElementById('bairro').value = data.bairro;
+                    document.getElementById('uf').value = data.uf;
+                    document.getElementById('complemento').focus();
+                }
+            } catch (e) { console.error("Erro na busca de CEP"); }
+        }
+        // --- GITHUB API ---
+        const githubInput = document.getElementById('github-user');
         githubInput.addEventListener('input', (e) => {
-            clearTimeout(debounceTimer);
-            debounceTimer = setTimeout(() => checkGitHubUser(e.target.value), 600);
+            let timer;
+            clearTimeout(timer);
+            timer = setTimeout(async () => {
+                let user = e.target.value.trim().replace('@','');
+                if(!user) { document.getElementById('github-feedback').classList.add('d-none'); return; }
+                document.getElementById('github-feedback').classList.remove('d-none');
+                document.getElementById('github-status').innerText = 'Validando perfil...';
+                try {
+                    const res = await fetch(`https://api.github.com/users/${user}`);
+                    if(res.ok) {
+                        const data = await res.json();
+                        document.getElementById('github-avatar').src = data.avatar_url;
+                        document.getElementById('github-status').innerText = `Olá, ${data.name || user}!`;
+                    } else { document.getElementById('github-status').innerText = 'Username não encontrado'; }
+                } catch(err) { }
+            }, 600);
         });
 
-        // Submit Simulado
-        document.getElementById('registrationForm').addEventListener('submit', (e) => {
-            e.preventDefault();
-            const btn = e.target.querySelector('button');
-            btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span> Processando...';
-            btn.disabled = true;
-
-            setTimeout(() => {
-                alert('Bem-vindo à Deployme 2026!');
-                showView('home');
-                btn.innerHTML = 'Criar Perfil Agora';
-                btn.disabled = false;
-            }, 1500);
+        // --- FICHEIROS ---
+        document.getElementById('photo-file').addEventListener('change', e => {
+            if(e.target.files[0]) document.getElementById('photo-text').innerText = "Selecionado: " + e.target.files[0].name;
+        });
+        document.getElementById('resume-file').addEventListener('change', e => {
+            if(e.target.files[0]) {
+                document.getElementById('resume-text').innerText = "PDF: " + e.target.files[0].name;
+                document.getElementById('btnAnalyze').classList.remove('d-none');
+            }
         });
