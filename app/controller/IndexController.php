@@ -16,5 +16,14 @@
         public function lgpd(){
             $this->render('lgpd');
         }
+        public function loginSelection(){
+            $this->render('loginSelection');
+        }
+        public function studentLogin(){
+            $this->render('studentLogin');
+        }
+        public function recruiterLogin(){
+            $this->render('recruiterLogin');
+        }
     }
 ?>

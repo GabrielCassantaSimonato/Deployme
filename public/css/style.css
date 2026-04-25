@@ -48,23 +48,34 @@
         /* ==========================================
            2. BARRA DE NAVEGAÇÃO (NAVBAR)
            ========================================== */
-        .navbar {
-            padding: 1.2rem 0;
-            transition: var(--transition);
-            z-index: 1050;
-            background: transparent;
+        #mainNav { 
+            transition: var(--transition); 
+            z-index: 2000 !important; 
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(12px);
+            position: fixed !important; /* Fixa na janela */
+            top: 0 !important;         /* Prensada no topo absoluto */
+            left: 0;
+            right: 0;
+            width: 100%;
+            margin: 0 !important;
+            border-bottom: 1px solid rgba(0,0,0,0.05);
         }
         
-        .navbar.scrolled {
-            padding: 0.8rem 0;
-            background: rgba(255, 255, 255, 0.98) !important;
-            backdrop-filter: blur(10px);
+        #mainNav.scrolled { 
+            background: rgba(255, 255, 255, 0.98) !important; 
             box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+            padding: 0.3rem 0;
         }
 
-        .nav-link {
-            color: var(--brand-dark) !important;
-            font-weight: 600;
+        .navbar-brand img {
+            height: 80px;
             transition: var(--transition);
         }
+
+        #mainNav.scrolled .navbar-brand img {
+            height: 50px;
+        }
+
+        .nav-link { color: var(--brand-dark) !important; font-weight: 600; font-size: 0.95rem; }
         .nav-link:hover { color: var(--brand-blue) !important; }
