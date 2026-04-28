@@ -14,6 +14,7 @@
                 if (!data.erro) {
                     document.getElementById('rua').value = data.logradouro;
                     document.getElementById('bairro').value = data.bairro;
+                    document.getElementById('cidade').value = data.localidade;
                     document.getElementById('uf').value = data.uf;
                     document.getElementById('complemento').focus();
                 }

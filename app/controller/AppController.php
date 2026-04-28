@@ -3,7 +3,7 @@ namespace app\controller;
 use MF\controller\Action;
 use MF\model\Container;
 
-class TimelineController extends Action
+class AppController extends Action
 {
 
     public function timeline()

@@ -31,19 +31,22 @@
             </a>
             <h3 class="fw-800 mb-4" id="form-heading">Criar Conta</h3>
 
-            <form id="registrationForm">
-                <input type="hidden" id="user-role" value="student">
+            <form id="registrationForm" action="/cadastrarRecrutador" method="POST" enctype="multipart/form-data">
 
                 <!-- Dados Pessoais -->
                 <div class="form-section-header">Dados Pessoais</div>
                 <div class="row g-3 mb-4">
+
                     <div class="col-md-8">
-                        <div class="form-floating"><input type="text" class="form-control" id="fullName"
-                                placeholder="Nome" required><label>Nome Completo</label></div>
+                        <div class="form-floating">
+                            <input type="text" name="nome" class="form-control" id="nome" placeholder="Nome" required>
+                            <label>Nome Completo</label>
+                        </div>
                     </div>
+
                     <div class="col-md-4">
                         <div class="form-floating">
-                            <select class="form-select" id="gender" required>
+                            <select name="genero" class="form-select" id="gender" required>
                                 <option value="" selected disabled>Escolha...</option>
                                 <option value="M">Masculino</option>
                                 <option value="F">Feminino</option>
@@ -52,59 +55,92 @@
                             <label>Género</label>
                         </div>
                     </div>
+
                     <div class="col-12">
-                        <div class="form-floating"><input type="email" class="form-control" id="email"
-                                placeholder="E-mail" required><label>E-mail de Acesso</label></div>
+                        <div class="form-floating">
+                            <input type="email" name="email" class="form-control" id="email" placeholder="E-mail"
+                                required>
+                            <label>E-mail de Acesso</label>
+                        </div>
                     </div>
+
                 </div>
+
+                <!-- Recrutador -->
                 <div class="recruiter-field">
                     <div class="form-section-header">Dados Corporativos</div>
+
                     <div class="row g-3 mb-4">
+
                         <div class="col-md-7">
-                            <div class="form-floating"><input type="text" class="form-control" id="company"
-                                    placeholder="Empresa"><label>Nome da Empresa</label></div>
+                            <div class="form-floating">
+                                <input type="text" name="empresa" class="form-control" id="company"
+                                    placeholder="Empresa">
+                                <label>Nome da Empresa</label>
+                            </div>
                         </div>
+
                         <div class="col-md-5">
                             <div class="form-floating">
-                                <select class="form-select" id="seniority">
-                                    <option value="" selected disabled>Escolha...</option>
-                                    <option>Junior Recruiter</option>
-                                    <option>Tech Recruiter</option>
-                                    <option>Lead Talent Acquisition</option>
+                                <select class="form-select" name="senioridade_id" required>
+                                    <option value="" selected disabled>...</option>
+                                    <?php foreach ($this->view->senioridades as $s) { ?>
+                                        <option value="<?= $s['id'] ?>">
+                                            <?= $s['senioridade'] ?>
+                                        </option>
+                                    <?php } ?>
                                 </select>
                                 <label>Senioridade</label>
                             </div>
                         </div>
+
                     </div>
                 </div>
-                <!-- Ficheiros -->
+
+                <!-- Upload -->
                 <div class="form-section-header">Uploads e Segurança</div>
+
                 <div class="row g-3">
+
                     <div class="col-md-6">
                         <label class="upload-card" for="photo-file">
                             <div class="upload-icon"><i class="bi bi-camera"></i></div>
                             <div class="text-start">
                                 <div class="small fw-800 text-dark">Foto de Perfil</div>
-                                <div class="x-small text-muted" id="photo-text">JPG, PNG (Opcional)</div>
+                                <div class="x-small text-muted">JPG, PNG (Opcional)</div>
                             </div>
                         </label>
-                        <input type="file" id="photo-file" class="d-none" accept="image/*">
+
+                        <!-- AQUI ESTAVA FALTANDO -->
+                        <input type="file" name="foto" id="photo-file" class="d-none" accept="image/*">
                     </div>
-                    <div class="row mt-4">
-                        <div class="col-12">
-                            <div class="form-floating"><input type="password" class="form-control" placeholder="Senha"
-                                    required><label>Defina sua Senha</label></div>
+
+                </div>
+
+                <!-- Senha -->
+                <div class="row mt-4">
+                    <div class="col-12">
+                        <div class="form-floating">
+                            <input type="password" name="senha" class="form-control" placeholder="Senha" required>
+                            <label>Defina sua Senha</label>
                         </div>
                     </div>
+                </div>
 
-                    <div class="form-check my-4">
-                        <input class="form-check-input" type="checkbox" required id="termsCheck">
-                        <label class="form-check-label small text-muted" for="termsCheck">
-                            Li e concordo com a <a href="/lgpd"
-                                class="text-primary fw-bold text-decoration-none">Política de LGPD</a> da Deployme.
-                        </label>
-                    </div>
+                <!-- Termos -->
+                <div class="form-check my-4">
+                    <input class="form-check-input" type="checkbox" name="termos" required id="termsCheck">
+                    <label class="form-check-label small text-muted" for="termsCheck">
+                        Li e concordo com a
+                        <a href="/lgpd" class="text-primary fw-bold text-decoration-none">
+                            Política de LGPD
+                        </a> da Deployme.
+                    </label>
+                </div>
 
-                    <button type="submit" class="btn btn-primary btn-lg w-100 py-3 shadow-lg">Finalizar Cadastro</button>
+                <button type="submit" class="btn btn-primary btn-lg w-100 py-3 shadow-lg">
+                    Finalizar Cadastro
+                </button>
+
             </form>
         </div>

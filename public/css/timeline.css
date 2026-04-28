@@ -198,3 +198,17 @@ body {
 .logout:hover {
   color: red;
 }
+/* BADGE (bolinha vermelha) */
+.notification-badge {
+  position: absolute;
+  top: 0;
+  right: 8px;
+
+  background: red;
+  color: white;
+  font-size: 10px;
+  font-weight: bold;
+
+  padding: 2px 6px;
+  border-radius: 50%;
+}

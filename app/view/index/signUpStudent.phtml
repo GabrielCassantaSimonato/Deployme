@@ -22,7 +22,7 @@
                 </div>
             </div>
 
-            <div class="mt-auto pt-5 opacity-50 small">Deployme Hub &bull; Ver. 2.6</div>
+            <div class="mt-auto pt-5 opacity-50 small">Deployme &bull; Ver. 2.6</div>
         </div>
 
         <div class="signup-form-side">
@@ -31,72 +31,100 @@
             </a>
             <h3 class="fw-800 mb-4" id="form-heading">Criar Conta</h3>
 
-            <form id="registrationForm">
-                <input type="hidden" id="user-role" value="student">
-
+            <form id="registrationForm" action="/studentRegister" method="POST" enctype="multipart/form-data">
                 <!-- Dados Pessoais -->
                 <div class="form-section-header">Dados Pessoais</div>
                 <div class="row g-3 mb-4">
                     <div class="col-md-8">
-                        <div class="form-floating"><input type="text" class="form-control" id="fullName"
-                                placeholder="Nome" required><label>Nome Completo</label></div>
+                        <div class="form-floating"><input type="text" class="form-control" id="nome" name="nome" placeholder="Nome"
+                                required><label>Nome Completo</label></div>
                     </div>
                     <div class="col-md-4">
                         <div class="form-floating">
-                            <select class="form-select" id="gender" required>
+                            <select class="form-select" name="genero_id" required>
                                 <option value="" selected disabled>Escolha...</option>
-                                <option value="M">Masculino</option>
-                                <option value="F">Feminino</option>
-                                <option value="N">Não Informar</option>
+
+                                <?php foreach ($this->view->generos as $g) { ?>
+                                    <option value="<?= $g['id'] ?>">
+                                        <?= $g['genero'] ?>
+                                    </option>
+                                <?php } ?>
+
                             </select>
-                            <label>Género</label>
+                            <label>Gênero</label>
                         </div>
                     </div>
                     <div class="col-12">
-                        <div class="form-floating"><input type="email" class="form-control" id="email"
+                        <div class="form-floating"><input type="email" name="email" class="form-control" id="email"
                                 placeholder="E-mail" required><label>E-mail de Acesso</label></div>
                     </div>
                 </div>
 
                 <!-- CAMPOS DINÂMICOS: ESTUDANTE -->
                 <div class="student-field">
-                    <div class="form-section-header">Vida Académica</div>
+                    <div class="form-section-header">Vida Acadêmica</div>
+
+                    <!-- LINHA 1 -->
                     <div class="row g-3 mb-4">
+
                         <div class="col-md-6">
-                            <div class="form-floating"><input type="text" class="form-control" id="university"
-                                    placeholder="Instituição"><label>Universidade</label></div>
-                        </div>
-                        <div class="col-md-4">
-                            <div class="form-floating"><input type="text" class="form-control" id="course"
-                                    placeholder="Curso"><label>Curso</label></div>
-                        </div>
-                        <div class="col-md-2">
-                            <div class="form-floating"><select class="form-select" id="semester">
-                                    <option value="" selected disabled>...</option>
-                                    <option value="1">1º</option>
-                                    <option value="2">2º</option>
-                                    <option value="3">3º</option>
-                                    <option value="4">4º</option>
-                                    <option value="5+">5º</option>
-                                    <option value="5+">6º</option>
-                                    <option value="5+">7º</option>
-                                    <option value="5+">8º</option>
-                                </select><label>Sem.</label></div>
+                            <div class="form-floating">
+                                <select class="form-select" name="universidade_id" required>
+                                    <option value="" selected disabled>Escolha...</option>
+                                    <?php foreach ($this->view->universidades as $u) { ?>
+                                        <option value="<?= $u['id'] ?>"><?= $u['nome'] ?></option>
+                                    <?php } ?>
+                                </select>
+                                <label>Universidade</label>
+                            </div>
                         </div>
 
-                        <div class="col-12 mt-2">
+                        <div class="col-md-4">
+                            <div class="form-floating">
+                                <select class="form-select" name="curso_id" required>
+                                    <option value="" selected disabled>Escolha...</option>
+                                    <?php foreach ($this->view->cursos as $c) { ?>
+                                        <option value="<?= $c['id'] ?>"><?= $c['nome'] ?></option>
+                                    <?php } ?>
+                                </select>
+                                <label>Curso</label>
+                            </div>
+                        </div>
+
+                        <div class="col-md-2">
+                            <div class="form-floating">
+                                <select class="form-select" name="semestre_id" required>
+                                    <option value="" selected disabled>...</option>
+                                    <?php foreach ($this->view->semestres as $s) { ?>
+                                        <option value="<?= $s['id'] ?>"><?= $s['descricao'] ?></option>
+                                    <?php } ?>
+                                </select>
+                                <label>Sem.</label>
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <div class="row mb-4">
+                        <div class="col-12">
+
                             <div class="github-modern-input input-group">
-                                <span class="input-group-text"><i class="bi bi-github"></i></span>
+                                <span class="input-group-text">
+                                    <i class="bi bi-github"></i>
+                                </span>
+
                                 <div class="form-floating flex-grow-1">
-                                    <input type="text" id="github-user" class="form-control" placeholder="User">
+                                    <input type="text" id="github-user" class="form-control" name="github" placeholder="User">
                                     <label>Seu Username do GitHub</label>
                                 </div>
                             </div>
+
                             <div id="github-feedback" class="mt-2 d-none align-items-center p-3 bg-light rounded-4">
                                 <img id="github-avatar" src=""
                                     style="width:40px; border-radius:50%; margin-right:15px; border: 2px solid white;">
                                 <span id="github-status" class="small fw-800"></span>
                             </div>
+
                         </div>
                     </div>
                 </div>
@@ -105,23 +133,29 @@
                 <div class="row g-3 mb-4">
                     <div class="col-md-4">
                         <div class="form-floating"><input type="text" class="form-control" id="cep"
-                                placeholder="00000-000" maxlength="9" onkeyup="mascaraCEP(this)"
-                                onblur="buscaViaCEP(this.value)"><label>CEP</label></div>
+                                placeholder="00000-000" name="cep" maxlength="9" onkeyup="mascaraCEP(this)"
+                                onblur="buscaViaCEP(this.value)"><label>CEP</label>
+                        </div>
                     </div>
                     <div class="col-md-8">
-                        <div class="form-floating"><input type="text" class="form-control" id="rua"
-                                placeholder="Rua"><label>Rua / Logradouro</label></div>
+                        <div class="form-floating"><input type="text" name="rua" class="form-control" id="rua"
+                                placeholder="Rua"><label>Rua
+                                / Logradouro</label></div>
                     </div>
                     <div class="col-md-5">
-                        <div class="form-floating"><input type="text" class="form-control" id="bairro"
+                        <div class="form-floating"><input type="text" name="bairro" class="form-control" id="bairro"
                                 placeholder="Bairro"><label>Bairro</label></div>
                     </div>
                     <div class="col-md-5">
-                        <div class="form-floating"><input type="text" class="form-control" id="complemento"
+                        <div class="form-floating"><input type="text" name="cidade" class="form-control" id="cidade"
+                                placeholder="Cidade"><label>Cidade</label></div>
+                    </div>
+                    <div class="col-md-5">
+                        <div class="form-floating"><input type="text" name="complemento" class="form-control" id="complemento"
                                 placeholder="Comp."><label>Complemento</label></div>
                     </div>
                     <div class="col-md-2">
-                        <div class="form-floating"><input type="text" class="form-control" id="uf"
+                        <div class="form-floating"><input type="text" name="uf" class="form-control" id="uf"
                                 placeholder="UF"><label>UF</label></div>
                     </div>
                 </div>
@@ -136,19 +170,18 @@
                                 <div class="x-small text-muted" id="photo-text">JPG, PNG (Opcional)</div>
                             </div>
                         </label>
-                        <input type="file" id="photo-file" class="d-none" accept="image/*">
+                        <input type="file" name="foto" id="photo-file" class="d-none" accept="image/*">
                     </div>
                     <div class="col-md-6 student-field">
                         <label class="upload-card" for="resume-file">
-                            <div class="upload-icon"><i class="bi bi-file-earmark-pdf text-danger"></i></div>
+                            <div class="upload-icon"><i class="bi bi-file-earmark-pdf text-danger"></i>
+                            </div>
                             <div class="text-start">
                                 <div class="small fw-800 text-dark">Currículo PDF</div>
                                 <div class="x-small text-muted" id="resume-text">Max 5MB</div>
                             </div>
                         </label>
-                        <input type="file" id="resume-file" class="d-none" accept="application/pdf">
-                        <button type="button" id="btnAnalyze" class="btn-ai-analyze w-100 d-none mt-2"
-                            onclick="runAgentAnalysis()"><i class="bi bi-stars me-1"></i> Analisar com IA</button>
+                        <input type="file" name="curriculo" id="resume-file" class="d-none" accept="application/pdf">
                     </div>
                 </div>
 
@@ -162,11 +195,12 @@
                 <div class="form-check my-4">
                     <input class="form-check-input" type="checkbox" required id="termsCheck">
                     <label class="form-check-label small text-muted" for="termsCheck">
-                        Li e concordo com a <a href="/lgpd"
-                            class="text-primary fw-bold text-decoration-none">Política de LGPD</a> da Deployme.
+                        Li e concordo com a <a href="/lgpd" class="text-primary fw-bold text-decoration-none">Política
+                            de LGPD</a> da Deployme.
                     </label>
                 </div>
 
-                        <button type="submit" class="btn btn-primary btn-lg w-100 py-3 shadow-lg">Finalizar Cadastro</button>
-                    </form>
-                </div>
+                <button type="submit" class="btn btn-primary btn-lg w-100 py-3 shadow-lg">Finalizar
+                    Cadastro</button>
+            </form>
+        </div>
