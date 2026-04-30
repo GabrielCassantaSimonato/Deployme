@@ -36,8 +36,17 @@
                 <div class="form-section-header">Dados Pessoais</div>
                 <div class="row g-3 mb-4">
                     <div class="col-md-8">
-                        <div class="form-floating"><input type="text" class="form-control" id="nome" name="nome" placeholder="Nome"
-                                required><label>Nome Completo</label></div>
+                        <div class="form-floating">
+                            <input type="text" name="nome" class="form-control 
+                                <?= isset($this->view->erros['nome']) ? 'is-invalid' : '' ?>"
+                                value="<?= $this->view->dados['nome'] ?? '' ?>">
+                            <?php if (isset($this->view->erros['nome'])) { ?>
+                                <div class="invalid-feedback">
+                                    <?= $this->view->erros['nome'] ?>
+                                </div>
+                            <?php } ?>
+                            <label>Nome Completo</label>
+                        </div>
                     </div>
                     <div class="col-md-4">
                         <div class="form-floating">
@@ -55,8 +64,17 @@
                         </div>
                     </div>
                     <div class="col-12">
-                        <div class="form-floating"><input type="email" name="email" class="form-control" id="email"
-                                placeholder="E-mail" required><label>E-mail de Acesso</label></div>
+                        <div class="form-floating">
+                            <input type="email" name="email" class="form-control 
+                                <?= isset($this->view->erros['email']) ? 'is-invalid' : '' ?>"
+                                value="<?= $this->view->dados['email'] ?? '' ?>">
+                            <?php if (isset($this->view->erros['email'])) { ?>
+                                <div class="invalid-feedback">
+                                    <?= $this->view->erros['email'] ?>
+                                </div>
+                            <?php } ?>
+                            <label>E-mail de Acesso</label>
+                        </div>
                     </div>
                 </div>
 
@@ -96,7 +114,7 @@
                                 <select class="form-select" name="semestre_id" required>
                                     <option value="" selected disabled>...</option>
                                     <?php foreach ($this->view->semestres as $s) { ?>
-                                        <option value="<?= $s['id'] ?>"><?= $s['descricao'] ?></option>
+                                        <option value="<?= $s['id'] ?>"><?= $s['semestre'] ?></option>
                                     <?php } ?>
                                 </select>
                                 <label>Sem.</label>
@@ -114,7 +132,8 @@
                                 </span>
 
                                 <div class="form-floating flex-grow-1">
-                                    <input type="text" id="github-user" class="form-control" name="github" placeholder="User">
+                                    <input type="text" id="github-user" class="form-control" name="github"
+                                        placeholder="User">
                                     <label>Seu Username do GitHub</label>
                                 </div>
                             </div>
@@ -151,8 +170,8 @@
                                 placeholder="Cidade"><label>Cidade</label></div>
                     </div>
                     <div class="col-md-5">
-                        <div class="form-floating"><input type="text" name="complemento" class="form-control" id="complemento"
-                                placeholder="Comp."><label>Complemento</label></div>
+                        <div class="form-floating"><input type="text" name="complemento" class="form-control"
+                                id="complemento" placeholder="Comp."><label>Complemento</label></div>
                     </div>
                     <div class="col-md-2">
                         <div class="form-floating"><input type="text" name="uf" class="form-control" id="uf"
@@ -170,7 +189,7 @@
                                 <div class="x-small text-muted" id="photo-text">JPG, PNG (Opcional)</div>
                             </div>
                         </label>
-                        <input type="file" name="foto" id="photo-file" class="d-none" accept="image/*">
+                        <input type="file" name="foto_perfil" id="photo-file" class="d-none" accept="image/*">
                     </div>
                     <div class="col-md-6 student-field">
                         <label class="upload-card" for="resume-file">
@@ -187,8 +206,17 @@
 
                 <div class="row mt-4">
                     <div class="col-12">
-                        <div class="form-floating"><input type="password" class="form-control" placeholder="Senha"
-                                required><label>Defina sua Senha</label></div>
+                        <div class="form-floating">
+                            <input type="password" name="senha" class="form-control 
+                                <?= isset($this->view->erros['senha']) ? 'is-invalid' : '' ?>">
+
+                            <?php if (isset($this->view->erros['senha'])) { ?>
+                                <div class="invalid-feedback">
+                                    <?= $this->view->erros['senha'] ?>
+                                </div>
+                            <?php } ?>
+                            <label>Defina sua Senha</label>
+                        </div>
                     </div>
                 </div>
 
