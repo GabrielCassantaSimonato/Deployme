@@ -1,4 +1,4 @@
-<div id="signup-page">
+<div id="signup-page"> 
     <div class="signup-card">
         <div class="signup-side-info">
             <img src="/img/logo_deployme.png" alt="Deployme" style="height: 200px; filter: brightness(0) invert(1);"
@@ -6,7 +6,6 @@
             <h2 class="fw-800 mb-4" id="info-title">A tua jornada começa agora.</h2>
             <p class="lead opacity-75 mb-5" id="info-subtitle">Acesso a talentos e vagas reais em um clique.</p>
 
-            <!-- FRASES ATUALIZADAS CONFORME SOLICITADO -->
             <div class="d-flex flex-column gap-4">
                 <div class="d-flex align-items-center gap-3">
                     <i class="bi bi-people-fill text-primary fs-4"></i>
@@ -31,35 +30,67 @@
             </a>
             <h3 class="fw-800 mb-4" id="form-heading">Criar Conta</h3>
 
-            <form id="registrationForm" action="/cadastrarRecrutador" method="POST" enctype="multipart/form-data">
+            <form id="registrationForm" action="/recruiterRegister" method="POST" enctype="multipart/form-data">
 
                 <!-- Dados Pessoais -->
                 <div class="form-section-header">Dados Pessoais</div>
                 <div class="row g-3 mb-4">
 
+                    <!-- NOME -->
                     <div class="col-md-8">
                         <div class="form-floating">
-                            <input type="text" name="nome" class="form-control" id="nome" placeholder="Nome" required>
+                            <input type="text" name="nome"
+                                class="form-control <?= isset($this->view->erros['nome']) ? 'is-invalid' : '' ?>"
+                                value="<?= $this->view->dados['nome'] ?? '' ?>">
+
+                            <?php if (isset($this->view->erros['nome'])) { ?>
+                                <div class="invalid-feedback">
+                                    <?= $this->view->erros['nome'] ?>
+                                </div>
+                            <?php } ?>
+
                             <label>Nome Completo</label>
                         </div>
                     </div>
 
+                    <!-- GENERO -->
                     <div class="col-md-4">
                         <div class="form-floating">
-                            <select name="genero" class="form-select" id="gender" required>
-                                <option value="" selected disabled>Escolha...</option>
-                                <option value="M">Masculino</option>
-                                <option value="F">Feminino</option>
-                                <option value="N">Não Informar</option>
+                            <select name="genero_id"
+                                class="form-select <?= isset($this->view->erros['genero_id']) ? 'is-invalid' : '' ?>">
+                                <option value="" disabled selected>Escolha...</option>
+
+                                <?php foreach ($this->view->generos as $g) { ?>
+                                    <option value="<?= $g['id'] ?>"
+                                        <?= (isset($this->view->dados['genero']) && $this->view->dados['genero'] == $g['id']) ? 'selected' : '' ?>>
+                                        <?= $g['genero'] ?>
+                                    </option>
+                                <?php } ?>
                             </select>
-                            <label>Género</label>
+
+                            <?php if (isset($this->view->erros['genero_id'])) { ?>
+                                <div class="invalid-feedback">
+                                    <?= $this->view->erros['genero_id'] ?>
+                                </div>
+                            <?php } ?>
+
+                            <label>Gênero</label>
                         </div>
                     </div>
 
+                    <!-- EMAIL -->
                     <div class="col-12">
                         <div class="form-floating">
-                            <input type="email" name="email" class="form-control" id="email" placeholder="E-mail"
-                                required>
+                            <input type="email" name="email"
+                                class="form-control <?= isset($this->view->erros['email']) ? 'is-invalid' : '' ?>"
+                                value="<?= $this->view->dados['email'] ?? '' ?>">
+
+                            <?php if (isset($this->view->erros['email'])) { ?>
+                                <div class="invalid-feedback">
+                                    <?= $this->view->erros['email'] ?>
+                                </div>
+                            <?php } ?>
+
                             <label>E-mail de Acesso</label>
                         </div>
                     </div>
@@ -72,28 +103,47 @@
 
                     <div class="row g-3 mb-4">
 
+                        <!-- EMPRESA -->
                         <div class="col-md-7">
                             <div class="form-floating">
-                                <input type="text" name="empresa" class="form-control" id="company"
-                                    placeholder="Empresa">
+                                <input type="text" name="empresa"
+                                    class="form-control <?= isset($this->view->erros['empresa']) ? 'is-invalid' : '' ?>"
+                                    value="<?= $this->view->dados['empresa'] ?? '' ?>">
+
+                                <?php if (isset($this->view->erros['empresa'])) { ?>
+                                    <div class="invalid-feedback">
+                                        <?= $this->view->erros['empresa'] ?>
+                                    </div>
+                                <?php } ?>
+
                                 <label>Nome da Empresa</label>
                             </div>
                         </div>
 
-                        <div class="col-md-5">
-                            <div class="form-floating">
-                                <select class="form-select" name="senioridade_id" required>
-                                    <option value="" selected disabled>...</option>
-                                    <?php foreach ($this->view->senioridades as $s) { ?>
-                                        <option value="<?= $s['id'] ?>">
-                                            <?= $s['senioridade'] ?>
-                                        </option>
-                                    <?php } ?>
-                                </select>
-                                <label>Senioridade</label>
-                            </div>
-                        </div>
+                        <!-- SENIORIDADE -->
+                        <div class="col-md-4">
+                        <div class="form-floating">
+                            <select name="senioridade_id"
+                                class="form-select <?= isset($this->view->erros['senioridade_id']) ? 'is-invalid' : '' ?>">
+                                <option value="" disabled selected>Escolha...</option>
 
+                                <?php foreach ($this->view->senioridade as $senioridade) { ?>
+                                    <option value="<?= $g['id'] ?>"
+                                        <?= (isset($this->view->dados['senioridade']) && $this->view->dados['senioridade'] == $senioridade['id']) ? 'selected' : '' ?>>
+                                        <?= $senioridade['senioridade'] ?>
+                                    </option>
+                                <?php } ?>
+                            </select>
+
+                            <?php if (isset($this->view->erros['senioridade_id'])) { ?>
+                                <div class="invalid-feedback">
+                                    <?= $this->view->erros['senioridade_id'] ?>
+                                </div>
+                            <?php } ?>
+
+                            <label>Senioridade</label>
+                        </div>
+                    </div>
                     </div>
                 </div>
 
@@ -101,7 +151,6 @@
                 <div class="form-section-header">Uploads e Segurança</div>
 
                 <div class="row g-3">
-
                     <div class="col-md-6">
                         <label class="upload-card" for="photo-file">
                             <div class="upload-icon"><i class="bi bi-camera"></i></div>
@@ -110,18 +159,23 @@
                                 <div class="x-small text-muted">JPG, PNG (Opcional)</div>
                             </div>
                         </label>
-
-                        <!-- AQUI ESTAVA FALTANDO -->
                         <input type="file" name="foto_perfil" id="photo-file" class="d-none" accept="image/*">
                     </div>
-
                 </div>
 
-                <!-- Senha -->
+                <!-- SENHA -->
                 <div class="row mt-4">
                     <div class="col-12">
                         <div class="form-floating">
-                            <input type="password" name="senha" class="form-control" placeholder="Senha" required>
+                            <input type="password" name="senha"
+                                class="form-control <?= isset($this->view->erros['senha']) ? 'is-invalid' : '' ?>">
+
+                            <?php if (isset($this->view->erros['senha'])) { ?>
+                                <div class="invalid-feedback">
+                                    <?= $this->view->erros['senha'] ?>
+                                </div>
+                            <?php } ?>
+
                             <label>Defina sua Senha</label>
                         </div>
                     </div>

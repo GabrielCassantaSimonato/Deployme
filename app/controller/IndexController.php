@@ -10,13 +10,9 @@ class IndexController extends Action
     {
         $this->render('index');
     }
-
-    // =========================
-    // FORM ESTUDANTE (GET)
-    // =========================
     public function signUpStudent()
     {
-        $this->carregarDadosFormularioEstudante();
+        $this->carregarDadosFormulario();
         $this->render('signUpStudent');
     }
 
@@ -25,8 +21,7 @@ class IndexController extends Action
     // =========================
     public function signUpRecruiter()
     {
-        $senioridade = Container::getModel('Senioridade');
-        $this->view->senioridades = $senioridade->getSenioridades();
+        $this->carregarDadosFormulario();
 
         $this->render('signUpRecruiter');
     }
@@ -57,7 +52,7 @@ class IndexController extends Action
         if (!empty($erros)) {
 
             // Recarrega selects
-            $this->carregarDadosFormularioEstudante();
+            $this->carregarDadosFormulario();
 
             // Mantém dados e erros
             $this->view->erros = $erros;
@@ -104,6 +99,50 @@ class IndexController extends Action
         exit;
     }
 
+    public function recruiterRegister()
+    {
+        $usuario = Container::getModel('Usuario');
+        $recrutador = Container::getModel('Recrutador');
+        $genero = Container::getModel('Genero');
+
+        // =========================
+        // USUÁRIO
+        // =========================
+        $usuario->__set('nome', $_POST['nome']);
+        $usuario->__set('email', $_POST['email']);
+        $usuario->__set('senha', $_POST['senha']);
+        $usuario->__set('tipo', 'recrutador');
+        $usuario->__set('genero_id', $_POST['genero_id'] ?? null);
+
+        $erros = $usuario->validarCadastro();
+
+        if (!empty($erros)) {
+            $this->view->erros = $erros;
+            $this->view->dados = $_POST;
+            $this->carregarDadosFormulario();
+
+            $this->render('signUpRecruiter');
+            return;
+        }
+
+        // senha segura
+        $usuario->__set('senha', password_hash($_POST['senha'], PASSWORD_DEFAULT));
+
+        $usuario_id = $usuario->salvarUsuario();
+
+        // =========================
+        // RECRUTADOR
+        // =========================
+        $recrutador->__set('usuario_id', $usuario_id);
+        $recrutador->__set('empresa', $_POST['empresa']);
+        $recrutador->__set('senioridade_id', $_POST['senioridade_id']);
+
+        $recrutador->salvarRecrutador();
+
+        header('Location: /successRegister');
+        exit;
+    }
+
     // =========================
     // TELA SUCESSO
     // =========================
@@ -135,16 +174,18 @@ class IndexController extends Action
         $this->render('recruiterLogin');
     }
 
-    private function carregarDadosFormularioEstudante()
+    private function carregarDadosFormulario()
     {
         $curso = Container::getModel('Curso');
         $universidade = Container::getModel('Universidade');
         $genero = Container::getModel('Genero');
         $semestre = Container::getModel('Semestre');
+        $senioridade = Container::getModel('Senioridade');
 
         $this->view->cursos = $curso->getCursos();
         $this->view->universidades = $universidade->getUniversidades();
         $this->view->generos = $genero->getGeneros();
         $this->view->semestres = $semestre->getSemestres();
+        $this->view->senioridade = $senioridade->getSenioridades();
     }
 }

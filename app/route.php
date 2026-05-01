@@ -12,6 +12,7 @@ class route extends Bootstrap{ //classe route que herda a classe bootstrap
         $routes['studentLogin'] = Array('route'=>'/studentLogin','controller'=>'IndexController','action'=>'studentLogin');
         $routes['recruiterLogin'] = Array('route'=>'/recruiterLogin','controller'=>'IndexController','action'=>'recruiterLogin');
         $routes['studentRegister'] = Array('route'=>'/studentRegister','controller'=>'IndexController','action'=>'studentRegister');
+        $routes['recruiterRegister'] = Array('route'=>'/recruiterRegister','controller'=>'IndexController','action'=>'recruiterRegister');
         $routes['timeline'] = Array('route'=>'/timeline','controller'=>'AppController','action'=>'timeline');
         $routes['successRegister'] = Array('route'=>'/successRegister','controller'=>'IndexController','action'=>'successRegister');
         $this->setRoutes($routes);//seta a rota no objeto
