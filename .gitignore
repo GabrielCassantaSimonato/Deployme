@@ -1,5 +1,10 @@
-# Ignorar uploads
-/public/uploads/*
-!/public/uploads/.gitkeep
+# Ignorar tudo dentro de uploads
+/public/uploads/**
+
+# Permitir as pastas (via gitkeep)
+!/public/uploads/fotos/
+!/public/uploads/currículos/
+
+# Permitir apenas os .gitkeep
 !/public/uploads/fotos/.gitkeep
-!/public/uploads/curriculos/.gitkeep
+!/public/uploads/currículos/.gitkeep
