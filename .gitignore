@@ -1,0 +1,5 @@
+# Ignorar uploads
+/public/uploads/*
+!/public/uploads/.gitkeep
+!/public/uploads/fotos/.gitkeep
+!/public/uploads/curriculos/.gitkeep

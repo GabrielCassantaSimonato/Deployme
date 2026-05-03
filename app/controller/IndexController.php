@@ -34,7 +34,6 @@ class IndexController extends Action
 
         $usuario = Container::getModel('Usuario');
         $estudante = Container::getModel('Estudante');
-
         // =========================
         // DADOS USUÁRIO
         // =========================
@@ -48,6 +47,36 @@ class IndexController extends Action
         // VALIDAÇÃO
         // =========================
         $erros = $usuario->validarCadastro();
+        $fotoNome = null;
+
+        if (isset($_FILES['foto_perfil']) && $_FILES['foto_perfil']['error'] == 0) {
+
+            $ext = pathinfo($_FILES['foto_perfil']['name'], PATHINFO_EXTENSION);
+            $fotoNome = uniqid() . '.' . $ext;
+            $destino = $_SERVER['DOCUMENT_ROOT'] . '/uploads/fotos/' . $fotoNome;
+
+            move_uploaded_file(
+                $_FILES['foto_perfil']['tmp_name'], $destino
+            );
+            $usuario->__set('foto', $fotoNome ?? null);
+        }
+
+        $curriculoNome = null;
+
+        if (isset($_FILES['curriculo']) && $_FILES['curriculo']['error'] == 0) {
+
+            $ext = pathinfo($_FILES['curriculo']['name'], PATHINFO_EXTENSION);
+
+            if ($ext !== 'pdf') {
+            }
+
+            $curriculoNome = uniqid() . '.pdf';
+            $destino = $_SERVER['DOCUMENT_ROOT'] . '/uploads/currículos/' . $curriculoNome;
+
+            move_uploaded_file(
+                $_FILES['curriculo']['tmp_name'],$destino
+            );
+        }
 
         if (!empty($erros)) {
 
@@ -86,6 +115,7 @@ class IndexController extends Action
         $estudante->__set('cidade', $_POST['cidade'] ?? null);
         $estudante->__set('complemento', $_POST['complemento'] ?? null);
         $estudante->__set('uf', $_POST['uf'] ?? null);
+        $estudante->__set('curriculo', $curriculoNome ?? null);
 
         // =========================
         // SALVA ESTUDANTE
@@ -105,16 +135,30 @@ class IndexController extends Action
         $recrutador = Container::getModel('Recrutador');
         $genero = Container::getModel('Genero');
 
+
         // =========================
         // USUÁRIO
         // =========================
-        $usuario->__set('nome', $_POST['nome']);
-        $usuario->__set('email', $_POST['email']);
-        $usuario->__set('senha', $_POST['senha']);
+        $usuario->__set('nome', $_POST['nome'] ?? null);
+        $usuario->__set('email', $_POST['email'] ?? null);
+        $usuario->__set('senha', $_POST['senha'] ?? null);
         $usuario->__set('tipo', 'recrutador');
         $usuario->__set('genero_id', $_POST['genero_id'] ?? null);
 
         $erros = $usuario->validarCadastro();
+        $fotoNome = null;
+
+        if (isset($_FILES['foto_perfil']) && $_FILES['foto_perfil']['error'] == 0) {
+
+            $ext = pathinfo($_FILES['foto_perfil']['name'], PATHINFO_EXTENSION);
+            $fotoNome = uniqid() . '.' . $ext;
+            $destino = $_SERVER['DOCUMENT_ROOT'] . '/uploads/fotos/' . $fotoNome;
+
+            move_uploaded_file(
+                $_FILES['foto_perfil']['tmp_name'],$destino
+            );
+            $usuario->__set('foto', $fotoNome ?? null);
+        }
 
         if (!empty($erros)) {
             $this->view->erros = $erros;
@@ -134,8 +178,8 @@ class IndexController extends Action
         // RECRUTADOR
         // =========================
         $recrutador->__set('usuario_id', $usuario_id);
-        $recrutador->__set('empresa', $_POST['empresa']);
-        $recrutador->__set('senioridade_id', $_POST['senioridade_id']);
+        $recrutador->__set('empresa', $_POST['empresa'] ?? null);
+        $recrutador->__set('senioridade_id', $_POST['senioridade_id'] ?? null);
 
         $recrutador->salvarRecrutador();
 
