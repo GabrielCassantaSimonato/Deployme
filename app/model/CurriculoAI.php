@@ -10,18 +10,12 @@ class CurriculoAI
     {
 
         $apiKey = $_ENV['GEMINI_API_KEY_ANALYZE'];
-
         $modelo = 'gemini-2.5-flash';
-
         $url = "https://generativelanguage.googleapis.com/v1beta/models/{$modelo}:generateContent?key={$apiKey}";
-
         $prompt = "
         Atue como um recrutador técnico sênior da plataforma Deployme.
-
         Analise o currículo abaixo e gere uma avaliação profissional.
-
         Quero um feedback humano, moderno e construtivo.
-
         Avalie:
         - clareza do currículo
         - organização
@@ -29,7 +23,6 @@ class CurriculoAI
         - impacto profissional
         - maturidade técnica
         - chances no mercado
-
         Currículo:
             {$textoCurriculo}
         Responda SOMENTE um JSON válido no formato:
@@ -41,7 +34,6 @@ class CurriculoAI
     \"score\": 0
 }
 ";
-
         $body = [
             'contents' => [
                 [
