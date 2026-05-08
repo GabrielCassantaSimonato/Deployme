@@ -8,3 +8,5 @@
 # Permitir apenas os .gitkeep
 !/public/uploads/fotos/.gitkeep
 !/public/uploads/currículos/.gitkeep
+
+.env
