@@ -34,6 +34,7 @@ class CurriculoAI
     \"score\": 0
 }
 ";
+        //Corpo da requisição
         $body = [
             'contents' => [
                 [
@@ -45,8 +46,8 @@ class CurriculoAI
                 ]
             ],
             'generationConfig' => [
-                'temperature' => 0.2,
-                'responseMimeType' => 'application/json'
+                'temperature' => 0.1, //temperatura para respostas determinísticas 
+                'responseMimeType' => 'application/json' //Formato da resposta
             ]
         ];
         $curl = curl_init();

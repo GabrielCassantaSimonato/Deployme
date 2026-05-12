@@ -3,6 +3,7 @@ namespace app\controller;
 
 use MF\controller\Action;
 use MF\model\Container;
+use app\service\EmailService;
 
 class IndexController extends Action
 {
@@ -56,7 +57,8 @@ class IndexController extends Action
             $destino = $_SERVER['DOCUMENT_ROOT'] . '/uploads/fotos/' . $fotoNome;
 
             move_uploaded_file(
-                $_FILES['foto_perfil']['tmp_name'], $destino
+                $_FILES['foto_perfil']['tmp_name'],
+                $destino
             );
             $usuario->__set('foto', $fotoNome ?? null);
         }
@@ -74,7 +76,8 @@ class IndexController extends Action
             $destino = $_SERVER['DOCUMENT_ROOT'] . '/uploads/currículos/' . $curriculoNome;
 
             move_uploaded_file(
-                $_FILES['curriculo']['tmp_name'],$destino
+                $_FILES['curriculo']['tmp_name'],
+                $destino
             );
         }
 
@@ -121,7 +124,7 @@ class IndexController extends Action
         // SALVA ESTUDANTE
         // =========================
         $estudante->salvarEstudante();
-
+        EmailService::enviarBoasVindas($_POST['email'], $_POST['nome']);
         // =========================
         // REDIRECT FINAL
         // =========================
@@ -155,7 +158,8 @@ class IndexController extends Action
             $destino = $_SERVER['DOCUMENT_ROOT'] . '/uploads/fotos/' . $fotoNome;
 
             move_uploaded_file(
-                $_FILES['foto_perfil']['tmp_name'],$destino
+                $_FILES['foto_perfil']['tmp_name'],
+                $destino
             );
             $usuario->__set('foto', $fotoNome ?? null);
         }
@@ -182,6 +186,7 @@ class IndexController extends Action
         $recrutador->__set('senioridade_id', $_POST['senioridade_id'] ?? null);
 
         $recrutador->salvarRecrutador();
+        EmailService::enviarBoasVindas($_POST['email'], $_POST['nome']);
 
         header('Location: /successRegister');
         exit;

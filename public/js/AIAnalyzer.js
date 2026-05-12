@@ -39,7 +39,7 @@ analyzeBtn.addEventListener('click', async () => {
 
         // POPULA MODAL
         document.getElementById('aiScore').innerText =
-        data.score + '/10';
+        data.score + '/100';
 
         document.getElementById('aiFeedback').innerText =
         data.feedback;
