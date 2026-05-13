@@ -19,6 +19,8 @@ class route extends Bootstrap
         $routes['resumeAnalyzer'] = array('route' => '/resumeAnalyzer', 'controller' => 'IAController', 'action' => 'resumeAnalyzer');
         $routes['auth'] = array('route' => '/auth', 'controller' => 'AuthController', 'action' => 'auth');
         $routes['logout'] = array('route' => '/logout', 'controller' => 'AuthController', 'action' => 'logout');
+        $routes['loginAdmin'] = array('route' => '/loginAdmin', 'controller' => 'IndexController', 'action' => 'loginAdmin');
+        $routes['admin'] = array('route' => '/admin', 'controller' => 'AdminController', 'action' => 'dashboard');
         $this->setRoutes($routes);//seta a rota no objeto
     }
 }

@@ -70,6 +70,12 @@ class AuthController extends Action
             $_SESSION['empresa'] =
                 $dadosRecrutador['empresa'];
         }
+        // ADMIN
+        if ($dadosUsuario['tipo'] == 'admin') {
+
+            header('Location: /admin');
+            exit;
+        }
 
         // REDIRECIONAMENTO
         header('Location: /timeline');

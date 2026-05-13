@@ -1,5 +1,7 @@
 <?php
 
+
+
 if (session_status() !== PHP_SESSION_ACTIVE) {
   session_start();
 }
@@ -7,6 +9,16 @@ if (session_status() !== PHP_SESSION_ACTIVE) {
 $tipo = $_SESSION['tipo'];
 
 ?>
+
+<?php if (isset($_GET['erro']) && $_GET['erro'] == 'sem_permissao') { ?>
+
+  <div class="alert alert-danger">
+
+    Você não possui permissão para acessar esta área.
+
+  </div>
+
+<?php } ?>
 
 <nav class="navbar-custom">
 

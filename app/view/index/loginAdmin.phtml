@@ -8,10 +8,10 @@
             </a>
 
             <div class="login-avatar-ring">
-                <i class="bi bi-shield-lock"></i>
+                <i class="bi bi-shield-lock-fill"></i>
             </div>
 
-            <h3 class="fw-800 mb-5 text-dark" id="login-heading">Login</h3>
+            <h3 class="fw-800 mb-5 text-dark" id="login-heading">Login de Administrador</h3>
 
             <?php if (isset($_GET['erro']) && $_GET['erro'] == 1) { ?>
 
@@ -22,17 +22,19 @@
 
             <?php } ?>
 
-            <?php if (isset($_GET['auth']) && $_GET['auth'] == 'required') { ?>
+            <?php if (isset($_GET['auth']) && $_GET['auth'] == 'admin') { ?>
 
-                <div class="alert alert-warning d-flex align-items-center mb-4">
+                <div class="alert alert-danger d-flex align-items-center mb-4">
 
-                    <i class="bi bi-lock-fill me-2"></i>
+                    <i class="bi bi-shield-lock-fill me-2"></i>
 
-                    Você precisa estar logado para acessar esta página.
+                    Apenas administradores podem acessar esta área.
 
                 </div>
 
             <?php } ?>
+
+
 
             <form action="/auth" method="POST">
                 <div class="form-floating mb-3">
@@ -52,23 +54,7 @@
                 <button type="submit" class="btn btn-primary btn-lg w-100 py-3 shadow-lg mb-4">
                     Entrar
                 </button>
-                <hr class="my-4 opacity-50">
             </form>
-            <div class="login-option-card admin-card">
-
-                <i class="bi bi-shield-lock-fill"></i>
-
-                <h4>Administrador</h4>
-
-                <p>
-                    Painel administrativo da plataforma
-                </p>
-
-                <a href="/loginAdmin" class="btn btn-dark">
-                    Entrar
-                </a>
-
-            </div>
         </div>
     </div>
 </div>

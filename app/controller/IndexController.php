@@ -212,6 +212,10 @@ class IndexController extends Action
     {
         $this->render('login');
     }
+    public function loginAdmin()
+    {
+        $this->render('loginAdmin');
+    }
 
     private function carregarDadosFormulario()
     {
