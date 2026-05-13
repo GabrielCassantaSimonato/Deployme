@@ -4,7 +4,8 @@ namespace app\model;
 
 use MF\model\Model;
 
-class Usuario extends Model {
+class Usuario extends Model
+{
 
     private $id;
     private $nome;
@@ -16,15 +17,18 @@ class Usuario extends Model {
     private $criado_em;
 
     // GET e SET mágico
-    public function __get($atributo) {
+    public function __get($atributo)
+    {
         return $this->$atributo;
     }
 
-    public function __set($atributo, $valor) {
+    public function __set($atributo, $valor)
+    {
         $this->$atributo = $valor;
     }
 
-    public function salvarUsuario() {
+    public function salvarUsuario()
+    {
         $query = "INSERT INTO usuarios 
         (nome, email, senha, tipo, genero_id, foto, criado_em)
         VALUES 
@@ -44,7 +48,8 @@ class Usuario extends Model {
         return $this->db->lastInsertId();
     }
 
-    public function emailExiste() {
+    public function emailExiste()
+    {
         $query = "SELECT id FROM usuarios WHERE email = :email";
         $stmt = $this->db->prepare($query);
         $stmt->bindValue(':email', $this->__get('email'));
@@ -53,28 +58,46 @@ class Usuario extends Model {
         return $stmt->rowCount() > 0;
     }
 
-    public function validarCadastro() {
+    public function validarCadastro()
+    {
 
-    $erros = [];
+        $erros = [];
 
-    if (empty($this->__get('nome'))) {
-        $erros['nome'] = 'Nome é obrigatório';
+        if (empty($this->__get('nome'))) {
+            $erros['nome'] = 'Nome é obrigatório';
+        }
+
+        if (empty($this->__get('email'))) {
+            $erros['email'] = 'Email é obrigatório';
+        }
+
+        if ($this->emailExiste()) {
+            $erros['email'] = 'Email já cadastrado';
+        }
+
+        if (strlen($this->__get('senha')) < 8) {
+            $erros['senha'] = 'Senha deve ter no mínimo 8 caracteres';
+        }
+
+        return $erros;
     }
 
-    if (empty($this->__get('email'))) {
-        $erros['email'] = 'Email é obrigatório';
-    }
+    public function buscarPorEmail()
+    {
+        $query = "
+        SELECT *
+        FROM usuarios
+        WHERE email = :email
+    ";
 
-    if ($this->emailExiste()) {
-        $erros['email'] = 'Email já cadastrado';
-    }
+        $stmt = $this->db->prepare($query);
 
-    if (strlen($this->__get('senha')) < 8) {
-        $erros['senha'] = 'Senha deve ter no mínimo 8 caracteres';
-    }
+        $stmt->bindValue(':email', $this->__get('email'));
 
-    return $erros;
-}
+        $stmt->execute();
+
+        return $stmt->fetch(\PDO::FETCH_ASSOC);
+    }
 }
 
 ?>

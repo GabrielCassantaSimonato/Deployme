@@ -4,7 +4,8 @@ namespace app\model;
 
 use MF\model\Model;
 
-class Estudante extends Model {
+class Estudante extends Model
+{
 
     private $id;
     private $usuario_id;
@@ -20,15 +21,18 @@ class Estudante extends Model {
     private $uf;
     private $curriculo;
 
-    public function __get($atributo) {
+    public function __get($atributo)
+    {
         return $this->$atributo;
     }
 
-    public function __set($atributo, $valor) {
+    public function __set($atributo, $valor)
+    {
         $this->$atributo = $valor;
     }
 
-    public function salvarEstudante() {
+    public function salvarEstudante()
+    {
         $query = "INSERT INTO estudantes 
         (usuario_id, universidade_id, curso_id, semestre_id, github, cep, rua, bairro, cidade, complemento, uf, curriculo)
         VALUES 
@@ -50,6 +54,23 @@ class Estudante extends Model {
         $stmt->bindValue(':curriculo', $this->__get('curriculo'));
 
         return $stmt->execute();
+    }
+
+    public function buscarPorUsuario($usuario_id)
+    {
+        $query = "
+        SELECT cidade, uf
+        FROM estudantes
+        WHERE usuario_id = :usuario_id
+    ";
+
+        $stmt = $this->db->prepare($query);
+
+        $stmt->bindValue(':usuario_id', $usuario_id);
+
+        $stmt->execute();
+
+        return $stmt->fetch(\PDO::FETCH_ASSOC);
     }
 }
 

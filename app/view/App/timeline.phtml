@@ -1,3 +1,13 @@
+<?php
+
+if (session_status() !== PHP_SESSION_ACTIVE) {
+  session_start();
+}
+
+$tipo = $_SESSION['tipo'];
+
+?>
+
 <nav class="navbar-custom">
 
   <!-- ESQUERDA -->
@@ -15,15 +25,35 @@
       <span>Pessoas</span>
     </div>
 
-    <div class="nav-icon">
-      <i class="bi bi-briefcase"></i>
-      <span>Minhas candidaturas</span>
-    </div>
+    <!-- ESTUDANTE -->
+    <?php if ($tipo == 'estudante') { ?>
 
-    <div class="nav-icon">
-      <i class="bi bi-globe"></i>
-      <span>Ver vagas</span>
-    </div>
+      <div class="nav-icon">
+        <i class="bi bi-briefcase"></i>
+        <span>Minhas candidaturas</span>
+      </div>
+
+      <div class="nav-icon">
+        <i class="bi bi-globe"></i>
+        <span>Ver vagas</span>
+      </div>
+
+    <?php } ?>
+
+    <!-- RECRUTADOR -->
+    <?php if ($tipo == 'recrutador') { ?>
+
+      <div class="nav-icon">
+        <i class="bi bi-file-earmark-text"></i>
+        <span>Vagas postadas</span>
+      </div>
+
+      <div class="nav-icon">
+        <i class="bi bi-people-fill"></i>
+        <span>Candidaturas</span>
+      </div>
+
+    <?php } ?>
 
     <div class="nav-icon">
       <i class="bi bi-chat-dots"></i>
@@ -41,122 +71,221 @@
 
   <!-- DIREITA -->
   <div class="nav-right">
-    <div class="nav-icon logout">
+
+    <a href="/logout" class="nav-icon logout text-decoration-none">
       <i class="bi bi-box-arrow-right"></i>
       <span>Sair</span>
-    </div>
+    </a>
+
   </div>
 
 </nav>
 
 <div class="container mt-3">
+
   <div class="row">
 
     <!-- LEFT -->
     <div class="col-md-3">
+
       <div class="card-custom text-center p-3">
+
         <div class="cover"></div>
-        <img src="https://i.pravatar.cc/50?img=1" class="profile-img">
+
+        <img src="<?= !empty($_SESSION['foto_perfil'])
+          ? '/uploads/fotos/' . $_SESSION['foto_perfil']
+          : '/uploads/fotos/default-user.png' ?>" class="profile-img">
 
         <h6 class="mt-2">
-          <a href="#" class="user-link">Gabriel Cassanta Simonato</a>
+
+          <a href="#" class="user-link">
+
+            <?= $_SESSION['nome'] ?>
+
+          </a>
+
         </h6>
 
-        <small>Desenvolvedor</small>
+        <?php if ($tipo == 'estudante') { ?>
+
+          <small>
+
+            <i class="bi bi-geo-alt-fill"></i>
+
+            <?= $_SESSION['cidade'] ?> -
+            <?= $_SESSION['estado'] ?>
+
+          </small>
+
+        <?php } ?>
+
+        <?php if ($tipo == 'recrutador') { ?>
+
+          <small>
+
+            <?= $_SESSION['empresa'] ?>
+
+          </small>
+
+        <?php } ?>
 
         <div class="mt-2">
-          <small><strong>320</strong> seguidores</small><br>
-          <small><strong>180</strong> seguindo</small>
+
+          <small>
+            <strong>320</strong> seguidores
+          </small><br>
+
+          <small>
+            <strong>180</strong> seguindo
+          </small>
+
         </div>
+
       </div>
+
     </div>
 
     <!-- FEED -->
     <div class="col-md-6">
 
-      <!-- 🔥 CRIAR PUBLICAÇÃO -->
+      <!-- CRIAR PUBLICAÇÃO -->
       <div class="card-custom p-3 mb-3">
 
         <div class="d-flex align-items-center mb-2">
-          <img src="https://i.pravatar.cc/50?img=1" class="me-2" style="border-radius: 50%;">
+          <img src="<?= !empty($_SESSION['foto_perfil'])
+            ? '/uploads/fotos/' . $_SESSION['foto_perfil']
+            : '/uploads/fotos/default-user.png' ?>" class="me-2" style="
+        width: 48px;
+        height: 48px;
+        border-radius: 50%;
+        object-fit: cover;
+    ">
 
-          <input 
-            type="text" 
-            class="form-control" 
-            placeholder="No que você está pensando?"
-            data-bs-toggle="modal"
-            data-bs-target="#publicacaoModal"
-            style="border-radius: 20px; cursor: pointer;"
-            readonly
-          >
+          <input type="text" class="form-control" placeholder="No que você está pensando?" data-bs-toggle="modal"
+            data-bs-target="#publicacaoModal" style="border-radius: 20px; cursor: pointer;" readonly>
+
         </div>
 
         <div class="d-flex justify-content-around mt-2 post-actions">
+
           <button>📷 Foto</button>
+
           <button>🎥 Vídeo</button>
-          <button>📄 Vaga</button>
+
+          <!-- SOMENTE RECRUTADOR POSTA VAGA -->
+          <?php if ($tipo == 'recrutador') { ?>
+
+            <button>📄 Vaga</button>
+
+          <?php } ?>
+
         </div>
 
       </div>
 
       <!-- POST NORMAL -->
       <div class="card-custom p-3">
+
         <div class="d-flex post-header">
+
           <img src="https://i.pravatar.cc/50?img=1" class="me-2">
+
           <div>
-            <a href="#" class="user-link">Jaqueline Amaro</a><br>
+
+            <a href="#" class="user-link">
+              Jaqueline Amaro
+            </a><br>
+
             <small>Especialista CRM</small>
+
           </div>
+
         </div>
 
-        <p class="mt-2">Profissionais open to work disponíveis!</p>
+        <p class="mt-2">
+          Profissionais open to work disponíveis!
+        </p>
 
-        <small class="text-muted">10 curtidas</small>
+        <small class="text-muted">
+          10 curtidas
+        </small>
 
         <hr>
 
         <div class="d-flex justify-content-around post-actions">
+
           <button>👍 Curtir</button>
+
           <button data-bs-toggle="modal" data-bs-target="#comentariosModal">
             💬 Comentar
           </button>
+
           <button>🔁 Compartilhar</button>
+
         </div>
+
       </div>
 
       <!-- POST DE VAGA -->
+      <!-- TODOS VEEM -->
       <div class="card-custom p-3 mt-3">
+
         <div class="d-flex post-header">
+
           <img src="https://i.pravatar.cc/50?img=2" class="me-2">
+
           <div>
-            <a href="#" class="user-link">Tech Solutions</a><br>
+
+            <a href="#" class="user-link">
+              Tech Solutions
+            </a><br>
+
             <small>Empresa de Tecnologia</small>
+
           </div>
+
         </div>
 
-        <p class="mt-2">Estamos contratando desenvolvedores!</p>
+        <p class="mt-2">
+          Estamos contratando desenvolvedores!
+        </p>
 
         <div class="vaga-card mt-2">
-          <div class="vaga-link">Desenvolvedor PHP Jr</div>
+
+          <div class="vaga-link">
+            Desenvolvedor PHP Jr
+          </div>
+
           <div>Tech Solutions</div>
-          <div class="vaga-local">São Paulo - SP</div>
+
+          <div class="vaga-local">
+            São Paulo - SP
+          </div>
 
           <button class="btn btn-primary btn-sm mt-2">
             Ver vaga
           </button>
+
         </div>
 
-        <small class="text-muted">5 curtidas</small>
+        <small class="text-muted">
+          5 curtidas
+        </small>
 
         <hr>
 
         <div class="d-flex justify-content-around post-actions">
+
           <button>👍 Curtir</button>
+
           <button data-bs-toggle="modal" data-bs-target="#comentariosModal">
             💬 Comentar
           </button>
+
           <button>🔁 Compartilhar</button>
+
         </div>
+
       </div>
 
     </div>
@@ -165,91 +294,171 @@
     <div class="col-md-3"></div>
 
   </div>
+
 </div>
 
-<!-- MODAL PUBLICAÇÃO / VAGA -->
+<!-- MODAL PUBLICAÇÃO -->
 <div class="modal fade" id="publicacaoModal" tabindex="-1">
+
   <div class="modal-dialog">
+
     <div class="modal-content">
 
       <div class="modal-header">
-        <h5 class="modal-title">Criar publicação</h5>
+
+        <h5 class="modal-title">
+          Criar publicação
+        </h5>
+
         <button class="btn-close" data-bs-dismiss="modal"></button>
+
       </div>
 
       <div class="modal-body">
 
         <!-- TOGGLE -->
         <div class="d-flex mb-3">
-          <button class="btn btn-outline-primary w-50 me-1" onclick="showPost()">Publicação</button>
-          <button class="btn btn-outline-success w-50 ms-1" onclick="showVaga()">Vaga</button>
+
+          <button class="btn btn-outline-primary w-50 me-1" onclick="showPost()">
+            Publicação
+          </button>
+
+          <!-- SOMENTE RECRUTADOR -->
+          <?php if ($tipo == 'recrutador') { ?>
+
+            <button class="btn btn-outline-success w-50 ms-1" onclick="showVaga()">
+              Vaga
+            </button>
+
+          <?php } ?>
+
         </div>
 
-        <!-- POST -->
+        <!-- FORM POST -->
         <div id="postForm">
+
           <div class="d-flex mb-2">
-            <img src="https://i.pravatar.cc/50?img=1" class="me-2" style="border-radius: 50%;">
-            <strong>Gabriel Simonato</strong>
+
+            <img src="<?= !empty($_SESSION['foto_perfil'])
+              ? '/uploads/fotos/' . $_SESSION['foto_perfil']
+              : '/uploads/fotos/default-user.png' ?>" class="me-2" style="
+        width: 48px;
+        height: 48px;
+        border-radius: 50%;
+        object-fit: cover;
+    ">
+
+            <strong>
+
+              <?= $_SESSION['nome'] ?>
+
+            </strong>
+
           </div>
 
           <textarea class="form-control mb-2" rows="4" placeholder="Escreva sua publicação..."></textarea>
 
-          <button class="btn btn-primary w-100">Publicar</button>
+          <button class="btn btn-primary w-100">
+            Publicar
+          </button>
+
         </div>
 
-        <!-- VAGA -->
-        <div id="vagaForm" style="display:none;">
+        <!-- FORM VAGA -->
+        <?php if ($tipo == 'recrutador') { ?>
 
-          <div class="d-flex mb-2">
-            <img src="https://i.pravatar.cc/50?img=1" class="me-2" style="border-radius: 50%;">
-            <strong>Gabriel Simonato</strong>
+          <div id="vagaForm" style="display:none;">
+
+            <div class="d-flex mb-2">
+
+              <img src="<?= !empty($_SESSION['foto_perfil'])
+                ? '/uploads/fotos/' . $_SESSION['foto_perfil']
+                : '/uploads/fotos/default-user.png' ?>" class="me-2" style="
+        width: 48px;
+        height: 48px;
+        border-radius: 50%;
+        object-fit: cover;
+    ">
+
+              <strong>
+
+                <?= $_SESSION['nome'] ?>
+
+              </strong>
+
+            </div>
+
+            <input class="form-control mb-2" placeholder="Título da vaga">
+
+            <input class="form-control mb-2" placeholder="Empresa">
+
+            <input class="form-control mb-2" placeholder="Localização">
+
+            <textarea class="form-control mb-2" rows="3" placeholder="Descrição da vaga"></textarea>
+
+            <button class="btn btn-success w-100">
+              Publicar vaga
+            </button>
+
           </div>
 
-          <input class="form-control mb-2" placeholder="Título da vaga">
-          <input class="form-control mb-2" placeholder="Empresa">
-          <input class="form-control mb-2" placeholder="Localização">
-          <textarea class="form-control mb-2" rows="3" placeholder="Descrição da vaga"></textarea>
-
-          <button class="btn btn-success w-100">Publicar vaga</button>
-        </div>
+        <?php } ?>
 
       </div>
 
     </div>
+
   </div>
+
 </div>
 
-<!-- MODAL DE COMENTÁRIOS -->
+<!-- MODAL COMENTÁRIOS -->
 <div class="modal fade" id="comentariosModal" tabindex="-1">
+
   <div class="modal-dialog">
+
     <div class="modal-content">
 
       <div class="modal-header">
-        <h5 class="modal-title">Comentários</h5>
+
+        <h5 class="modal-title">
+          Comentários
+        </h5>
+
         <button class="btn-close" data-bs-dismiss="modal"></button>
+
       </div>
 
       <div class="modal-body">
 
         <div class="mb-3">
+
           <strong>João Silva</strong><br>
+
           <small>Muito bom!</small>
+
         </div>
 
         <div class="mb-3">
+
           <strong>Ana Souza</strong><br>
+
           <small>Excelente oportunidade 👏</small>
+
         </div>
 
         <hr>
 
         <textarea class="form-control mb-2" placeholder="Escreva um comentário..."></textarea>
-        <button class="btn btn-primary btn-sm">Comentar</button>
+
+        <button class="btn btn-primary btn-sm">
+          Comentar
+        </button>
 
       </div>
 
     </div>
+
   </div>
+
 </div>
-</body>
-</html>

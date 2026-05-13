@@ -208,19 +208,9 @@ class IndexController extends Action
         $this->render('lgpd');
     }
 
-    public function loginSelection()
+    public function login()
     {
-        $this->render('loginSelection');
-    }
-
-    public function studentLogin()
-    {
-        $this->render('studentLogin');
-    }
-
-    public function recruiterLogin()
-    {
-        $this->render('recruiterLogin');
+        $this->render('login');
     }
 
     private function carregarDadosFormulario()

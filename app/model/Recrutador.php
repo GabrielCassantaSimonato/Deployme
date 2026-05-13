@@ -3,21 +3,25 @@ namespace app\model;
 
 use MF\model\Model;
 
-class Recrutador extends Model {
+class Recrutador extends Model
+{
 
     private $usuario_id;
     private $empresa;
     private $senioridade_id;
 
-    public function __get($atributo) {
+    public function __get($atributo)
+    {
         return $this->$atributo;
     }
 
-    public function __set($atributo, $valor) {
+    public function __set($atributo, $valor)
+    {
         $this->$atributo = $valor;
     }
 
-    public function salvarRecrutador() {
+    public function salvarRecrutador()
+    {
 
         $query = "INSERT INTO recrutadores 
         (usuario_id, empresa, senioridade_id)
@@ -31,6 +35,22 @@ class Recrutador extends Model {
         $stmt->bindValue(':senioridade_id', $this->__get('senioridade_id'));
 
         return $stmt->execute();
+    }
+    public function buscarPorUsuario($usuario_id)
+    {
+        $query = "
+        SELECT empresa
+        FROM recrutadores
+        WHERE usuario_id = :usuario_id
+    ";
+
+        $stmt = $this->db->prepare($query);
+
+        $stmt->bindValue(':usuario_id', $usuario_id);
+
+        $stmt->execute();
+
+        return $stmt->fetch(\PDO::FETCH_ASSOC);
     }
 }
 ?>

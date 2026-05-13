@@ -1,21 +1,24 @@
 <?php
 namespace app; //classe responsável por ter as rotas do sistema
+
 use MF\init\Bootstrap;
 
-class route extends Bootstrap{ //classe route que herda a classe bootstrap
-    protected function initRoutes(){ //preparação das rotas para ir ao controller
-        $routes['home'] = Array('route'=>'/','controller'=>'IndexController','action'=>'index');
-        $routes['signUpStudent'] = Array('route'=>'/signUpStudent','controller'=>'IndexController','action'=>'signUpStudent');
-        $routes['signUpRecruiter'] = Array('route'=>'/signUpRecruiter','controller'=>'IndexController','action'=>'signUpRecruiter');
-        $routes['lgpd'] = Array('route'=>'/lgpd','controller'=>'IndexController','action'=>'lgpd');
-        $routes['loginSelection'] = Array('route'=>'/loginSelection','controller'=>'IndexController','action'=>'loginSelection');
-        $routes['studentLogin'] = Array('route'=>'/studentLogin','controller'=>'IndexController','action'=>'studentLogin');
-        $routes['recruiterLogin'] = Array('route'=>'/recruiterLogin','controller'=>'IndexController','action'=>'recruiterLogin');
-        $routes['studentRegister'] = Array('route'=>'/studentRegister','controller'=>'IndexController','action'=>'studentRegister');
-        $routes['recruiterRegister'] = Array('route'=>'/recruiterRegister','controller'=>'IndexController','action'=>'recruiterRegister');
-        $routes['timeline'] = Array('route'=>'/timeline','controller'=>'AppController','action'=>'timeline');
-        $routes['successRegister'] = Array('route'=>'/successRegister','controller'=>'IndexController','action'=>'successRegister');
-        $routes['resumeAnalyzer'] = Array('route'=>'/resumeAnalyzer','controller'=>'IAController','action'=>'resumeAnalyzer');
+class route extends Bootstrap
+{ //classe route que herda a classe bootstrap
+    protected function initRoutes()
+    { //preparação das rotas para ir ao controller
+        $routes['home'] = array('route' => '/', 'controller' => 'IndexController', 'action' => 'index');
+        $routes['signUpStudent'] = array('route' => '/signUpStudent', 'controller' => 'IndexController', 'action' => 'signUpStudent');
+        $routes['signUpRecruiter'] = array('route' => '/signUpRecruiter', 'controller' => 'IndexController', 'action' => 'signUpRecruiter');
+        $routes['lgpd'] = array('route' => '/lgpd', 'controller' => 'IndexController', 'action' => 'lgpd');
+        $routes['login'] = array('route' => '/login', 'controller' => 'IndexController', 'action' => 'login');
+        $routes['studentRegister'] = array('route' => '/studentRegister', 'controller' => 'IndexController', 'action' => 'studentRegister');
+        $routes['recruiterRegister'] = array('route' => '/recruiterRegister', 'controller' => 'IndexController', 'action' => 'recruiterRegister');
+        $routes['timeline'] = array('route' => '/timeline', 'controller' => 'AppController', 'action' => 'timeline');
+        $routes['successRegister'] = array('route' => '/successRegister', 'controller' => 'IndexController', 'action' => 'successRegister');
+        $routes['resumeAnalyzer'] = array('route' => '/resumeAnalyzer', 'controller' => 'IAController', 'action' => 'resumeAnalyzer');
+        $routes['auth'] = array('route' => '/auth', 'controller' => 'AuthController', 'action' => 'auth');
+        $routes['logout'] = array('route' => '/logout', 'controller' => 'AuthController', 'action' => 'logout');
         $this->setRoutes($routes);//seta a rota no objeto
     }
 }
