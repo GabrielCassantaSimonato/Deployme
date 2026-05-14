@@ -98,6 +98,49 @@ class Usuario extends Model
 
         return $stmt->fetch(\PDO::FETCH_ASSOC);
     }
+
+    public function buscarUsuarioCompleto($id)
+    {
+        $query = "
+        SELECT
+
+            u.id,
+            u.nome,
+            u.email,
+            u.tipo,
+            u.foto,
+
+            e.cep,
+            e.rua,
+            e.bairro,
+            e.complemento,
+            e.cidade,
+            e.uf,
+            e.github,
+            e.curriculo,
+
+            r.empresa
+
+        FROM usuarios u
+
+        LEFT JOIN estudantes e
+            ON e.usuario_id = u.id
+
+        LEFT JOIN recrutadores r
+            ON r.usuario_id = u.id
+
+        WHERE u.id = :id
+    ";
+
+        $stmt = $this->db->prepare($query);
+
+        $stmt->bindValue(':id', $id);
+
+        $stmt->execute();
+
+        return $stmt->fetch(\PDO::FETCH_ASSOC);
+    }
 }
+
 
 ?>

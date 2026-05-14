@@ -1,0 +1,368 @@
+<?php
+
+$usuario = $this->view->dadosUsuario;
+
+?>
+
+<div class="mb-4">
+
+    <a href="/timeline" class="linkedin-back-btn">
+
+        <i class="bi bi-arrow-left"></i>
+
+        Voltar
+
+    </a>
+
+</div>
+
+<div class="linkedin-profile-container">
+
+    <!-- COVER -->
+    <div class="linkedin-cover"></div>
+
+    <!-- CARD PRINCIPAL -->
+    <div class="linkedin-profile-card">
+
+        <!-- HEADER -->
+        <div class="linkedin-profile-header">
+
+            <img src="<?= !empty($usuario['foto'])
+                ? '/uploads/fotos/' . $usuario['foto']
+                : '/uploads/fotos/default-user.png' ?>" class="linkedin-profile-photo">
+
+            <div class="linkedin-profile-info">
+
+                <h2>
+                    <?= $usuario['nome'] ?>
+                </h2>
+
+                <?php if ($usuario['tipo'] == 'estudante') { ?>
+
+                    <p class="linkedin-subtitle">
+
+                        <i class="bi bi-geo-alt-fill me-1"></i>
+
+                        <?= $usuario['cidade'] ?>
+                        -
+                        <?= $usuario['uf'] ?>
+
+                    </p>
+
+                <?php } ?>
+
+                <?php if ($usuario['tipo'] == 'recrutador') { ?>
+
+                    <p class="linkedin-subtitle">
+
+                        <i class="bi bi-buildings-fill me-1"></i>
+
+                        <?= $usuario['empresa'] ?>
+
+                    </p>
+
+                <?php } ?>
+
+            </div>
+
+        </div>
+
+        <!-- CURRÍCULO / GITHUB -->
+        <div class="linkedin-actions">
+
+            <!-- CURRÍCULO -->
+            <?php if (!empty($usuario['curriculo'])) { ?>
+
+                <a href="/uploads/currículos/<?= $usuario['curriculo'] ?>" target="_blank" class="linkedin-feature-card">
+
+                    <div class="linkedin-feature-icon bg-primary-custom">
+
+                        <i class="bi bi-file-earmark-pdf-fill"></i>
+
+                    </div>
+
+                    <div class="linkedin-feature-content">
+
+                        <strong>
+                            Currículo profissional
+                        </strong>
+
+                        <p>
+                            Visualize o currículo cadastrado.
+                        </p>
+
+                    </div>
+
+                </a>
+
+            <?php } else { ?>
+
+                <div class="linkedin-feature-card disabled-card">
+
+                    <div class="linkedin-feature-icon bg-light-custom">
+
+                        <i class="bi bi-file-earmark-pdf"></i>
+
+                    </div>
+
+                    <div class="linkedin-feature-content">
+
+                        <strong>
+                            Nenhum currículo cadastrado
+                        </strong>
+
+                        <p>
+                            Adicione seu currículo futuramente.
+                        </p>
+
+                    </div>
+
+                </div>
+
+            <?php } ?>
+
+            <!-- GITHUB -->
+            <?php if (!empty($usuario['github'])) { ?>
+
+                <a href="https://github.com/<?= str_replace([
+                    'https://github.com/',
+                    'http://github.com/',
+                    'github.com/'
+                ], '', trim($usuario['github'])) ?>" target="_blank" class="linkedin-feature-card">
+
+                    <div class="linkedin-feature-icon github-bg">
+
+                        <i class="bi bi-github"></i>
+
+                    </div>
+
+                    <div class="linkedin-feature-content">
+
+                        <strong>
+                            GitHub
+                        </strong>
+
+                        <p>
+                            Visualize projetos e repositórios públicos.
+                        </p>
+
+                    </div>
+
+                </a>
+
+            <?php } else { ?>
+
+                <div class="linkedin-feature-card disabled-card">
+
+                    <div class="linkedin-feature-icon bg-light-custom">
+
+                        <i class="bi bi-github"></i>
+
+                    </div>
+
+                    <div class="linkedin-feature-content">
+
+                        <strong>
+                            GitHub não cadastrado
+                        </strong>
+
+                        <p>
+                            Adicione seu GitHub futuramente.
+                        </p>
+
+                    </div>
+
+                </div>
+
+            <?php } ?>
+
+        </div>
+
+    </div>
+
+    <!-- INFORMAÇÕES -->
+    <div class="linkedin-section">
+
+        <h4>
+
+            <i class="bi bi-person-lines-fill"></i>
+
+            Informações pessoais
+
+        </h4>
+
+        <div class="linkedin-info-grid">
+
+            <!-- EMAIL -->
+            <div class="linkedin-info-item">
+
+                <small>
+                    E-mail
+                </small>
+
+                <span>
+                    <?= $usuario['email'] ?>
+                </span>
+
+            </div>
+
+            <?php if ($usuario['tipo'] == 'estudante') { ?>
+
+                <!-- CEP -->
+                <div class="linkedin-info-item">
+
+                    <small>
+                        CEP
+                    </small>
+
+                    <span>
+                        <?= $usuario['cep'] ?>
+                    </span>
+
+                </div>
+
+                <!-- RUA -->
+                <div class="linkedin-info-item">
+
+                    <small>
+                        Rua
+                    </small>
+
+                    <span>
+                        <?= $usuario['rua'] ?>
+                    </span>
+
+                </div>
+
+                <!-- BAIRRO -->
+                <div class="linkedin-info-item">
+
+                    <small>
+                        Bairro
+                    </small>
+
+                    <span>
+                        <?= $usuario['bairro'] ?>
+                    </span>
+
+                </div>
+
+                <!-- COMPLEMENTO -->
+                <div class="linkedin-info-item">
+
+                    <small>
+                        Complemento
+                    </small>
+
+                    <span>
+                        <?= $usuario['complemento'] ?>
+                    </span>
+
+                </div>
+
+                <!-- CIDADE -->
+                <div class="linkedin-info-item">
+
+                    <small>
+                        Cidade
+                    </small>
+
+                    <span>
+                        <?= $usuario['cidade'] ?>
+                    </span>
+
+                </div>
+
+                <!-- ESTADO -->
+                <div class="linkedin-info-item">
+
+                    <small>
+                        Estado
+                    </small>
+
+                    <span>
+                        <?= $usuario['uf'] ?>
+                    </span>
+
+                </div>
+
+            <?php } ?>
+
+            <?php if ($usuario['tipo'] == 'recrutador') { ?>
+
+                <!-- EMPRESA -->
+                <div class="linkedin-info-item">
+
+                    <small>
+                        Empresa
+                    </small>
+
+                    <span>
+                        <?= $usuario['empresa'] ?>
+                    </span>
+
+                </div>
+
+            <?php } ?>
+
+
+        </div>
+
+    </div>
+
+    <?php if ($usuario['tipo'] == 'estudante') { ?>
+
+        <!-- REPOSITÓRIOS GITHUB -->
+        <div class="linkedin-section">
+
+            <h4>
+
+                <i class="bi bi-github"></i>
+
+                Repositórios GitHub
+
+            </h4>
+
+            <?php if (!empty($usuario['github'])) { ?>
+
+                <div id="githubRepos" class="github-repo-grid" data-github="<?= str_replace([
+                    'https://github.com/',
+                    'http://github.com/',
+                    'github.com/'
+                ], '', trim($usuario['github'])) ?>">
+
+                    <div class="text-muted">
+
+                        Carregando repositórios...
+
+                    </div>
+
+                </div>
+
+            <?php } else { ?>
+
+                <div class="linkedin-empty-repo">
+
+                    <i class="bi bi-github"></i>
+
+                    <div>
+
+                        <strong>
+                            GitHub não cadastrado
+                        </strong>
+
+                        <p>
+                            Preencha o campo GitHub futuramente para exibir seus repositórios automaticamente no perfil.
+                        </p>
+
+                    </div>
+
+                </div>
+
+            <?php } ?>
+
+        </div>
+
+    <?php } ?>
+
+</div>

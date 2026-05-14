@@ -1,0 +1,449 @@
+.linkedin-profile-container{
+    max-width: 1000px;
+    margin: 40px auto;
+}
+
+/* COVER */
+
+.linkedin-cover{
+    height: 240px;
+
+    border-radius: 24px 24px 0 0;
+
+    background: linear-gradient(
+        135deg,
+        #0a66c2,
+        #004182
+    );
+}
+
+/* CARD PRINCIPAL */
+
+.linkedin-profile-card{
+    background: #fff;
+
+    margin-top: -70px;
+
+    border-radius: 24px;
+
+    padding: 0 40px 40px;
+
+    box-shadow: 0 6px 30px rgba(0,0,0,0.08);
+}
+
+/* HEADER */
+
+.linkedin-profile-header{
+    display: flex;
+    align-items: flex-end;
+    gap: 28px;
+
+    flex-wrap: wrap;
+}
+
+.linkedin-profile-photo{
+    width: 170px;
+    height: 170px;
+
+    border-radius: 50%;
+
+    object-fit: cover;
+
+    border: 6px solid #fff;
+
+    margin-top: -70px;
+
+    background: white;
+
+    box-shadow: 0 6px 20px rgba(0,0,0,0.12);
+}
+
+.linkedin-profile-info h2{
+    font-size: 2rem;
+
+    font-weight: 700;
+
+    color: #1f2328;
+
+    margin-bottom: 8px;
+}
+
+.linkedin-subtitle{
+    color: #5f6b7a;
+
+    font-size: 1rem;
+
+    margin: 0;
+}
+
+/* ACTIONS */
+
+.linkedin-actions{
+    margin-top: 35px;
+
+    display: grid;
+
+    grid-template-columns: repeat(
+        auto-fit,
+        minmax(320px, 1fr)
+    );
+
+    gap: 20px;
+}
+
+/* FEATURE CARD */
+
+.linkedin-feature-card{
+    background: #fff;
+
+    border: 1px solid #e6ebf0;
+
+    border-radius: 20px;
+
+    padding: 22px;
+
+    display: flex;
+    align-items: center;
+    gap: 18px;
+
+    text-decoration: none;
+
+    transition: .3s ease;
+
+    box-shadow: 0 4px 18px rgba(0,0,0,0.04);
+}
+
+.linkedin-feature-card:hover{
+    transform: translateY(-3px);
+
+    box-shadow: 0 8px 24px rgba(0,0,0,0.08);
+
+    border-color: #d0d7e2;
+}
+
+.linkedin-feature-icon{
+    width: 60px;
+    height: 60px;
+
+    border-radius: 18px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    font-size: 1.5rem;
+
+    flex-shrink: 0;
+}
+
+.bg-primary-custom{
+    background: rgba(10, 102, 194, 0.12);
+
+    color: #0a66c2;
+}
+
+.github-bg{
+    background: rgba(36, 41, 47, 0.10);
+
+    color: #24292f;
+}
+
+.bg-light-custom{
+    background: #f3f5f7;
+
+    color: #9aa3ad;
+}
+
+.linkedin-feature-content strong{
+    display: block;
+
+    color: #1f2328;
+
+    font-size: 1rem;
+
+    margin-bottom: 6px;
+
+    font-weight: 700;
+}
+
+.linkedin-feature-content p{
+    margin: 0;
+
+    color: #667085;
+
+    font-size: .92rem;
+
+    line-height: 1.5;
+}
+
+.disabled-card{
+    cursor: default;
+
+    opacity: .95;
+}
+
+.disabled-card:hover{
+    transform: none;
+
+    box-shadow: 0 4px 18px rgba(0,0,0,0.04);
+}
+
+/* SECTION */
+
+.linkedin-section{
+    background: white;
+
+    margin-top: 25px;
+
+    border-radius: 24px;
+
+    padding: 35px;
+
+    box-shadow: 0 4px 25px rgba(0,0,0,0.06);
+}
+
+.linkedin-section h4{
+    font-size: 1.35rem;
+
+    font-weight: 700;
+
+    color: #1f2328;
+
+    margin-bottom: 28px;
+
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+/* GRID */
+
+.linkedin-info-grid{
+    display: grid;
+
+    grid-template-columns: repeat(
+        auto-fit,
+        minmax(240px, 1fr)
+    );
+
+    gap: 20px;
+}
+
+/* INFO ITEM */
+
+.linkedin-info-item{
+    background: #f7f9fb;
+
+    border-radius: 18px;
+
+    padding: 22px;
+
+    border: 1px solid #edf1f5;
+
+    transition: .3s ease;
+}
+
+.linkedin-info-item:hover{
+    transform: translateY(-2px);
+
+    box-shadow: 0 6px 18px rgba(0,0,0,0.05);
+}
+
+.linkedin-info-item small{
+    display: block;
+
+    color: #667085;
+
+    margin-bottom: 8px;
+
+    font-size: .85rem;
+
+    font-weight: 600;
+}
+
+.linkedin-info-item span{
+    font-weight: 600;
+
+    color: #1f2328;
+
+    font-size: .97rem;
+
+    word-break: break-word;
+}
+
+/* RESPONSIVO */
+
+@media(max-width: 768px){
+
+    .linkedin-profile-card{
+        padding: 0 25px 30px;
+    }
+
+    .linkedin-profile-header{
+        flex-direction: column;
+        align-items: center;
+
+        text-align: center;
+    }
+
+    .linkedin-profile-photo{
+        width: 140px;
+        height: 140px;
+    }
+
+    .linkedin-actions{
+        grid-template-columns: 1fr;
+    }
+
+    .linkedin-info-grid{
+        grid-template-columns: 1fr;
+    }
+
+}
+.linkedin-back-btn{
+
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+
+    background: white;
+
+    padding: 12px 22px;
+
+    border-radius: 50px;
+
+    text-decoration: none;
+
+    color: #1f2328;
+
+    font-weight: 600;
+
+    box-shadow: 0 4px 15px rgba(0,0,0,0.06);
+
+    transition: .3s ease;
+}
+
+.linkedin-back-btn:hover{
+
+    transform: translateY(-2px);
+
+    box-shadow: 0 8px 20px rgba(0,0,0,0.08);
+
+    color: #0a66c2;
+}
+
+.github-repo-grid{
+
+    display: grid;
+
+    grid-template-columns: repeat(
+        auto-fit,
+        minmax(280px, 1fr)
+    );
+
+    gap: 20px;
+}
+
+.github-repo-card{
+
+    background: white;
+
+    border: 1px solid #e6ebf0;
+
+    border-radius: 18px;
+
+    padding: 22px;
+
+    text-decoration: none;
+
+    transition: .3s ease;
+
+    color: inherit;
+
+    box-shadow: 0 4px 15px rgba(0,0,0,0.04);
+}
+
+.github-repo-card:hover{
+
+    transform: translateY(-3px);
+
+    box-shadow: 0 10px 25px rgba(0,0,0,0.08);
+
+    border-color: #0a66c2;
+}
+
+.repo-top{
+
+    display: flex;
+    align-items: center;
+    gap: 10px;
+
+    margin-bottom: 12px;
+
+    color: #0a66c2;
+}
+
+.repo-top strong{
+
+    font-size: 1rem;
+}
+
+.github-repo-card p{
+
+    color: #667085;
+
+    font-size: .92rem;
+
+    line-height: 1.5;
+
+    min-height: 45px;
+}
+
+.repo-footer{
+
+    margin-top: 15px;
+
+    font-size: .9rem;
+
+    font-weight: 600;
+
+    color: #24292f;
+}
+
+.linkedin-empty-repo{
+
+    display: flex;
+    align-items: center;
+    gap: 18px;
+
+    background: #f7f9fb;
+
+    border: 1px solid #e8ecf1;
+
+    border-radius: 18px;
+
+    padding: 25px;
+}
+
+.linkedin-empty-repo i{
+
+    font-size: 2rem;
+
+    color: #9aa3ad;
+}
+
+.linkedin-empty-repo strong{
+
+    display: block;
+
+    margin-bottom: 5px;
+
+    color: #1f2328;
+}
+
+.linkedin-empty-repo p{
+
+    margin: 0;
+
+    color: #667085;
+}

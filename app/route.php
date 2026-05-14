@@ -21,6 +21,7 @@ class route extends Bootstrap
         $routes['logout'] = array('route' => '/logout', 'controller' => 'AuthController', 'action' => 'logout');
         $routes['loginAdmin'] = array('route' => '/loginAdmin', 'controller' => 'IndexController', 'action' => 'loginAdmin');
         $routes['admin'] = array('route' => '/admin', 'controller' => 'AdminController', 'action' => 'dashboard');
+        $routes['profile'] = array('route' => '/profile', 'controller' => 'ProfileController', 'action' => 'profile');
         $this->setRoutes($routes);//seta a rota no objeto
     }
 }
