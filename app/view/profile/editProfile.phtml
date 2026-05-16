@@ -1,0 +1,411 @@
+<?php
+
+$usuario = $this->view->dadosUsuario;
+$tipo = $_SESSION['tipo'];
+
+?>
+
+<nav class="navbar-custom">
+
+    <!-- ESQUERDA -->
+    <div class="nav-left">
+        <a href="/timeline">
+            <img src="/img/logo_deployme.png" alt="Deployme" class="logo-navbar">
+        </a>
+    </div>
+
+    <!-- CENTRO -->
+    <div class="nav-center">
+
+        <div class="nav-icon">
+            <i class="bi bi-people"></i>
+            <span>Pessoas</span>
+        </div>
+
+        <!-- ESTUDANTE -->
+        <?php if ($tipo == 'estudante') { ?>
+
+            <div class="nav-icon">
+                <i class="bi bi-briefcase"></i>
+                <span>Minhas candidaturas</span>
+            </div>
+
+            <div class="nav-icon">
+                <i class="bi bi-globe"></i>
+                <span>Ver vagas</span>
+            </div>
+
+        <?php } ?>
+
+        <!-- RECRUTADOR -->
+        <?php if ($tipo == 'recrutador') { ?>
+
+            <div class="nav-icon">
+                <i class="bi bi-file-earmark-text"></i>
+                <span>Vagas postadas</span>
+            </div>
+
+            <div class="nav-icon">
+                <i class="bi bi-people-fill"></i>
+                <span>Candidaturas</span>
+            </div>
+
+        <?php } ?>
+
+        <div class="nav-icon">
+            <i class="bi bi-chat-dots"></i>
+            <span>Chat</span>
+        </div>
+
+        <div class="nav-icon position-relative">
+            <i class="bi bi-bell"></i>
+            <span>Notificações</span>
+
+            <span class="notification-badge">3</span>
+        </div>
+
+    </div>
+
+    <!-- DIREITA -->
+    <div class="nav-right">
+
+        <a href="/logout" class="nav-icon logout text-decoration-none">
+            <i class="bi bi-box-arrow-right"></i>
+            <span>Sair</span>
+        </a>
+
+    </div>
+
+</nav>
+
+
+
+
+<!-- CARD -->
+<div class="edit-profile-wrapper">
+    <div class="edit-profile-card">
+
+        <!-- HEADER -->
+        <div class="edit-profile-header">
+
+            <div class="edit-cover"></div>
+
+            <div class="edit-profile-top">
+
+                <img src="<?= !empty($usuario['foto'])
+                    ? '/uploads/fotos/' . $usuario['foto']
+                    : '/uploads/fotos/default-user.png' ?>" class="edit-profile-photo">
+
+                <div>
+
+                    <h2>
+                        <?= $usuario['nome'] ?>
+                    </h2>
+
+                    <p class="text-muted">
+
+                        <?= $usuario['email'] ?>
+
+                    </p>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <!-- FORM -->
+        <div class="edit-profile-body">
+
+            <!-- CONTA -->
+            <div class="edit-section">
+
+                <h4>
+
+                    <i class="bi bi-person-fill"></i>
+
+                    Informações da conta
+
+                </h4>
+
+                <div class="row">
+
+                    <div class="col-md-6 mb-3">
+
+                        <label class="form-label">
+                            Nome
+                        </label>
+
+                        <input type="text" class="form-control" value="<?= $usuario['nome'] ?>">
+
+                    </div>
+
+                    <div class="col-md-6 mb-3">
+
+                        <label class="form-label">
+                            E-mail
+                        </label>
+
+                        <input type="email" class="form-control" value="<?= $usuario['email'] ?>">
+
+                    </div>
+
+                </div>
+
+            </div>
+
+            <?php if ($usuario['tipo'] == 'estudante') { ?>
+
+                <!-- GITHUB -->
+                <div class="edit-section">
+
+                    <h4>
+
+                        <i class="bi bi-github"></i>
+
+                        GitHub
+
+                    </h4>
+
+                    <input type="text" class="form-control" placeholder="https://github.com/seuusuario"
+                        value="<?= $usuario['github'] ?? '' ?>">
+
+                </div>
+
+                <!-- FORMAÇÃO -->
+                <div class="edit-section">
+
+                    <h4>
+
+                        <i class="bi bi-mortarboard-fill"></i>
+
+                        Formação acadêmica
+
+                    </h4>
+
+                    <div class="row">
+
+                        <!-- FACULDADE -->
+                        <div class="col-md-6 mb-3">
+
+                            <label class="form-label">
+                                Faculdade
+                            </label>
+
+                            <input type="text" class="form-control" value="<?= $usuario['faculdade'] ?>">
+
+                        </div>
+
+                        <!-- CURSO -->
+                        <div class="col-md-6 mb-3">
+
+                            <label class="form-label">
+                                Curso
+                            </label>
+
+                            <input type="text" class="form-control" value="<?= $usuario['curso'] ?>">
+
+                        </div>
+
+                        <!-- SEMESTRE -->
+                        <div class="col-md-4 mb-3">
+
+                            <label class="form-label">
+                                Semestre
+                            </label>
+
+                            <input type="text" class="form-control" value="<?= $usuario['semestre'] ?>">
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+                <!-- ENDEREÇO -->
+                <div class="edit-section">
+
+                    <h4>
+
+                        <i class="bi bi-geo-alt-fill"></i>
+
+                        Endereço
+
+                    </h4>
+
+                    <div class="row">
+
+                        <div class="col-md-4 mb-3">
+
+                            <label class="form-label">
+                                CEP
+                            </label>
+
+                            <input type="text" class="form-control" value="<?= $usuario['cep'] ?>">
+
+                        </div>
+
+                        <div class="col-md-8 mb-3">
+
+                            <label class="form-label">
+                                Rua
+                            </label>
+
+                            <input type="text" class="form-control" value="<?= $usuario['rua'] ?>">
+
+                        </div>
+
+                        <div class="col-md-6 mb-3">
+
+                            <label class="form-label">
+                                Bairro
+                            </label>
+
+                            <input type="text" class="form-control" value="<?= $usuario['bairro'] ?>">
+
+                        </div>
+
+                        <div class="col-md-6 mb-3">
+
+                            <label class="form-label">
+                                Complemento
+                            </label>
+
+                            <input type="text" class="form-control" value="<?= $usuario['complemento'] ?>">
+
+                        </div>
+
+                        <div class="col-md-6 mb-3">
+
+                            <label class="form-label">
+                                Cidade
+                            </label>
+
+                            <input type="text" class="form-control" value="<?= $usuario['cidade'] ?>">
+
+                        </div>
+
+                        <div class="col-md-6 mb-3">
+
+                            <label class="form-label">
+                                UF
+                            </label>
+
+                            <input type="text" class="form-control" value="<?= $usuario['uf'] ?>">
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+                <!-- CURRÍCULO -->
+                <div class="edit-section">
+
+                    <h4>
+
+                        <i class="bi bi-file-earmark-pdf-fill"></i>
+
+                        Currículo
+
+                    </h4>
+
+                    <?php if (!empty($usuario['curriculo'])) { ?>
+
+                        <div class="current-file">
+
+                            <i class="bi bi-file-earmark-pdf"></i>
+
+                            <?= $usuario['curriculo'] ?>
+
+                        </div>
+
+                    <?php } else { ?>
+
+                        <div class="current-file empty-file">
+
+                            Nenhum currículo cadastrado
+
+                        </div>
+
+                    <?php } ?>
+
+                    <input type="file" class="form-control mt-3">
+
+                </div>
+
+            <?php } ?>
+
+            <?php if ($usuario['tipo'] == 'recrutador') { ?>
+
+                <!-- EMPRESA -->
+                <div class="edit-section">
+
+                    <h4>
+
+                        <i class="bi bi-buildings-fill"></i>
+
+                        Empresa
+
+                    </h4>
+
+                    <input type="text" class="form-control" value="<?= $usuario['empresa'] ?>">
+
+                </div>
+
+            <?php } ?>
+
+            <!-- FOTO -->
+            <div class="edit-section">
+
+                <h4>
+
+                    <i class="bi bi-camera-fill"></i>
+
+                    Foto de perfil
+
+                </h4>
+
+                <div class="current-photo-container">
+
+                    <img src="<?= !empty($usuario['foto'])
+                        ? '/uploads/fotos/' . $usuario['foto']
+                        : '/uploads/fotos/default-user.png' ?>" class="current-profile-preview">
+
+                    <div>
+
+                        <strong>
+                            Foto atual do perfil
+                        </strong>
+
+                        <p class="text-muted mb-0">
+
+                            Você poderá alterar sua foto futuramente.
+
+                        </p>
+
+                    </div>
+
+                </div>
+
+                <input type="file" class="form-control mt-3">
+
+            </div>
+            <!-- BOTÃO -->
+            <div class="text-end mt-4">
+
+                <button class="save-profile-btn">
+
+                    <i class="bi bi-check-circle-fill"></i>
+
+                    Salvar alterações
+
+                </button>
+
+            </div>
+
+        </div>
+
+    </div>
+</div>
+</div>

@@ -119,6 +119,12 @@ class Usuario extends Model
             e.github,
             e.curriculo,
 
+            f.nome AS faculdade,
+
+            c.nome AS curso,
+
+            s.semestre,
+
             r.empresa
 
         FROM usuarios u
@@ -128,6 +134,16 @@ class Usuario extends Model
 
         LEFT JOIN recrutadores r
             ON r.usuario_id = u.id
+
+        LEFT JOIN universidades f
+            ON e.universidade_id = f.id
+
+        LEFT JOIN cursos c
+            ON e.curso_id = c.id
+
+        LEFT JOIN semestres s
+            ON e.semestre_id = s.id
+    
 
         WHERE u.id = :id
     ";

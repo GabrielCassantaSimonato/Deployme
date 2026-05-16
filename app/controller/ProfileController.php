@@ -20,4 +20,14 @@ class ProfileController extends Action
 
         $this->render('profile');
     }
+    public function editProfile()
+    {
+
+        Auth::validarAutenticacao();
+        $usuarioModel = Container::getModel('Usuario');
+        $dadosUsuario = $usuarioModel->buscarUsuarioCompleto($_SESSION['id']);
+
+        $this->view->dadosUsuario = $dadosUsuario;
+        $this->render('editProfile');
+    }
 }

@@ -1,20 +1,81 @@
 <?php
 
 $usuario = $this->view->dadosUsuario;
+$tipo = $_SESSION['tipo'];
 
 ?>
+<nav class="navbar-custom">
 
-<div class="mb-4">
+    <!-- ESQUERDA -->
+    <div class="nav-left">
+        <a href="/timeline">
+            <img src="/img/logo_deployme.png" alt="Deployme" class="logo-navbar">
+        </a>
+    </div>
 
-    <a href="/timeline" class="linkedin-back-btn">
+    <!-- CENTRO -->
+    <div class="nav-center">
 
-        <i class="bi bi-arrow-left"></i>
+        <div class="nav-icon">
+            <i class="bi bi-people"></i>
+            <span>Pessoas</span>
+        </div>
 
-        Voltar
+        <!-- ESTUDANTE -->
+        <?php if ($tipo == 'estudante') { ?>
 
-    </a>
+            <div class="nav-icon">
+                <i class="bi bi-briefcase"></i>
+                <span>Minhas candidaturas</span>
+            </div>
 
-</div>
+            <div class="nav-icon">
+                <i class="bi bi-globe"></i>
+                <span>Ver vagas</span>
+            </div>
+
+        <?php } ?>
+
+        <!-- RECRUTADOR -->
+        <?php if ($tipo == 'recrutador') { ?>
+
+            <div class="nav-icon">
+                <i class="bi bi-file-earmark-text"></i>
+                <span>Vagas postadas</span>
+            </div>
+
+            <div class="nav-icon">
+                <i class="bi bi-people-fill"></i>
+                <span>Candidaturas</span>
+            </div>
+
+        <?php } ?>
+
+        <div class="nav-icon">
+            <i class="bi bi-chat-dots"></i>
+            <span>Chat</span>
+        </div>
+
+        <div class="nav-icon position-relative">
+            <i class="bi bi-bell"></i>
+            <span>Notificações</span>
+
+            <span class="notification-badge">3</span>
+        </div>
+
+    </div>
+
+    <!-- DIREITA -->
+    <div class="nav-right">
+
+        <a href="/logout" class="nav-icon logout text-decoration-none">
+            <i class="bi bi-box-arrow-right"></i>
+            <span>Sair</span>
+        </a>
+
+    </div>
+
+</nav>
 
 <div class="linkedin-profile-container">
 
@@ -33,6 +94,7 @@ $usuario = $this->view->dadosUsuario;
 
             <div class="linkedin-profile-info">
 
+
                 <h2>
                     <?= $usuario['nome'] ?>
                 </h2>
@@ -50,6 +112,18 @@ $usuario = $this->view->dadosUsuario;
                     </p>
 
                 <?php } ?>
+
+                <div class="linkedin-profile-actions">
+
+                    <a href="/editProfile" class="linkedin-edit-btn">
+
+                        <i class="bi bi-pencil-square"></i>
+
+                        Editar perfil
+
+                    </a>
+
+                </div>
 
                 <?php if ($usuario['tipo'] == 'recrutador') { ?>
 
@@ -312,6 +386,66 @@ $usuario = $this->view->dadosUsuario;
         </div>
 
     </div>
+
+    <?php if ($usuario['tipo'] == 'estudante') { ?>
+
+        <!-- FORMAÇÃO -->
+        <div class="linkedin-section">
+
+            <h4>
+
+                <i class="bi bi-mortarboard-fill"></i>
+
+                Formação acadêmica
+
+            </h4>
+
+            <div class="linkedin-info-grid">
+
+                <!-- FACULDADE -->
+                <div class="linkedin-info-item">
+
+                    <small>
+                        Faculdade
+                    </small>
+
+                    <span>
+                        <?= $usuario['faculdade'] ?>
+                    </span>
+
+                </div>
+
+                <!-- CURSO -->
+                <div class="linkedin-info-item">
+
+                    <small>
+                        Curso
+                    </small>
+
+                    <span>
+                        <?= $usuario['curso'] ?>
+                    </span>
+
+                </div>
+
+                <!-- SEMESTRE -->
+                <div class="linkedin-info-item">
+
+                    <small>
+                        Semestre
+                    </small>
+
+                    <span>
+                        <?= $usuario['semestre'] ?>
+                    </span>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    <?php } ?>
 
     <?php if ($usuario['tipo'] == 'estudante') { ?>
 

@@ -1,3 +1,4 @@
+
 .linkedin-profile-container{
     max-width: 1000px;
     margin: 40px auto;
@@ -446,4 +447,307 @@
     margin: 0;
 
     color: #667085;
+}
+
+.linkedin-profile-actions{
+
+    margin-top: 18px;
+
+}
+
+.linkedin-edit-btn{
+
+    background: #0A66C2;
+    color: white;
+
+    padding: 10px 22px;
+
+    border-radius: 30px;
+
+    text-decoration: none;
+
+    font-weight: 600;
+
+    transition: .2s ease;
+
+    display: inline-flex;
+
+    align-items: center;
+
+    gap: 8px;
+
+}
+
+.linkedin-edit-btn:hover{
+
+    background: #004182;
+
+    color: white;
+
+}
+/* CONTAINER */
+
+.edit-profile-card{
+
+    background: #fff;
+
+    border-radius: 18px;
+
+    overflow: hidden;
+
+    box-shadow: 0 8px 30px rgba(0,0,0,.08);
+    border: 1px solid #E5E7EB;
+
+}
+
+/* COVER */
+
+.edit-cover{
+
+    height: 180px;
+
+    background: linear-gradient(
+        135deg,
+        #0A66C2,
+        #004182
+    );
+
+}
+
+/* TOPO */
+
+.edit-profile-top{
+
+    padding: 0 40px 30px;
+
+    margin-top: -70px;
+
+    display: flex;
+
+    align-items: flex-end;
+
+    gap: 25px;
+
+}
+
+/* FOTO */
+
+.edit-profile-photo{
+
+    width: 150px;
+
+    height: 150px;
+
+    border-radius: 50%;
+
+    object-fit: cover;
+
+    border: 5px solid #fff;
+
+    background: #fff;
+
+}
+
+/* BODY */
+
+.edit-profile-body{
+
+    padding: 35px 40px 40px;
+
+}
+
+/* SEÇÕES */
+
+.edit-section{
+
+    margin-bottom: 35px;
+
+    background: #fff;
+
+    border: 1px solid #E5E7EB;
+
+    border-radius: 14px;
+
+    padding: 25px;
+
+}
+
+/* TITULOS */
+
+.edit-section h4{
+
+    font-size: 20px;
+
+    font-weight: 700;
+
+    margin-bottom: 25px;
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 10px;
+
+    color: #1F2937;
+
+}
+
+/* INPUTS */
+
+.edit-section .form-control{
+
+    border-radius: 12px;
+
+    border: 1px solid #D1D5DB;
+
+    padding: 12px 15px;
+
+    min-height: 50px;
+
+    box-shadow: none;
+
+    transition: .2s ease;
+
+}
+
+.edit-section .form-control:focus{
+
+    border-color: #0A66C2;
+
+    box-shadow: 0 0 0 4px rgba(10,102,194,.12);
+
+}
+
+/* LABEL */
+
+.form-label{
+
+    font-weight: 600;
+
+    color: #374151;
+
+    margin-bottom: 8px;
+
+}
+
+/* CURRÍCULO */
+
+.current-file{
+
+    background: #F3F4F6;
+
+    padding: 14px 18px;
+
+    border-radius: 12px;
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 10px;
+
+    font-weight: 500;
+
+}
+
+.empty-file{
+
+    color: #6B7280;
+
+}
+
+/* BOTÃO */
+
+.save-profile-btn{
+
+    background: #0A66C2;
+
+    color: white;
+
+    border: none;
+
+    padding: 14px 28px;
+
+    border-radius: 30px;
+
+    font-weight: 700;
+
+    transition: .2s ease;
+
+    display: inline-flex;
+
+    align-items: center;
+
+    gap: 10px;
+
+}
+
+.save-profile-btn:hover{
+
+    background: #004182;
+
+}
+
+/* RESPONSIVO */
+
+@media(max-width:768px){
+
+    .edit-profile-top{
+
+        flex-direction: column;
+
+        align-items: center;
+
+        text-align: center;
+
+    }
+
+    .edit-profile-body{
+
+        padding: 25px;
+
+    }
+
+}
+.current-photo-container{
+
+    background: #F3F4F6;
+
+    border-radius: 14px;
+
+    padding: 18px;
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 18px;
+
+}
+
+.current-profile-preview{
+
+    width: 90px;
+
+    height: 90px;
+
+    border-radius: 50%;
+
+    object-fit: cover;
+
+    border: 3px solid #fff;
+
+    box-shadow: 0 4px 10px rgba(0,0,0,.08);
+
+}
+.edit-profile-wrapper{
+
+    width: 100%;
+
+    max-width: 950px;
+
+    margin: 40px auto;
+
+    padding: 0 20px;
+
 }
