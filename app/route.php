@@ -23,6 +23,7 @@ class route extends Bootstrap
         $routes['admin'] = array('route' => '/admin', 'controller' => 'AdminController', 'action' => 'dashboard');
         $routes['profile'] = array('route' => '/profile', 'controller' => 'ProfileController', 'action' => 'profile');
         $routes['editProfile'] = array('route' => '/editProfile', 'controller' => 'ProfileController', 'action' => 'editProfile');
+        $routes['updateProfile'] = array('route' => '/updateProfile', 'controller' => 'ProfileController', 'action' => 'updateProfile');
         $this->setRoutes($routes);//seta a rota no objeto
     }
 }

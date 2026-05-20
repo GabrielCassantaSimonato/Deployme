@@ -104,48 +104,51 @@ class Usuario extends Model
         $query = "
         SELECT
 
-            u.id,
-            u.nome,
-            u.email,
-            u.tipo,
-            u.foto,
+    u.id,
+    u.nome,
+    u.email,
+    u.tipo,
+    u.foto,
 
-            e.cep,
-            e.rua,
-            e.bairro,
-            e.complemento,
-            e.cidade,
-            e.uf,
-            e.github,
-            e.curriculo,
+    e.cep,
+    e.rua,
+    e.bairro,
+    e.complemento,
+    e.cidade,
+    e.uf,
+    e.github,
+    e.curriculo,
 
-            f.nome AS faculdade,
+    e.universidade_id,
+    e.curso_id,
+    e.semestre_id,
 
-            c.nome AS curso,
+    f.nome AS faculdade,
 
-            s.semestre,
+    c.nome AS curso,
 
-            r.empresa
+    s.semestre AS semestre,
 
-        FROM usuarios u
+    r.empresa
 
-        LEFT JOIN estudantes e
-            ON e.usuario_id = u.id
+FROM usuarios u
 
-        LEFT JOIN recrutadores r
-            ON r.usuario_id = u.id
+LEFT JOIN estudantes e
+    ON e.usuario_id = u.id
 
-        LEFT JOIN universidades f
-            ON e.universidade_id = f.id
+LEFT JOIN recrutadores r
+    ON r.usuario_id = u.id
 
-        LEFT JOIN cursos c
-            ON e.curso_id = c.id
+LEFT JOIN universidades f
+    ON e.universidade_id = f.id
 
-        LEFT JOIN semestres s
-            ON e.semestre_id = s.id
-    
+LEFT JOIN cursos c
+    ON e.curso_id = c.id
 
-        WHERE u.id = :id
+LEFT JOIN semestres s
+    ON e.semestre_id = s.id
+
+WHERE u.id = :id
     ";
 
         $stmt = $this->db->prepare($query);
@@ -155,6 +158,132 @@ class Usuario extends Model
         $stmt->execute();
 
         return $stmt->fetch(\PDO::FETCH_ASSOC);
+    }
+
+    public function updateProfile($dados)
+    {
+        // USUÁRIOS
+        $query = "
+
+        UPDATE usuarios SET
+
+            nome = :nome,
+            email = :email
+
+        WHERE id = :id
+
+    ";
+
+        if (isset($dados['foto'])) {
+
+            $query = "
+
+            UPDATE usuarios SET
+
+                nome = :nome,
+                email = :email,
+                foto = :foto
+
+            WHERE id = :id
+
+        ";
+
+        }
+
+        $stmt = $this->db->prepare($query);
+
+        $stmt->bindValue(':id', $dados['id']);
+        $stmt->bindValue(':nome', $dados['nome']);
+        $stmt->bindValue(':email', $dados['email']);
+
+        if (isset($dados['foto'])) {
+
+            $stmt->bindValue(':foto', $dados['foto']);
+
+        }
+
+        $stmt->execute();
+
+        // ESTUDANTE
+        if ($_SESSION['tipo'] == 'estudante') {
+
+            $queryEstudante = "
+
+            UPDATE estudantes SET
+
+                github = :github,
+                cep = :cep,
+                rua = :rua,
+                bairro = :bairro,
+                complemento = :complemento,
+                cidade = :cidade,
+                uf = :uf,
+                universidade_id = :universidade_id,
+                curso_id = :curso_id,
+                semestre_id = :semestre_id
+
+        ";
+
+            if (isset($dados['curriculo'])) {
+
+                $queryEstudante .= ",
+                curriculo = :curriculo
+            ";
+
+            }
+
+            $queryEstudante .= "
+
+            WHERE usuario_id = :usuario_id
+
+        ";
+
+            $stmt = $this->db->prepare($queryEstudante);
+
+            $stmt->bindValue(':github', $dados['github']);
+            $stmt->bindValue(':cep', $dados['cep']);
+            $stmt->bindValue(':rua', $dados['rua']);
+            $stmt->bindValue(':bairro', $dados['bairro']);
+            $stmt->bindValue(':complemento', $dados['complemento']);
+            $stmt->bindValue(':cidade', $dados['cidade']);
+            $stmt->bindValue(':uf', $dados['uf']);
+            $stmt->bindValue(':universidade_id', $dados['universidade_id']);
+            $stmt->bindValue(':curso_id', $dados['curso_id']);
+            $stmt->bindValue(':semestre_id', $dados['semestre_id']);
+
+            if (isset($dados['curriculo'])) {
+
+                $stmt->bindValue(':curriculo', $dados['curriculo']);
+
+            }
+
+            $stmt->bindValue(':usuario_id', $dados['id']);
+
+            $stmt->execute();
+
+        }
+
+        // RECRUTADOR
+        if ($_SESSION['tipo'] == 'recrutador') {
+
+            $query = "
+
+            UPDATE recrutadores SET
+
+                empresa = :empresa
+
+            WHERE usuario_id = :usuario_id
+
+        ";
+
+            $stmt = $this->db->prepare($query);
+
+            $stmt->bindValue(':empresa', $dados['empresa']);
+            $stmt->bindValue(':usuario_id', $dados['id']);
+
+            $stmt->execute();
+
+        }
     }
 }
 

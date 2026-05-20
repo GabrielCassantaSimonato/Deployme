@@ -5,7 +5,6 @@ document.addEventListener('DOMContentLoaded', async () => {
     if(!reposContainer) return;
 
     const github = reposContainer.dataset.github;
-    console.log(github);
 
     if(!github) return;
 
