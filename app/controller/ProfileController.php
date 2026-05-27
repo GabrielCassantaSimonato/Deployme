@@ -14,9 +14,46 @@ class ProfileController extends Action
 
         $usuarioModel = Container::getModel('Usuario');
 
-        $dadosUsuario = $usuarioModel->buscarUsuarioCompleto($_SESSION['id']);
+        // PERFIL VIA URL
+        if (isset($_GET['id']) && !empty($_GET['id'])) {
+
+            $id = $_GET['id'];
+
+            // SE FOR O PRÓPRIO PERFIL
+            if ($id == $_SESSION['id']) {
+
+                $modoLeitura = false;
+
+            } else {
+
+                $modoLeitura = true;
+            }
+
+        } else {
+
+            // PERFIL LOGADO
+            $id = $_SESSION['id'];
+
+            $modoLeitura = false;
+        }
+
+        $dadosUsuario = $usuarioModel->buscarUsuarioCompleto($id);
+
+        if (!$dadosUsuario) {
+
+            echo "Usuário não encontrado.";
+            exit;
+        }
 
         $this->view->dadosUsuario = $dadosUsuario;
+        $this->view->modo_leitura = $modoLeitura;
+        $publicacao = Container::getModel('Publicacao');
+
+        $publicacao->__set('usuario_id', $id);
+
+        $publicacoes = $publicacao->getPublicacoesUsuario();
+        $this->view->publicacoes = $publicacoes;
+
 
         $this->render('profile');
     }

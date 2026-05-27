@@ -212,3 +212,157 @@ body {
   padding: 2px 6px;
   border-radius: 50%;
 }
+.modal-user-photo {
+
+    width: 55px;
+    height: 55px;
+
+    border-radius: 50%;
+
+    object-fit: cover;
+
+    margin-right: 12px;
+
+}
+
+.post-textarea {
+
+    border: none !important;
+
+    resize: none;
+
+    font-size: 18px;
+
+    box-shadow: none !important;
+
+    padding: 0;
+
+}
+
+.post-textarea:focus {
+
+    box-shadow: none !important;
+
+}
+
+.post-upload-actions {
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 10px;
+
+}
+
+.upload-btn {
+
+    display: inline-flex;
+
+    align-items: center;
+
+    gap: 8px;
+
+    background: #f1f3f5;
+
+    padding: 10px 14px;
+
+    border-radius: 12px;
+
+    cursor: pointer;
+
+    transition: 0.2s;
+
+    font-weight: 500;
+
+}
+
+.upload-btn:hover {
+
+    background: #e9ecef;
+
+}
+
+.post-preview-img {
+
+    width: 100%;
+
+    max-height: 350px;
+
+    object-fit: cover;
+
+    border-radius: 14px;
+
+}
+
+.publication-toggle {
+
+    display: flex;
+
+    background: #f1f3f5;
+
+    border-radius: 14px;
+
+    padding: 5px;
+
+    gap: 5px;
+
+}
+
+.toggle-btn {
+
+    flex: 1;
+
+    border: none;
+
+    background: transparent;
+
+    padding: 12px;
+
+    border-radius: 10px;
+
+    font-weight: 600;
+
+    transition: 0.2s;
+
+}
+
+.toggle-btn.active {
+
+    background: white;
+
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+
+}
+
+.modern-input {
+
+    border-radius: 12px;
+
+    padding: 12px;
+
+}
+
+.publish-btn {
+
+    border-radius: 12px;
+
+    padding: 12px;
+
+    font-weight: 600;
+
+}
+
+.success-icon i {
+
+    font-size: 70px;
+
+    color: #0d6efd;
+
+}
+
+#modalVagaSucesso .success-icon i {
+
+    color: #198754;
+
+}

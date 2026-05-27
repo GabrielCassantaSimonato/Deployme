@@ -7,6 +7,7 @@ if (session_status() !== PHP_SESSION_ACTIVE) {
 }
 
 $tipo = $_SESSION['tipo'];
+$publicacoes = $this->view->publicacoes;
 
 ?>
 
@@ -15,6 +16,94 @@ $tipo = $_SESSION['tipo'];
   <div class="alert alert-danger">
 
     Você não possui permissão para acessar esta área.
+
+  </div>
+
+<?php } ?>
+
+<?php if (isset($_GET['post']) && $_GET['post'] == 'sucesso') { ?>
+
+  <div class="modal fade" id="modalPostSucesso" tabindex="-1">
+
+    <div class="modal-dialog modal-dialog-centered">
+
+      <div class="modal-content border-0 shadow-lg rounded-4">
+
+        <div class="modal-body text-center p-5">
+
+          <div class="success-icon mb-3">
+
+            <i class="bi bi-check-circle-fill"></i>
+
+          </div>
+
+          <h3 class="fw-bold">
+
+            Publicação criada!
+
+          </h3>
+
+          <p class="text-muted">
+
+            Sua publicação já está aparecendo no feed 🚀
+
+          </p>
+
+          <button class="btn btn-primary px-4" data-bs-dismiss="modal">
+
+            Fechar
+
+          </button>
+
+        </div>
+
+      </div>
+
+    </div>
+
+  </div>
+
+<?php } ?>
+
+<?php if (isset($_GET['vaga']) && $_GET['vaga'] == 'sucesso') { ?>
+
+  <div class="modal fade" id="modalVagaSucesso" tabindex="-1">
+
+    <div class="modal-dialog modal-dialog-centered">
+
+      <div class="modal-content border-0 shadow-lg rounded-4">
+
+        <div class="modal-body text-center p-5">
+
+          <div class="success-icon mb-3">
+
+            <i class="bi bi-briefcase-fill"></i>
+
+          </div>
+
+          <h3 class="fw-bold">
+
+            Vaga publicada!
+
+          </h3>
+
+          <p class="text-muted">
+
+            Sua vaga já está disponível no feed 🎯
+
+          </p>
+
+          <button class="btn btn-success px-4" data-bs-dismiss="modal">
+
+            Fechar
+
+          </button>
+
+        </div>
+
+      </div>
+
+    </div>
 
   </div>
 
@@ -164,313 +253,623 @@ $tipo = $_SESSION['tipo'];
       <div class="card-custom p-3 mb-3">
 
         <div class="d-flex align-items-center mb-2">
+
           <img src="<?= !empty($_SESSION['foto_perfil'])
             ? '/uploads/fotos/' . $_SESSION['foto_perfil']
             : '/uploads/fotos/default-user.png' ?>" class="me-2" style="
-        width: 48px;
-        height: 48px;
-        border-radius: 50%;
-        object-fit: cover;
-    ">
+                    width:48px;
+                    height:48px;
+                    border-radius:50%;
+                    object-fit:cover;
+                ">
 
           <input type="text" class="form-control" placeholder="No que você está pensando?" data-bs-toggle="modal"
-            data-bs-target="#publicacaoModal" style="border-radius: 20px; cursor: pointer;" readonly>
-
-        </div>
-
-        <div class="d-flex justify-content-around mt-2 post-actions">
-
-          <button>📷 Foto</button>
-
-          <button>🎥 Vídeo</button>
-
-          <!-- SOMENTE RECRUTADOR POSTA VAGA -->
-          <?php if ($tipo == 'recrutador') { ?>
-
-            <button>📄 Vaga</button>
-
-          <?php } ?>
+            data-bs-target="#publicacaoModal" style="
+                    border-radius:20px;
+                    cursor:pointer;
+                " readonly>
 
         </div>
 
       </div>
 
-      <!-- POST NORMAL -->
-      <div class="card-custom p-3">
+      <!-- FEED PUBLICAÇÕES -->
+      <?php if (count($publicacoes) > 0) { ?>
 
-        <div class="d-flex post-header">
+        <?php foreach ($publicacoes as $publicacao) { ?>
 
-          <img src="https://i.pravatar.cc/50?img=1" class="me-2">
+          <?php
+          $isMeuPerfil = $publicacao['id'] == $_SESSION['id'];
 
-          <div>
+          if ($isMeuPerfil) {
 
-            <a href="#" class="user-link">
-              Jaqueline Amaro
-            </a><br>
+            $linkPerfil = '/profile';
 
-            <small>Especialista CRM</small>
+          } else {
 
-          </div>
+            $linkPerfil = '/profile?id=' . $publicacao['usuario_id'];
 
-        </div>
+          }
+          ?>
 
-        <p class="mt-2">
-          Profissionais open to work disponíveis!
-        </p>
+          <!-- POST NORMAL -->
+          <?php if ($publicacao['tipo'] == 'post') { ?>
 
-        <small class="text-muted">
-          10 curtidas
-        </small>
+            <div class="card-custom p-3 mb-3">
 
-        <hr>
+              <!-- HEADER -->
+              <div class="d-flex align-items-center mb-3">
 
-        <div class="d-flex justify-content-around post-actions">
+                <a href="<?= $linkPerfil ?>" class="text-decoration-none">
 
-          <button>👍 Curtir</button>
+                  <img src="<?= !empty($publicacao['foto'])
+                    ? '/uploads/fotos/' . $publicacao['foto']
+                    : '/uploads/fotos/default-user.png' ?>" class="me-2" style="
+                  width:50px;
+                  height:50px;
+                  border-radius:50%;
+                  object-fit:cover;
+                  border:2px solid #f1f1f1;
+              ">
 
-          <button data-bs-toggle="modal" data-bs-target="#comentariosModal">
-            💬 Comentar
-          </button>
+                </a>
 
-          <button>🔁 Compartilhar</button>
+                <div>
 
-        </div>
+                  <a href="<?= $linkPerfil ?>" class="user-link fw-bold text-decoration-none">
 
-      </div>
+                    <?= $publicacao['nome'] ?>
 
-      <!-- POST DE VAGA -->
-      <!-- TODOS VEEM -->
-      <div class="card-custom p-3 mt-3">
+                  </a>
 
-        <div class="d-flex post-header">
+                  <div class="text-muted small">
 
-          <img src="https://i.pravatar.cc/50?img=2" class="me-2">
+                    <?php if (!empty($publicacao['empresa'])) { ?>
 
-          <div>
+                      <?= $publicacao['empresa'] ?>
 
-            <a href="#" class="user-link">
-              Tech Solutions
-            </a><br>
+                    <?php } else { ?>
 
-            <small>Empresa de Tecnologia</small>
+                      <?= $publicacao['cidade'] ?? '' ?>
+                      <?= !empty($publicacao['uf']) ? '- ' . $publicacao['uf'] : '' ?>
 
-          </div>
+                    <?php } ?>
 
-        </div>
+                  </div>
 
-        <p class="mt-2">
-          Estamos contratando desenvolvedores!
-        </p>
+                  <div class="text-muted small">
 
-        <div class="vaga-card mt-2">
+                    <i class="bi bi-clock"></i>
 
-          <div class="vaga-link">
-            Desenvolvedor PHP Jr
-          </div>
+                    <?= date('d/m/Y H:i', strtotime($publicacao['created_at'])) ?>
 
-          <div>Tech Solutions</div>
+                  </div>
 
-          <div class="vaga-local">
-            São Paulo - SP
-          </div>
+                </div>
 
-          <button class="btn btn-primary btn-sm mt-2">
-            Ver vaga
-          </button>
+              </div>
 
-        </div>
+              <!-- TEXTO -->
+              <p class="mb-3 fs-6">
 
-        <small class="text-muted">
-          5 curtidas
-        </small>
+                <?= nl2br(htmlspecialchars($publicacao['conteudo'])) ?>
 
-        <hr>
+              </p>
 
-        <div class="d-flex justify-content-around post-actions">
+              <!-- IMAGEM -->
+              <?php if (!empty($publicacao['imagem'])) { ?>
 
-          <button>👍 Curtir</button>
+                <img src="/uploads/publicacoes/<?= $publicacao['imagem'] ?>" class="img-fluid rounded-4 mb-3 w-100" style="
+              max-height:500px;
+              object-fit:cover;
+            ">
 
-          <button data-bs-toggle="modal" data-bs-target="#comentariosModal">
-            💬 Comentar
-          </button>
+              <?php } ?>
 
-          <button>🔁 Compartilhar</button>
+              <hr>
 
-        </div>
+              <!-- ACTIONS -->
+              <div class="d-flex justify-content-around post-actions">
 
-      </div>
+                <button>
+                  👍 Curtir
+                </button>
 
-    </div>
+                <button>
+                  💬 Comentar
+                </button>
 
-    <!-- RIGHT -->
-    <div class="col-md-3"></div>
+                <button>
+                  🔁 Compartilhar
+                </button>
 
-  </div>
-
-</div>
-
-<!-- MODAL PUBLICAÇÃO -->
-<div class="modal fade" id="publicacaoModal" tabindex="-1">
-
-  <div class="modal-dialog">
-
-    <div class="modal-content">
-
-      <div class="modal-header">
-
-        <h5 class="modal-title">
-          Criar publicação
-        </h5>
-
-        <button class="btn-close" data-bs-dismiss="modal"></button>
-
-      </div>
-
-      <div class="modal-body">
-
-        <!-- TOGGLE -->
-        <div class="d-flex mb-3">
-
-          <button class="btn btn-outline-primary w-50 me-1" onclick="showPost()">
-            Publicação
-          </button>
-
-          <!-- SOMENTE RECRUTADOR -->
-          <?php if ($tipo == 'recrutador') { ?>
-
-            <button class="btn btn-outline-success w-50 ms-1" onclick="showVaga()">
-              Vaga
-            </button>
-
-          <?php } ?>
-
-        </div>
-
-        <!-- FORM POST -->
-        <div id="postForm">
-
-          <div class="d-flex mb-2">
-
-            <img src="<?= !empty($_SESSION['foto_perfil'])
-              ? '/uploads/fotos/' . $_SESSION['foto_perfil']
-              : '/uploads/fotos/default-user.png' ?>" class="me-2" style="
-        width: 48px;
-        height: 48px;
-        border-radius: 50%;
-        object-fit: cover;
-    ">
-
-            <strong>
-
-              <?= $_SESSION['nome'] ?>
-
-            </strong>
-
-          </div>
-
-          <textarea class="form-control mb-2" rows="4" placeholder="Escreva sua publicação..."></textarea>
-
-          <button class="btn btn-primary w-100">
-            Publicar
-          </button>
-
-        </div>
-
-        <!-- FORM VAGA -->
-        <?php if ($tipo == 'recrutador') { ?>
-
-          <div id="vagaForm" style="display:none;">
-
-            <div class="d-flex mb-2">
-
-              <img src="<?= !empty($_SESSION['foto_perfil'])
-                ? '/uploads/fotos/' . $_SESSION['foto_perfil']
-                : '/uploads/fotos/default-user.png' ?>" class="me-2" style="
-        width: 48px;
-        height: 48px;
-        border-radius: 50%;
-        object-fit: cover;
-    ">
-
-              <strong>
-
-                <?= $_SESSION['nome'] ?>
-
-              </strong>
+              </div>
 
             </div>
 
-            <input class="form-control mb-2" placeholder="Título da vaga">
+          <?php } ?>
 
-            <input class="form-control mb-2" placeholder="Empresa">
+          <!-- POST VAGA -->
+          <?php if ($publicacao['tipo'] == 'vaga') { ?>
 
-            <input class="form-control mb-2" placeholder="Localização">
+            <div class="card-custom p-3 mb-3 border-start border-success border-4">
 
-            <textarea class="form-control mb-2" rows="3" placeholder="Descrição da vaga"></textarea>
+              <!-- HEADER -->
+              <div class="d-flex align-items-center mb-3">
 
-            <button class="btn btn-success w-100">
-              Publicar vaga
-            </button>
+                <a href="<?= $linkPerfil ?>" class="text-decoration-none">
 
-          </div>
+                  <img src="<?= !empty($publicacao['foto'])
+                    ? '/uploads/fotos/' . $publicacao['foto']
+                    : '/uploads/fotos/default-user.png' ?>" class="me-2" style="
+                  width:50px;
+                  height:50px;
+                  border-radius:50%;
+                  object-fit:cover;
+                  border:2px solid #f1f1f1;
+              ">
+
+                </a>
+
+                <div>
+
+                  <a href="<?= $linkPerfil ?>" class="user-link fw-bold text-decoration-none">
+
+                    <?= $publicacao['nome'] ?>
+
+                  </a>
+
+                  <div class="text-muted small">
+
+                    <?= $publicacao['empresa'] ?>
+
+                  </div>
+
+                  <div class="text-muted small">
+
+                    <i class="bi bi-clock"></i>
+
+                    <?= date('d/m/Y H:i', strtotime($publicacao['created_at'])) ?>
+
+                  </div>
+
+                </div>
+
+              </div>
+
+              <!-- BADGE -->
+              <span class="badge bg-success mb-3 px-3 py-2">
+
+                <i class="bi bi-briefcase-fill"></i>
+
+                Vaga publicada
+
+              </span>
+
+              <!-- TÍTULO -->
+              <h5 class="fw-bold mb-3">
+
+                <?= $publicacao['titulo'] ?>
+
+              </h5>
+
+              <!-- INFOS -->
+              <div class="d-flex flex-wrap gap-2 mb-3">
+
+                <?php if (!empty($publicacao['localizacao'])) { ?>
+
+                  <span class="badge bg-light text-dark border">
+
+                    <i class="bi bi-geo-alt-fill"></i>
+
+                    <?= $publicacao['localizacao'] ?>
+
+                  </span>
+
+                <?php } ?>
+
+                <?php if (!empty($publicacao['modalidade'])) { ?>
+
+                  <span class="badge bg-light text-dark border">
+
+                    <i class="bi bi-building"></i>
+
+                    <?= ucfirst($publicacao['modalidade']) ?>
+
+                  </span>
+
+                <?php } ?>
+
+                <?php if (!empty($publicacao['salario'])) { ?>
+
+                  <span class="badge bg-light text-success border">
+
+                    <i class="bi bi-cash"></i>
+
+                    R$
+                    <?= $publicacao['salario'] ?>
+
+                  </span>
+
+                <?php } ?>
+
+              </div>
+
+              <!-- DESCRIÇÃO -->
+              <p class="mb-3">
+
+                <?= nl2br(htmlspecialchars($publicacao['conteudo'])) ?>
+
+              </p>
+
+              <!-- IMAGEM -->
+              <?php if (!empty($publicacao['imagem'])) { ?>
+
+                <img src="/uploads/publicacoes/<?= $publicacao['imagem'] ?>" class="img-fluid rounded-4 mb-3 w-100" style="
+              max-height:500px;
+              object-fit:cover;
+            ">
+
+              <?php } ?>
+
+              <!-- BOTÃO -->
+              <button class="btn btn-success rounded-pill px-4 mb-3">
+
+                <i class="bi bi-arrow-right-circle"></i>
+
+                Ver vaga
+
+              </button>
+
+              <hr>
+
+              <!-- ACTIONS -->
+              <div class="d-flex justify-content-around post-actions">
+
+                <button>
+                  👍 Curtir
+                </button>
+
+                <button>
+                  💬 Comentar
+                </button>
+
+                <button>
+                  🔁 Compartilhar
+                </button>
+
+              </div>
+
+            </div>
+
+          <?php } ?>
 
         <?php } ?>
 
-      </div>
+      <?php } else { ?>
 
-    </div>
+        <!-- SEM POSTS -->
+        <div class="card-custom p-5 text-center">
 
-  </div>
+          <i class="bi bi-chat-square-text display-3 text-muted"></i>
 
-</div>
+          <h4 class="mt-3 fw-bold">
 
-<!-- MODAL COMENTÁRIOS -->
-<div class="modal fade" id="comentariosModal" tabindex="-1">
+            Nenhuma publicação ainda
 
-  <div class="modal-dialog">
+          </h4>
 
-    <div class="modal-content">
+          <p class="text-muted mb-0">
 
-      <div class="modal-header">
+            Seja o primeiro a publicar algo 🚀
 
-        <h5 class="modal-title">
-          Comentários
-        </h5>
-
-        <button class="btn-close" data-bs-dismiss="modal"></button>
-
-      </div>
-
-      <div class="modal-body">
-
-        <div class="mb-3">
-
-          <strong>João Silva</strong><br>
-
-          <small>Muito bom!</small>
+          </p>
 
         </div>
 
-        <div class="mb-3">
+      <?php } ?>
 
-          <strong>Ana Souza</strong><br>
+      <!-- MODAL PUBLICAÇÃO -->
+      <div class="modal fade" id="publicacaoModal" tabindex="-1">
 
-          <small>Excelente oportunidade 👏</small>
+        <div class="modal-dialog modal-dialog-centered modal-lg">
+
+          <div class="modal-content border-0 shadow-lg">
+
+            <!-- HEADER -->
+            <div class="modal-header border-0 pb-0">
+
+              <h5 class="modal-title fw-bold">
+
+                Criar publicação
+
+              </h5>
+
+              <button class="btn-close" data-bs-dismiss="modal"></button>
+
+            </div>
+
+            <div class="modal-body pt-2">
+
+              <!-- TOGGLE -->
+              <?php if ($tipo == 'recrutador') { ?>
+
+                <div class="publication-toggle mb-4">
+
+                  <button type="button" class="toggle-btn active" onclick="showPost()" id="btnPost">
+
+                    <i class="bi bi-chat-left-text-fill"></i>
+
+                    Publicação
+
+                  </button>
+
+                  <button type="button" class="toggle-btn" onclick="showVaga()" id="btnVaga">
+
+                    <i class="bi bi-briefcase-fill"></i>
+
+                    Vaga
+
+                  </button>
+
+                </div>
+
+              <?php } ?>
+
+              <!-- FORM PUBLICAÇÃO -->
+              <form id="postForm" action="/post" method="POST" enctype="multipart/form-data">
+
+                <input type="hidden" name="tipo" value="post">
+
+                <!-- USER -->
+                <div class="d-flex align-items-center mb-3">
+
+                  <img src="<?= !empty($_SESSION['foto'])
+                    ? '/uploads/fotos/' . $_SESSION['foto']
+                    : '/uploads/fotos/default-user.png' ?>" class="modal-user-photo">
+
+                  <div>
+
+                    <strong class="d-block">
+
+                      <?= $_SESSION['nome'] ?>
+
+                    </strong>
+
+                    <small class="text-muted">
+
+                      <?php if ($tipo == 'estudante') { ?>
+
+                        <?= $_SESSION['cidade'] ?? '' ?> -
+                        <?= $_SESSION['estado'] ?? '' ?>
+
+                      <?php } ?>
+
+                      <?php if ($tipo == 'recrutador') { ?>
+
+                        <?= $_SESSION['empresa'] ?? '' ?>
+
+                      <?php } ?>
+
+                    </small>
+
+                  </div>
+
+                </div>
+
+                <!-- TEXTO -->
+                <textarea class="form-control post-textarea mb-3" rows="5" name="conteudo"
+                  placeholder="No que você está pensando?"></textarea>
+
+                <!-- PREVIEW -->
+                <div id="previewContainer" class="mb-3 d-none">
+
+                  <img id="previewImagem" class="post-preview-img">
+
+                </div>
+
+                <!-- ACTIONS -->
+                <div class="post-upload-actions">
+
+                  <label class="upload-btn">
+
+                    <i class="bi bi-image-fill"></i>
+
+                    Adicionar foto
+
+                    <input type="file" name="imagem" hidden accept="image/*" onchange="previewPostImage(event)">
+
+                  </label>
+
+                </div>
+
+                <!-- BUTTON -->
+                <button class="btn btn-primary w-100 publish-btn mt-4">
+
+                  <i class="bi bi-send-fill"></i>
+
+                  Publicar
+
+                </button>
+
+              </form>
+
+              <!-- FORM VAGA -->
+              <?php if ($tipo == 'recrutador') { ?>
+
+                <form id="vagaForm" action="/vacancy" method="POST" enctype="multipart/form-data" style="display:none;">
+
+                  <input type="hidden" name="tipo" value="vaga">
+
+                  <!-- USER -->
+                  <div class="d-flex align-items-center mb-3">
+
+                    <img src="<?= !empty($_SESSION['foto'])
+                      ? '/uploads/fotos/' . $_SESSION['foto']
+                      : '/uploads/fotos/default-user.png' ?>" class="modal-user-photo">
+
+                    <div>
+
+                      <strong class="d-block">
+
+                        <?= $_SESSION['nome'] ?>
+
+                      </strong>
+
+                      <small class="text-muted">
+
+                        <?= $_SESSION['empresa'] ?>
+
+                      </small>
+
+                    </div>
+
+                  </div>
+
+                  <input class="form-control modern-input mb-3" name="titulo_vaga" placeholder="Título da vaga">
+
+                  <input class="form-control modern-input mb-3" name="empresa" placeholder="Empresa">
+
+                  <input class="form-control modern-input mb-3" name="localizacao" placeholder="Localização">
+
+                  <select name="modalidade" class="form-select modern-input mb-3">
+
+                    <option value="">
+                      Modalidade
+                    </option>
+
+                    <option value="presencial">
+                      Presencial
+                    </option>
+
+                    <option value="hibrido">
+                      Híbrido
+                    </option>
+
+                    <option value="remoto">
+                      Remoto
+                    </option>
+
+                  </select>
+
+                  <input class="form-control modern-input mb-3" name="salario" placeholder="Salário">
+
+                  <textarea class="form-control post-textarea mb-3" rows="4" name="conteudo"
+                    placeholder="Descrição da vaga"></textarea>
+
+                  <!-- PREVIEW -->
+                  <div id="previewContainerVaga" class="mb-3 d-none">
+
+                    <img id="previewImagemVaga" class="post-preview-img">
+
+                  </div>
+
+                  <!-- ACTIONS -->
+                  <div class="post-upload-actions">
+
+                    <label class="upload-btn">
+
+                      <i class="bi bi-image-fill"></i>
+
+                      Adicionar imagem
+
+                      <input type="file" name="imagem" hidden accept="image/*" onchange="previewVagaImage(event)">
+
+                    </label>
+
+                  </div>
+
+                  <button class="btn btn-success w-100 publish-btn mt-4">
+
+                    <i class="bi bi-briefcase-fill"></i>
+
+                    Publicar vaga
+
+                  </button>
+
+                </form>
+
+              <?php } ?>
+
+            </div>
+
+          </div>
 
         </div>
 
-        <hr>
+      </div>
 
-        <textarea class="form-control mb-2" placeholder="Escreva um comentário..."></textarea>
+      <!-- MODAL COMENTÁRIOS -->
+      <div class="modal fade" id="comentariosModal" tabindex="-1">
 
-        <button class="btn btn-primary btn-sm">
-          Comentar
-        </button>
+        <div class="modal-dialog">
+
+          <div class="modal-content">
+
+            <div class="modal-header">
+
+              <h5 class="modal-title">
+                Comentários
+              </h5>
+
+              <button class="btn-close" data-bs-dismiss="modal"></button>
+
+            </div>
+
+            <div class="modal-body">
+
+              <div class="mb-3">
+
+                <strong>João Silva</strong><br>
+
+                <small>Muito bom!</small>
+
+              </div>
+
+              <div class="mb-3">
+
+                <strong>Ana Souza</strong><br>
+
+                <small>Excelente oportunidade 👏</small>
+
+              </div>
+
+              <hr>
+
+              <textarea class="form-control mb-2" placeholder="Escreva um comentário..."></textarea>
+
+              <button class="btn btn-primary btn-sm">
+                Comentar
+              </button>
+
+            </div>
+
+          </div>
+
+        </div>
 
       </div>
 
-    </div>
+      <script>
 
-  </div>
+        document.addEventListener('DOMContentLoaded', () => {
 
-</div>
+          <?php if (isset($_GET['post']) && $_GET['post'] == 'sucesso') { ?>
+
+            new bootstrap.Modal(
+              document.getElementById('modalPostSucesso')
+            ).show();
+
+          <?php } ?>
+
+          <?php if (isset($_GET['vaga']) && $_GET['vaga'] == 'sucesso') { ?>
+
+            new bootstrap.Modal(
+              document.getElementById('modalVagaSucesso')
+            ).show();
+
+          <?php } ?>
+
+        });
+
+      </script>

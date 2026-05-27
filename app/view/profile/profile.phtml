@@ -1,7 +1,9 @@
 <?php
 
 $usuario = $this->view->dadosUsuario;
-$tipo = $_SESSION['tipo'];
+$tipo = $usuario['tipo'];
+$modoLeitura = $this->view->modo_leitura ?? false;
+
 
 ?>
 <nav class="navbar-custom">
@@ -113,17 +115,21 @@ $tipo = $_SESSION['tipo'];
 
                 <?php } ?>
 
-                <div class="linkedin-profile-actions">
+                <?php if (!$modoLeitura) { ?>
 
-                    <a href="/editProfile" class="linkedin-edit-btn">
+                    <div class="linkedin-profile-actions">
 
-                        <i class="bi bi-pencil-square"></i>
+                        <a href="/editProfile" class="linkedin-edit-btn">
 
-                        Editar perfil
+                            <i class="bi bi-pencil-square"></i>
 
-                    </a>
+                            Editar perfil
 
-                </div>
+                        </a>
+
+                    </div>
+
+                <?php } ?>
 
                 <?php if ($usuario['tipo'] == 'recrutador') { ?>
 
@@ -501,5 +507,121 @@ $tipo = $_SESSION['tipo'];
         </div>
 
     <?php } ?>
+
+    <!-- PUBLICAÇÕES -->
+    <div class="linkedin-section">
+
+        <h4>
+
+            <i class="bi bi-postcard"></i>
+
+            Publicações
+
+        </h4>
+
+        <?php if (!empty($this->view->publicacoes)) { ?>
+
+            <?php foreach ($this->view->publicacoes as $publicacao) { ?>
+
+                <div class="post-card">
+
+                    <!-- HEADER -->
+                    <div class="post-header">
+
+                        <div class="post-user">
+
+                            <img src="<?= !empty($publicacao['foto'])
+                                ? '/uploads/fotos/' . $publicacao['foto']
+                                : '/uploads/fotos/default-user.png' ?>" class="post-avatar">
+
+                            <div>
+
+                                <strong>
+                                    <?= $publicacao['nome'] ?>
+                                </strong>
+
+                                <div class="post-time">
+
+                                    <?=
+                                        date(
+                                            'd/m/Y H:i',
+                                            strtotime($publicacao['created_at'])
+                                        )
+                                        ?>
+
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                    <!-- TEXTO -->
+                    <?php if (!empty($publicacao['conteudo'])) { ?>
+
+                        <div class="post-content">
+
+                            <?= nl2br(htmlspecialchars($publicacao['conteudo'])) ?>
+
+                        </div>
+
+                    <?php } ?>
+
+                    <!-- IMAGEM -->
+                    <?php if (!empty($publicacao['imagem'])) { ?>
+
+                        <div class="post-image-container">
+
+                            <img src="/uploads/publicacoes/<?= $publicacao['imagem'] ?>" class="post-image">
+
+                        </div>
+
+                    <?php } ?>
+
+                    <!-- ACTIONS -->
+                    <div class="post-actions">
+
+                        <button class="post-action-btn">
+
+                            <i class="bi bi-hand-thumbs-up"></i>
+
+                            Curtir
+
+                        </button>
+
+                        <button class="post-action-btn">
+
+                            <i class="bi bi-chat"></i>
+
+                            Comentar
+
+                        </button>
+
+                        <button class="post-action-btn">
+
+                            <i class="bi bi-share"></i>
+
+                            Compartilhar
+
+                        </button>
+
+                    </div>
+
+                </div>
+
+            <?php } ?>
+
+        <?php } else { ?>
+
+            <div class="text-muted">
+
+                Nenhuma publicação encontrada.
+
+            </div>
+
+        <?php } ?>
+
+    </div>
 
 </div>
