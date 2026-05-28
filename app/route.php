@@ -26,6 +26,8 @@ class route extends Bootstrap
         $routes['updateProfile'] = array('route' => '/updateProfile', 'controller' => 'ProfileController', 'action' => 'updateProfile');
         $routes['post'] = array('route' => '/post', 'controller' => 'AppController', 'action' => 'post');
         $routes['vacancy'] = array('route' => '/vacancy', 'controller' => 'AppController', 'action' => 'vacancy');
+        $routes['updatePost'] = array('route' => '/updatePost', 'controller' => 'AppController', 'action' => 'updatePost');
+        $routes['updateVacancy'] = array('route' => '/updateVacancy', 'controller' => 'AppController', 'action' => 'updateVacancy');
         $this->setRoutes($routes);//seta a rota no objeto
     }
 }

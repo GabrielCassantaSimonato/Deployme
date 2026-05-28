@@ -102,5 +102,88 @@ class AppController extends Action
         header('Location: /timeline?post=sucesso');
 
     }
+
+    public function updatePost()
+    {
+        Auth::validarAutenticacao();
+
+        $publicacao = Container::getModel('Publicacao');
+
+        $publicacao->__set('id', $_POST['id']);
+        $publicacao->__set('conteudo', $_POST['conteudo']);
+        $publicacao->__set('usuario_id', $_SESSION['id']);
+
+        $imagem = '';
+
+        if (!empty($_FILES['imagem']['name'])) {
+
+            $imagem = md5(time()) . '.jpg';
+
+            move_uploaded_file(
+                $_FILES['imagem']['tmp_name'],
+                'uploads/publicacoes/' . $imagem
+            );
+        }
+
+        $publicacao->__set('imagem', $imagem);
+
+        $publicacao->updatePost();
+
+        header('Location: /timeline?edit=post_sucesso');
+    }
+
+    public function updateVacancy()
+    {
+        Auth::validarAutenticacao();
+
+        $imagem = '';
+
+        // UPLOAD (Alinhado com o padrão usado na criação)
+        if (!empty($_FILES['imagem']['name'])) {
+
+            $extensao = pathinfo(
+                $_FILES['imagem']['name'],
+                PATHINFO_EXTENSION
+            );
+
+            $nomeImagem = uniqid() . '.' . $extensao;
+
+            move_uploaded_file(
+                $_FILES['imagem']['tmp_name'],
+                'uploads/publicacoes/' . $nomeImagem
+            );
+
+            $imagem = $nomeImagem;
+        }
+
+        $publicacao = Container::getModel('Publicacao');
+
+        // 1. ATUALIZA A PUBLICAÇÃO BASE (Tabela publicacoes)
+        // Aproveitamos o mesmo método que você já usa para editar posts comuns
+        $publicacao->__set('id', $_POST['id']);
+        $publicacao->__set('usuario_id', $_SESSION['id']);
+        $publicacao->__set('conteudo', $_POST['conteudo']);
+        $publicacao->__set('imagem', $imagem);
+
+        $publicacao->updatePost();
+
+        // 2. ATUALIZA OS DETALHES DA VAGA (Tabela vagas)
+        // Passamos o array $dados exatamente como fazemos no salvarVaga()
+        $publicacao->updateVacancy([
+
+            'publicacao_id' => $_POST['id'],
+            // Atenção: na criação você usou 'titulo_vaga', mas no HTML do modal de 
+            // edição o input se chama apenas 'titulo'. Mantive 'titulo' aqui.
+            'titulo' => $_POST['titulo'],
+            'empresa' => $_POST['empresa'],
+            'localizacao' => $_POST['localizacao'],
+            'modalidade' => $_POST['modalidade'],
+            'salario' => $_POST['salario'],
+            'descricao' => $_POST['conteudo']
+
+        ]);
+
+        header('Location: /timeline?edit=vaga_sucesso');
+    }
 }
 ?>

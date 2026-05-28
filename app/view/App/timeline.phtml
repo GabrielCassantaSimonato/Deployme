@@ -298,57 +298,64 @@ $publicacoes = $this->view->publicacoes;
             <div class="card-custom p-3 mb-3">
 
               <!-- HEADER -->
+              <!-- HEADER -->
               <div class="d-flex align-items-center mb-3">
-
                 <a href="<?= $linkPerfil ?>" class="text-decoration-none">
-
                   <img src="<?= !empty($publicacao['foto'])
                     ? '/uploads/fotos/' . $publicacao['foto']
                     : '/uploads/fotos/default-user.png' ?>" class="me-2" style="
-                  width:50px;
-                  height:50px;
-                  border-radius:50%;
-                  object-fit:cover;
-                  border:2px solid #f1f1f1;
-              ">
-
+      width:50px;
+      height:50px;
+      border-radius:50%;
+      object-fit:cover;
+      border:2px solid #f1f1f1;
+  ">
                 </a>
 
                 <div>
-
                   <a href="<?= $linkPerfil ?>" class="user-link fw-bold text-decoration-none">
-
                     <?= $publicacao['nome'] ?>
-
                   </a>
-
                   <div class="text-muted small">
-
                     <?php if (!empty($publicacao['empresa'])) { ?>
-
                       <?= $publicacao['empresa'] ?>
-
                     <?php } else { ?>
-
                       <?= $publicacao['cidade'] ?? '' ?>
                       <?= !empty($publicacao['uf']) ? '- ' . $publicacao['uf'] : '' ?>
-
                     <?php } ?>
-
                   </div>
-
                   <div class="text-muted small">
-
                     <i class="bi bi-clock"></i>
-
                     <?= date('d/m/Y H:i', strtotime($publicacao['created_at'])) ?>
-
                   </div>
-
                 </div>
 
-              </div>
+                <!-- 3 PONTINHOS (APARECE SÓ PARA O AUTOR) -->
+                <?php if ($publicacao['usuario_id'] == $_SESSION['id']) { ?>
+                  <div class="dropdown ms-auto">
+                    <button class="btn btn-link text-muted p-0 text-decoration-none" type="button" data-bs-toggle="dropdown"
+                      aria-expanded="false">
+                      <i class="bi bi-three-dots-vertical fs-5"></i>
+                    </button>
+                    <ul class="dropdown-menu dropdown-menu-end shadow border-0">
 
+                      <li>
+                        <button class="dropdown-item editar-post-btn" data-id="<?= $publicacao['id'] ?>"
+                          data-texto="<?= htmlspecialchars($publicacao['conteudo'] ?? $publicacao['publicacao']) ?>"
+                          data-imagem="<?= $publicacao['imagem'] ?>">
+
+                          <i class="bi bi-pencil me-2"></i>
+                          Editar
+                        </button>
+                      </li>
+                      <hr class="dropdown-divider">
+                      <li><a class="dropdown-item text-danger" href="/excluirpost?id=<?= $publicacao['id'] ?>"><i
+                            class="bi bi-trash me-2"></i>Excluir</a></li>
+                    </ul>
+                  </div>
+                <?php } ?>
+
+              </div>
               <!-- TEXTO -->
               <p class="mb-3 fs-6">
 
@@ -395,45 +402,60 @@ $publicacoes = $this->view->publicacoes;
             <div class="card-custom p-3 mb-3 border-start border-success border-4">
 
               <!-- HEADER -->
+              <!-- HEADER -->
               <div class="d-flex align-items-center mb-3">
-
                 <a href="<?= $linkPerfil ?>" class="text-decoration-none">
-
                   <img src="<?= !empty($publicacao['foto'])
                     ? '/uploads/fotos/' . $publicacao['foto']
                     : '/uploads/fotos/default-user.png' ?>" class="me-2" style="
-                  width:50px;
-                  height:50px;
-                  border-radius:50%;
-                  object-fit:cover;
-                  border:2px solid #f1f1f1;
-              ">
-
+      width:50px;
+      height:50px;
+      border-radius:50%;
+      object-fit:cover;
+      border:2px solid #f1f1f1;
+  ">
                 </a>
 
                 <div>
-
                   <a href="<?= $linkPerfil ?>" class="user-link fw-bold text-decoration-none">
-
                     <?= $publicacao['nome'] ?>
-
                   </a>
-
                   <div class="text-muted small">
-
                     <?= $publicacao['empresa'] ?>
-
                   </div>
-
                   <div class="text-muted small">
-
                     <i class="bi bi-clock"></i>
-
                     <?= date('d/m/Y H:i', strtotime($publicacao['created_at'])) ?>
-
                   </div>
-
                 </div>
+
+                <!-- 3 PONTINHOS (APARECE SÓ PARA O AUTOR) -->
+                <?php if ($publicacao['usuario_id'] == $_SESSION['id']) { ?>
+                  <div class="dropdown ms-auto">
+                    <button class="btn btn-link text-muted p-0 text-decoration-none" type="button" data-bs-toggle="dropdown"
+                      aria-expanded="false">
+                      <i class="bi bi-three-dots-vertical fs-5"></i>
+                    </button>
+                    <ul class="dropdown-menu dropdown-menu-end shadow border-0">
+                      <button class="dropdown-item editar-vaga-btn" data-id="<?= $publicacao['id'] ?>"
+                        data-titulo="<?= htmlspecialchars($publicacao['titulo'] ?? '') ?>"
+                        data-texto="<?= htmlspecialchars($publicacao['conteudo'] ?? '') ?>"
+                        data-empresa="<?= htmlspecialchars($publicacao['empresa'] ?? '') ?>"
+                        data-salario="<?= htmlspecialchars($publicacao['salario'] ?? '') ?>"
+                        data-localizacao="<?= htmlspecialchars($publicacao['localizacao'] ?? '') ?>"
+                        data-modalidade="<?= htmlspecialchars($publicacao['modalidade'] ?? '') ?>"
+                        data-imagem="<?= htmlspecialchars($publicacao['imagem'] ?? '') ?>" data-bs-toggle="modal"
+                        data-bs-target="#editarVagaModal">
+                        <i class="bi bi-pencil me-2"></i>
+                        Editar vaga
+                      </button>
+                      <hr class="dropdown-divider">
+                      </li>
+                      <li><a class="dropdown-item text-danger" href="/excluir-vaga?id=<?= $publicacao['id'] ?>"><i
+                            class="bi bi-trash me-2"></i>Excluir Vaga</a></li>
+                    </ul>
+                  </div>
+                <?php } ?>
 
               </div>
 
@@ -870,6 +892,306 @@ $publicacoes = $this->view->publicacoes;
 
           <?php } ?>
 
+          <?php if (isset($_GET['edit']) && $_GET['edit'] == 'post_sucesso') { ?>
+
+            new bootstrap.Modal(
+              document.getElementById('modalEditPostSucesso')
+            ).show();
+
+          <?php } ?>
+
+          <?php if (isset($_GET['edit']) && $_GET['edit'] == 'vaga_sucesso') { ?>
+
+            new bootstrap.Modal(
+              document.getElementById('modalEditVagaSucesso')
+            ).show();
+
+          <?php } ?>
+
         });
 
       </script>
+
+      <?php if (isset($_GET['edit']) && $_GET['edit'] == 'post_sucesso') { ?>
+
+        <div class="modal fade" id="modalEditPostSucesso" tabindex="-1">
+
+          <div class="modal-dialog modal-dialog-centered">
+
+            <div class="modal-content border-0 shadow-lg rounded-4">
+
+              <div class="modal-body text-center p-5">
+
+                <div class="success-icon mb-3">
+                  <i class="bi bi-check-circle-fill text-primary"></i>
+                </div>
+
+                <h3 class="fw-bold">
+                  Publicação atualizada!
+                </h3>
+
+                <p class="text-muted">
+                  Sua publicação foi editada com sucesso 🚀
+                </p>
+
+                <button class="btn btn-primary px-4" data-bs-dismiss="modal">
+                  Fechar
+                </button>
+
+              </div>
+
+            </div>
+
+          </div>
+
+        </div>
+
+      <?php } ?>
+
+      <?php if (isset($_GET['edit']) && $_GET['edit'] == 'vaga_sucesso') { ?>
+
+        <div class="modal fade" id="modalEditVagaSucesso" tabindex="-1">
+
+          <div class="modal-dialog modal-dialog-centered">
+
+            <div class="modal-content border-0 shadow-lg rounded-4">
+
+              <div class="modal-body text-center p-5">
+
+                <div class="success-icon mb-3">
+                  <i class="bi bi-briefcase-fill text-success"></i>
+                </div>
+
+                <h3 class="fw-bold">
+                  Vaga atualizada!
+                </h3>
+
+                <p class="text-muted">
+                  Sua vaga foi editada com sucesso 🎯
+                </p>
+
+                <button class="btn btn-success px-4" data-bs-dismiss="modal">
+                  Fechar
+                </button>
+
+              </div>
+
+            </div>
+
+          </div>
+
+        </div>
+
+      <?php } ?>
+      <div class="modal fade" id="editarPostModal" tabindex="-1">
+
+        <div class="modal-dialog">
+
+          <div class="modal-content">
+
+            <form method="POST" action="/updatePost" enctype="multipart/form-data">
+
+              <div class="modal-header">
+
+                <h5 class="modal-title">
+                  Editar publicação
+                </h5>
+
+                <button type="button" class="btn-close" data-bs-dismiss="modal">
+                </button>
+
+              </div>
+
+              <div class="modal-body">
+
+                <input type="hidden" name="id" id="editPostId">
+
+                <!-- TEXTO -->
+                <textarea name="conteudo" id="editPostTexto" class="form-control mb-3" rows="5"></textarea>
+
+                <!-- PREVIEW IMAGEM -->
+                <div id="editPreviewContainer" class="mb-3 d-none">
+                  <img id="editPreviewImagem" class="img-fluid rounded">
+                </div>
+
+                <label class="btn btn-light border w-100">
+                  <i class="bi bi-image"></i>
+                  Alterar imagem
+
+                  <input type="file" name="imagem" id="editPostFileInput" hidden accept="image/*">
+                </label>
+
+              </div>
+
+              <div class="modal-footer">
+
+                <button type="submit" class="btn btn-primary">
+
+                  Salvar alterações
+
+                </button>
+
+              </div>
+
+            </form>
+
+          </div>
+
+        </div>
+
+      </div>
+
+      <div class="modal fade" id="editarVagaModal" tabindex="-1">
+
+        <div class="modal-dialog modal-lg">
+
+          <div class="modal-content">
+
+            <form method="POST" action="/updateVacancy" enctype="multipart/form-data">
+
+              <!-- HEADER -->
+              <div class="modal-header">
+
+                <h5 class="modal-title">
+
+                  Editar vaga
+
+                </h5>
+
+                <button type="button" class="btn-close" data-bs-dismiss="modal">
+                </button>
+
+              </div>
+
+              <!-- BODY -->
+              <div class="modal-body">
+
+                <!-- ID -->
+                <input type="hidden" name="id" id="editVagaId">
+
+                <!-- TÍTULO -->
+                <div class="mb-3">
+
+                  <label class="form-label">
+
+                    Título da vaga
+
+                  </label>
+
+                  <input type="text" name="titulo" id="editVagaTitulo" class="form-control">
+
+                </div>
+
+                <div class="mb-3">
+
+                  <label class="form-label">
+
+                    Empresa
+
+                  </label>
+
+                  <input type="text" name="empresa" id="editVagaEmpresa" class="form-control">
+
+                </div>
+
+                <!-- DESCRIÇÃO -->
+                <div class="mb-3">
+
+                  <label class="form-label">
+
+                    Descrição
+
+                  </label>
+
+                  <textarea name="conteudo" id="editVagaTexto" class="form-control" rows="5"></textarea>
+
+                </div>
+
+                <!-- SALÁRIO -->
+                <div class="mb-3">
+
+                  <label class="form-label">
+
+                    Salário
+
+                  </label>
+
+                  <input type="text" name="salario" id="editVagaSalario" class="form-control">
+
+                </div>
+
+                <!-- LOCALIZAÇÃO -->
+                <div class="mb-3">
+
+                  <label class="form-label">
+
+                    Localização
+
+                  </label>
+
+                  <input type="text" name="localizacao" id="editVagaLocalizacao" class="form-control">
+
+                </div>
+
+                <!-- MODALIDADE -->
+                <div class="mb-3">
+
+                  <label class="form-label">
+
+                    Modalidade
+
+                  </label>
+
+                  <select name="modalidade" id="editVagaModalidade" class="form-select">
+
+                    <option value="Presencial">
+                      Presencial
+                    </option>
+
+                    <option value="Híbrido">
+                      Híbrido
+                    </option>
+
+                    <option value="Remoto">
+                      Remoto
+                    </option>
+
+                  </select>
+
+                </div>
+
+                <!-- ALTERAR IMAGEM -->
+                <div id="editVagaPreviewContainer" class="mb-3 d-none">
+                  <img id="editVagaPreviewImagem" class="img-fluid rounded w-100">
+                </div>
+
+                <div class="mb-3">
+                  <label class="btn btn-light border w-100">
+                    <i class="bi bi-image"></i>
+                    Alterar imagem
+
+                    <input type="file" name="imagem" id="editVagaFileInput" hidden accept="image/*">
+
+                  </label>
+                </div>
+
+              </div>
+
+              <!-- FOOTER -->
+              <div class="modal-footer">
+
+                <button type="submit" class="btn btn-success">
+
+                  Salvar alterações
+
+                </button>
+
+              </div>
+
+            </form>
+
+          </div>
+
+        </div>
+
+      </div>

@@ -157,10 +157,17 @@ class Publicacao extends Model
         SELECT
             p.*,
             u.nome,
-            u.foto
+            u.foto,
+            v.titulo,
+            v.empresa,
+            v.localizacao,
+            v.modalidade,
+            v.salario
         FROM publicacoes p
-        INNER JOIN usuarios u
+        INNER JOIN usuarios u 
             ON u.id = p.usuario_id
+        LEFT JOIN vagas v 
+            ON v.publicacao_id = p.id
         WHERE p.usuario_id = :usuario_id
         ORDER BY p.created_at DESC
     ";
@@ -172,5 +179,63 @@ class Publicacao extends Model
         $stmt->execute();
 
         return $stmt->fetchAll(\PDO::FETCH_ASSOC);
+    }
+
+    public function updatePost()
+    {
+        $query = "
+        UPDATE publicacoes
+        SET
+            conteudo = :conteudo
+    ";
+
+        if ($this->__get('imagem') != '') {
+            $query .= ", imagem = :imagem ";
+        }
+
+        $query .= "
+        WHERE id = :id
+        AND usuario_id = :usuario_id
+    ";
+
+        $stmt = $this->db->prepare($query);
+
+        $stmt->bindValue(':conteudo', $this->__get('conteudo'));
+        $stmt->bindValue(':id', $this->__get('id'));
+        $stmt->bindValue(':usuario_id', $this->__get('usuario_id'));
+
+        if ($this->__get('imagem') != '') {
+            $stmt->bindValue(':imagem', $this->__get('imagem'));
+        }
+
+        return $stmt->execute();
+    }
+    public function updateVacancy($dados)
+    {
+        $query = "
+        UPDATE vagas
+        SET
+            titulo = :titulo,
+            empresa = :empresa,
+            localizacao = :localizacao,
+            modalidade = :modalidade,
+            salario = :salario,
+            descricao = :descricao
+        WHERE 
+            publicacao_id = :publicacao_id
+    ";
+
+        $stmt = $this->db->prepare($query);
+
+        // Mapeamos os valores diretamente do array $dados que o Controller enviou
+        $stmt->bindValue(':publicacao_id', $dados['publicacao_id']);
+        $stmt->bindValue(':titulo', $dados['titulo']);
+        $stmt->bindValue(':empresa', $dados['empresa']);
+        $stmt->bindValue(':localizacao', $dados['localizacao']);
+        $stmt->bindValue(':modalidade', $dados['modalidade']);
+        $stmt->bindValue(':salario', $dados['salario']);
+        $stmt->bindValue(':descricao', $dados['descricao']);
+
+        return $stmt->execute();
     }
 }

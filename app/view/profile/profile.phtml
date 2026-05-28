@@ -1,56 +1,42 @@
 <?php
-
 $usuario = $this->view->dadosUsuario;
 $tipo = $usuario['tipo'];
 $modoLeitura = $this->view->modo_leitura ?? false;
-
-
 ?>
-<nav class="navbar-custom">
 
-    <!-- ESQUERDA -->
+<nav class="navbar-custom">
     <div class="nav-left">
         <a href="/timeline">
             <img src="/img/logo_deployme.png" alt="Deployme" class="logo-navbar">
         </a>
     </div>
 
-    <!-- CENTRO -->
     <div class="nav-center">
-
         <div class="nav-icon">
             <i class="bi bi-people"></i>
             <span>Pessoas</span>
         </div>
 
-        <!-- ESTUDANTE -->
         <?php if ($tipo == 'estudante') { ?>
-
             <div class="nav-icon">
                 <i class="bi bi-briefcase"></i>
                 <span>Minhas candidaturas</span>
             </div>
-
             <div class="nav-icon">
                 <i class="bi bi-globe"></i>
                 <span>Ver vagas</span>
             </div>
-
         <?php } ?>
 
-        <!-- RECRUTADOR -->
         <?php if ($tipo == 'recrutador') { ?>
-
             <div class="nav-icon">
                 <i class="bi bi-file-earmark-text"></i>
                 <span>Vagas postadas</span>
             </div>
-
             <div class="nav-icon">
                 <i class="bi bi-people-fill"></i>
                 <span>Candidaturas</span>
             </div>
-
         <?php } ?>
 
         <div class="nav-icon">
@@ -61,389 +47,476 @@ $modoLeitura = $this->view->modo_leitura ?? false;
         <div class="nav-icon position-relative">
             <i class="bi bi-bell"></i>
             <span>Notificações</span>
-
             <span class="notification-badge">3</span>
         </div>
-
     </div>
 
-    <!-- DIREITA -->
     <div class="nav-right">
-
         <a href="/logout" class="nav-icon logout text-decoration-none">
             <i class="bi bi-box-arrow-right"></i>
             <span>Sair</span>
         </a>
-
     </div>
-
 </nav>
 
 <div class="linkedin-profile-container">
 
-    <!-- COVER -->
     <div class="linkedin-cover"></div>
 
-    <!-- CARD PRINCIPAL -->
     <div class="linkedin-profile-card">
-
-        <!-- HEADER -->
         <div class="linkedin-profile-header">
-
-            <img src="<?= !empty($usuario['foto'])
-                ? '/uploads/fotos/' . $usuario['foto']
-                : '/uploads/fotos/default-user.png' ?>" class="linkedin-profile-photo">
+            <img src="<?= !empty($usuario['foto']) ? '/uploads/fotos/' . $usuario['foto'] : '/uploads/fotos/default-user.png' ?>"
+                class="linkedin-profile-photo">
 
             <div class="linkedin-profile-info">
-
-
                 <h2>
                     <?= $usuario['nome'] ?>
                 </h2>
 
                 <?php if ($usuario['tipo'] == 'estudante') { ?>
-
                     <p class="linkedin-subtitle">
-
                         <i class="bi bi-geo-alt-fill me-1"></i>
-
-                        <?= $usuario['cidade'] ?>
-                        -
+                        <?= $usuario['cidade'] ?> -
                         <?= $usuario['uf'] ?>
-
                     </p>
-
                 <?php } ?>
 
                 <?php if (!$modoLeitura) { ?>
-
                     <div class="linkedin-profile-actions">
-
                         <a href="/editProfile" class="linkedin-edit-btn">
-
-                            <i class="bi bi-pencil-square"></i>
-
-                            Editar perfil
-
+                            <i class="bi bi-pencil-square"></i> Editar perfil
                         </a>
-
                     </div>
-
                 <?php } ?>
 
                 <?php if ($usuario['tipo'] == 'recrutador') { ?>
-
                     <p class="linkedin-subtitle">
-
                         <i class="bi bi-buildings-fill me-1"></i>
-
                         <?= $usuario['empresa'] ?>
-
                     </p>
-
                 <?php } ?>
-
             </div>
-
         </div>
 
         <?php if ($usuario['tipo'] == 'estudante') { ?>
-
-            <!-- CURRÍCULO / GITHUB -->
             <div class="linkedin-actions">
-
-                <!-- CURRÍCULO -->
                 <?php if (!empty($usuario['curriculo'])) { ?>
-
                     <a href="/uploads/currículos/<?= $usuario['curriculo'] ?>" target="_blank" class="linkedin-feature-card">
-
                         <div class="linkedin-feature-icon bg-primary-custom">
-
                             <i class="bi bi-file-earmark-pdf-fill"></i>
-
                         </div>
-
                         <div class="linkedin-feature-content">
-
-                            <strong>
-                                Currículo profissional
-                            </strong>
-
-                            <p>
-                                Visualize o currículo cadastrado.
-                            </p>
-
+                            <strong>Currículo profissional</strong>
+                            <p>Visualize o currículo cadastrado.</p>
                         </div>
-
                     </a>
-
                 <?php } else { ?>
-
                     <div class="linkedin-feature-card disabled-card">
-
                         <div class="linkedin-feature-icon bg-light-custom">
-
                             <i class="bi bi-file-earmark-pdf"></i>
-
                         </div>
-
                         <div class="linkedin-feature-content">
-
-                            <strong>
-                                Currículo não cadastrado
-                            </strong>
-
-                            <p>
-                                Você poderá adicionar seu currículo futuramente.
-                            </p>
-
+                            <strong>Currículo não cadastrado</strong>
+                            <p>Você poderá adicionar seu currículo futuramente.</p>
                         </div>
-
                     </div>
-
                 <?php } ?>
 
-                <!-- GITHUB -->
                 <?php if (!empty($usuario['github'])) { ?>
-
-                    <a href="https://github.com/<?= str_replace([
-                        'https://github.com/',
-                        'http://github.com/',
-                        'github.com/'
-                    ], '', trim($usuario['github'])) ?>" target="_blank" class="linkedin-feature-card">
-
+                    <a href="https://github.com/<?= str_replace(['https://github.com/', 'http://github.com/', 'github.com/'], '', trim($usuario['github'])) ?>"
+                        target="_blank" class="linkedin-feature-card">
                         <div class="linkedin-feature-icon github-bg">
-
                             <i class="bi bi-github"></i>
-
                         </div>
-
                         <div class="linkedin-feature-content">
-
-                            <strong>
-                                GitHub profissional
-                            </strong>
-
-                            <p>
-                                Visualize projetos e repositórios públicos.
-                            </p>
-
+                            <strong>GitHub profissional</strong>
+                            <p>Visualize projetos e repositórios públicos.</p>
                         </div>
-
                     </a>
-
                 <?php } else { ?>
-
                     <div class="linkedin-feature-card disabled-card">
-
                         <div class="linkedin-feature-icon bg-light-custom">
-
                             <i class="bi bi-github"></i>
-
                         </div>
-
                         <div class="linkedin-feature-content">
-
-                            <strong>
-                                GitHub não cadastrado
-                            </strong>
-
-                            <p>
-                                Você poderá adicionar seu GitHub futuramente.
-                            </p>
-
+                            <strong>GitHub não cadastrado</strong>
+                            <p>Você poderá adicionar seu GitHub futuramente.</p>
                         </div>
-
                     </div>
-
                 <?php } ?>
-
             </div>
-
         <?php } ?>
-
     </div>
-
-    <!-- INFORMAÇÕES -->
     <div class="linkedin-section">
-
-        <h4>
-
-            <i class="bi bi-person-lines-fill"></i>
-
-            Informações pessoais
-
-        </h4>
-
+        <h4><i class="bi bi-person-lines-fill"></i> Informações pessoais</h4>
         <div class="linkedin-info-grid">
-
-            <!-- EMAIL -->
             <div class="linkedin-info-item">
-
-                <small>
-                    E-mail
-                </small>
-
+                <small>E-mail</small>
                 <span>
                     <?= $usuario['email'] ?>
                 </span>
-
             </div>
 
             <?php if ($usuario['tipo'] == 'estudante') { ?>
-
-                <!-- CEP -->
                 <div class="linkedin-info-item">
-
-                    <small>
-                        CEP
-                    </small>
-
+                    <small>CEP</small>
                     <span>
                         <?= $usuario['cep'] ?>
                     </span>
-
                 </div>
-
-                <!-- RUA -->
                 <div class="linkedin-info-item">
-
-                    <small>
-                        Rua
-                    </small>
-
+                    <small>Rua</small>
                     <span>
                         <?= $usuario['rua'] ?>
                     </span>
-
                 </div>
-
-                <!-- BAIRRO -->
                 <div class="linkedin-info-item">
-
-                    <small>
-                        Bairro
-                    </small>
-
+                    <small>Bairro</small>
                     <span>
                         <?= $usuario['bairro'] ?>
                     </span>
-
                 </div>
-
-                <!-- COMPLEMENTO -->
                 <div class="linkedin-info-item">
-
-                    <small>
-                        Complemento
-                    </small>
-
+                    <small>Complemento</small>
                     <span>
                         <?= $usuario['complemento'] ?>
                     </span>
-
                 </div>
-
-                <!-- CIDADE -->
                 <div class="linkedin-info-item">
-
-                    <small>
-                        Cidade
-                    </small>
-
+                    <small>Cidade</small>
                     <span>
                         <?= $usuario['cidade'] ?>
                     </span>
-
                 </div>
-
-                <!-- ESTADO -->
                 <div class="linkedin-info-item">
-
-                    <small>
-                        Estado
-                    </small>
-
+                    <small>Estado</small>
                     <span>
                         <?= $usuario['uf'] ?>
                     </span>
-
                 </div>
-
             <?php } ?>
 
             <?php if ($usuario['tipo'] == 'recrutador') { ?>
-
-                <!-- EMPRESA -->
                 <div class="linkedin-info-item">
-
-                    <small>
-                        Empresa
-                    </small>
-
+                    <small>Empresa</small>
                     <span>
                         <?= $usuario['empresa'] ?>
                     </span>
+                </div>
+            <?php } ?>
+        </div>
+    </div>
+
+    <?php if ($usuario['tipo'] == 'estudante') { ?>
+        <div class="linkedin-section">
+            <h4><i class="bi bi-mortarboard-fill"></i> Formação acadêmica</h4>
+            <div class="linkedin-info-grid">
+                <div class="linkedin-info-item">
+                    <small>Faculdade</small>
+                    <span>
+                        <?= $usuario['faculdade'] ?>
+                    </span>
+                </div>
+                <div class="linkedin-info-item">
+                    <small>Curso</small>
+                    <span>
+                        <?= $usuario['curso'] ?>
+                    </span>
+                </div>
+                <div class="linkedin-info-item">
+                    <small>Semestre</small>
+                    <span>
+                        <?= $usuario['semestre'] ?>
+                    </span>
+                </div>
+            </div>
+        </div>
+
+        <div class="linkedin-section">
+            <h4><i class="bi bi-github"></i> Repositórios GitHub</h4>
+            <?php if (!empty($usuario['github'])) { ?>
+                <div id="githubRepos" class="github-repo-grid"
+                    data-github="<?= str_replace(['https://github.com/', 'http://github.com/', 'github.com/'], '', trim($usuario['github'])) ?>">
+                    <div class="text-muted">Carregando repositórios...</div>
+                </div>
+            <?php } else { ?>
+                <div class="linkedin-empty-repo">
+                    <i class="bi bi-github"></i>
+                    <div>
+                        <strong>GitHub não cadastrado</strong>
+                        <p>Preencha o campo GitHub futuramente para exibir os repositórios automaticamente no perfil.</p>
+                    </div>
+                </div>
+            <?php } ?>
+        </div>
+    <?php } ?>
+
+    <div class="linkedin-section">
+        <h4><i class="bi bi-postcard"></i> Publicações</h4>
+
+        <?php if (!empty($this->view->publicacoes)) { ?>
+            <?php foreach ($this->view->publicacoes as $publicacao) { ?>
+
+                <?php if (!isset($publicacao['tipo']) || $publicacao['tipo'] == 'post') { ?>
+                    <div class="post-card mb-3">
+                        <div class="post-header d-flex align-items-center mb-3">
+                            <div class="post-user-info d-flex align-items-center">
+                                <img src="<?= !empty($publicacao['foto']) ? '/uploads/fotos/' . $publicacao['foto'] : '/uploads/fotos/default-user.png' ?>"
+                                    class="post-avatar me-2" style="width:50px; height:50px; border-radius:50%; object-fit:cover;">
+                                <div>
+                                    <strong class="d-block">
+                                        <?= $publicacao['nome'] ?>
+                                    </strong>
+                                    <div class="post-date text-muted small">
+                                        <?= date('d/m/Y H:i', strtotime($publicacao['created_at'])) ?>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <?php if ($publicacao['usuario_id'] == $_SESSION['id']) { ?>
+                                <div class="dropdown ms-auto">
+                                    <button class="btn btn-link text-muted p-0 text-decoration-none" type="button"
+                                        data-bs-toggle="dropdown" aria-expanded="false">
+                                        <i class="bi bi-three-dots-vertical fs-5"></i>
+                                    </button>
+                                    <ul class="dropdown-menu dropdown-menu-end shadow border-0">
+
+                                        <li>
+                                            <button class="dropdown-item editar-post-btn" data-id="<?= $publicacao['id'] ?>"
+                                                data-texto="<?= htmlspecialchars($publicacao['conteudo'] ?? $publicacao['publicacao']) ?>"
+                                                data-imagem="<?= $publicacao['imagem'] ?>">
+
+                                                <i class="bi bi-pencil me-2"></i>
+                                                Editar
+                                            </button>
+                                        </li>
+                                        <li>
+                                            <hr class="dropdown-divider">
+                                        </li>
+                                        <li>
+                                            <a class="dropdown-item text-danger" href="/excluirpost?id=<?= $publicacao['id'] ?>"
+                                                onclick="return confirm('Deseja excluir esta publicação?')">
+                                                <i class="bi bi-trash me-2"></i> Excluir
+                                            </a>
+                                        </li>
+                                    </ul>
+                                </div>
+                            <?php } ?>
+                        </div>
+
+                        <div class="post-body">
+                            <?php if (!empty($publicacao['conteudo'])) { ?>
+                                <div class="post-content mb-3">
+                                    <?= nl2br(htmlspecialchars($publicacao['conteudo'])) ?>
+                                </div>
+                            <?php } ?>
+
+                            <?php if (!empty($publicacao['imagem'])) { ?>
+                                <div class="post-image-container mb-3">
+                                    <img src="/uploads/publicacoes/<?= $publicacao['imagem'] ?>"
+                                        class="post-image img-fluid rounded w-100" style="max-height: 500px; object-fit: cover;">
+                                </div>
+                            <?php } ?>
+                        </div>
+
+                        <div class="post-actions d-flex justify-content-around border-top pt-2">
+                            <button class="post-action-btn btn btn-light text-muted w-100">
+                                <i class="bi bi-hand-thumbs-up"></i> Curtir
+                            </button>
+                            <button class="post-action-btn btn btn-light text-muted w-100">
+                                <i class="bi bi-chat"></i> Comentar
+                            </button>
+                            <button class="post-action-btn btn btn-light text-muted w-100">
+                                <i class="bi bi-share"></i> Compartilhar
+                            </button>
+                        </div>
+                    </div>
+                <?php } ?>
+
+                <?php if (isset($publicacao['tipo']) && $publicacao['tipo'] == 'vaga') { ?>
+                    <div class="post-card mb-3 border-start border-success border-4 p-3 shadow-sm bg-white rounded">
+                        <div class="post-header d-flex align-items-center mb-3">
+                            <div class="post-user-info d-flex align-items-center">
+                                <img src="<?= !empty($publicacao['foto']) ? '/uploads/fotos/' . $publicacao['foto'] : '/uploads/fotos/default-user.png' ?>"
+                                    class="post-avatar me-2" style="width:50px; height:50px; border-radius:50%; object-fit:cover;">
+                                <div>
+                                    <strong class="d-block">
+                                        <?= $publicacao['nome'] ?>
+                                    </strong>
+                                    <div class="text-muted small">
+                                        <?= $publicacao['empresa'] ?? 'Empresa Confidencial' ?>
+                                    </div>
+                                    <div class="post-date text-muted small">
+                                        <?= date('d/m/Y H:i', strtotime($publicacao['created_at'])) ?>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <?php if ($publicacao['usuario_id'] == $_SESSION['id']) { ?>
+                                <div class="dropdown ms-auto">
+                                    <button class="btn btn-link text-muted p-0 text-decoration-none" type="button"
+                                        data-bs-toggle="dropdown" aria-expanded="false">
+                                        <i class="bi bi-three-dots-vertical fs-5"></i>
+                                    </button>
+                                    <ul class="dropdown-menu dropdown-menu-end shadow border-0">
+                                        <button type="button" class="dropdown-item editar-vaga-btn" data-id="<?= $publicacao['id'] ?>"
+                                            data-titulo="<?= htmlspecialchars($publicacao['titulo'] ?? '') ?>"
+                                            data-empresa="<?= htmlspecialchars($publicacao['empresa'] ?? '') ?>"
+                                            data-texto="<?= htmlspecialchars($publicacao['conteudo'] ?? '') ?>"
+                                            data-salario="<?= htmlspecialchars($publicacao['salario'] ?? '') ?>"
+                                            data-localizacao="<?= htmlspecialchars($publicacao['localizacao'] ?? '') ?>"
+                                            data-modalidade="<?= htmlspecialchars($publicacao['modalidade'] ?? '') ?>"
+                                            data-imagem="<?= htmlspecialchars($publicacao['imagem'] ?? '') ?>">
+                                            <i class="bi bi-pencil me-2"></i>
+                                            Editar vaga
+                                        </button>
+                                        <hr class="dropdown-divider">
+                                        </li>
+                                        <li>
+                                            <a class="dropdown-item text-danger" href="/excluirpost?id=<?= $publicacao['id'] ?>"
+                                                onclick="return confirm('Deseja excluir esta vaga?')">
+                                                <i class="bi bi-trash me-2"></i> Excluir Vaga
+                                            </a>
+                                        </li>
+                                    </ul>
+                                </div>
+                            <?php } ?>
+                        </div>
+
+                        <div class="post-body">
+                            <span class="badge bg-success mb-3 px-3 py-2">
+                                <i class="bi bi-briefcase-fill"></i> Vaga publicada
+                            </span>
+
+                            <h5 class="fw-bold mb-3">
+                                <?= $publicacao['titulo'] ?? 'Título da Vaga' ?>
+                            </h5>
+
+                            <div class="d-flex flex-wrap gap-2 mb-3">
+                                <?php if (!empty($publicacao['localizacao'])) { ?>
+                                    <span class="badge bg-light text-dark border"><i class="bi bi-geo-alt-fill"></i>
+                                        <?= $publicacao['localizacao'] ?>
+                                    </span>
+                                <?php } ?>
+                                <?php if (!empty($publicacao['modalidade'])) { ?>
+                                    <span class="badge bg-light text-dark border"><i class="bi bi-building"></i>
+                                        <?= ucfirst($publicacao['modalidade']) ?>
+                                    </span>
+                                <?php } ?>
+                                <?php if (!empty($publicacao['salario'])) { ?>
+                                    <span class="badge bg-light text-success border"><i class="bi bi-cash"></i> R$
+                                        <?= $publicacao['salario'] ?>
+                                    </span>
+                                <?php } ?>
+                            </div>
+
+                            <?php if (!empty($publicacao['conteudo'])) { ?>
+                                <div class="post-content mb-3">
+                                    <?= nl2br(htmlspecialchars($publicacao['conteudo'])) ?>
+                                </div>
+                            <?php } ?>
+
+                            <?php if (!empty($publicacao['imagem'])) { ?>
+                                <div class="post-image-container mb-3">
+                                    <img src="/uploads/publicacoes/<?= $publicacao['imagem'] ?>"
+                                        class="post-image img-fluid rounded w-100" style="max-height: 500px; object-fit: cover;">
+                                </div>
+                            <?php } ?>
+
+                            <button class="btn btn-success rounded-pill px-4 mb-3 w-100">
+                                <i class="bi bi-arrow-right-circle"></i> Ver vaga
+                            </button>
+                        </div>
+
+                        <div class="post-actions d-flex justify-content-around border-top pt-2">
+                            <button class="post-action-btn btn btn-light text-muted w-100">
+                                <i class="bi bi-hand-thumbs-up"></i> Curtir
+                            </button>
+                            <button class="post-action-btn btn btn-light text-muted w-100">
+                                <i class="bi bi-chat"></i> Comentar
+                            </button>
+                            <button class="post-action-btn btn btn-light text-muted w-100">
+                                <i class="bi bi-share"></i> Compartilhar
+                            </button>
+                        </div>
+                    </div>
+                <?php } ?>
+
+            <?php } ?>
+        <?php } else { ?>
+            <div class="text-muted text-center p-4 card-custom">Nenhuma publicação encontrada.</div>
+        <?php } ?>
+    </div>
+
+    </form>
+
+</div>
+
+</div>
+
+</div>
+
+<?php if (isset($_GET['edit']) && $_GET['edit'] == 'post_sucesso') { ?>
+
+    <div class="modal fade" id="modalEditPostSucesso" tabindex="-1">
+
+        <div class="modal-dialog modal-dialog-centered">
+
+            <div class="modal-content border-0 shadow-lg rounded-4">
+
+                <div class="modal-body text-center p-5">
+
+                    <div class="success-icon mb-3">
+                        <i class="bi bi-check-circle-fill text-primary"></i>
+                    </div>
+
+                    <h3 class="fw-bold">
+                        Publicação atualizada!
+                    </h3>
+
+                    <p class="text-muted">
+                        Sua publicação foi editada com sucesso 🚀
+                    </p>
+
+                    <button class="btn btn-primary px-4" data-bs-dismiss="modal">
+                        Fechar
+                    </button>
 
                 </div>
 
-            <?php } ?>
+            </div>
 
         </div>
 
     </div>
 
-    <?php if ($usuario['tipo'] == 'estudante') { ?>
+<?php } ?>
 
-        <!-- FORMAÇÃO -->
-        <div class="linkedin-section">
+<?php if (isset($_GET['edit']) && $_GET['edit'] == 'vaga_sucesso') { ?>
 
-            <h4>
+    <div class="modal fade" id="modalEditVagaSucesso" tabindex="-1">
 
-                <i class="bi bi-mortarboard-fill"></i>
+        <div class="modal-dialog modal-dialog-centered">
 
-                Formação acadêmica
+            <div class="modal-content border-0 shadow-lg rounded-4">
 
-            </h4>
+                <div class="modal-body text-center p-5">
 
-            <div class="linkedin-info-grid">
+                    <div class="success-icon mb-3">
+                        <i class="bi bi-briefcase-fill text-success"></i>
+                    </div>
 
-                <!-- FACULDADE -->
-                <div class="linkedin-info-item">
+                    <h3 class="fw-bold">
+                        Vaga atualizada!
+                    </h3>
 
-                    <small>
-                        Faculdade
-                    </small>
+                    <p class="text-muted">
+                        Sua vaga foi editada com sucesso 🎯
+                    </p>
 
-                    <span>
-                        <?= $usuario['faculdade'] ?>
-                    </span>
-
-                </div>
-
-                <!-- CURSO -->
-                <div class="linkedin-info-item">
-
-                    <small>
-                        Curso
-                    </small>
-
-                    <span>
-                        <?= $usuario['curso'] ?>
-                    </span>
-
-                </div>
-
-                <!-- SEMESTRE -->
-                <div class="linkedin-info-item">
-
-                    <small>
-                        Semestre
-                    </small>
-
-                    <span>
-                        <?= $usuario['semestre'] ?>
-                    </span>
+                    <button class="btn btn-success px-4" data-bs-dismiss="modal">
+                        Fechar
+                    </button>
 
                 </div>
 
@@ -451,176 +524,220 @@ $modoLeitura = $this->view->modo_leitura ?? false;
 
         </div>
 
-    <?php } ?>
+    </div>
 
-    <?php if ($usuario['tipo'] == 'estudante') { ?>
+<?php } ?>
 
-        <!-- REPOSITÓRIOS GITHUB -->
-        <div class="linkedin-section">
+<div class="modal fade" id="editarPostModal" tabindex="-1">
 
-            <h4>
+    <div class="modal-dialog">
 
-                <i class="bi bi-github"></i>
+        <div class="modal-content">
 
-                Repositórios GitHub
+            <form method="POST" action="/updatePost" enctype="multipart/form-data">
 
-            </h4>
+                <div class="modal-header">
 
-            <?php if (!empty($usuario['github'])) { ?>
+                    <h5 class="modal-title">
+                        Editar publicação
+                    </h5>
 
-                <div id="githubRepos" class="github-repo-grid" data-github="<?= str_replace([
-                    'https://github.com/',
-                    'http://github.com/',
-                    'github.com/'
-                ], '', trim($usuario['github'])) ?>">
-
-                    <div class="text-muted">
-
-                        Carregando repositórios...
-
-                    </div>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal">
+                    </button>
 
                 </div>
 
-            <?php } else { ?>
+                <div class="modal-body">
 
-                <div class="linkedin-empty-repo">
-
-                    <i class="bi bi-github"></i>
-
-                    <div>
-
-                        <strong>
-                            GitHub não cadastrado
-                        </strong>
-
-                        <p>
-                            Preencha o campo GitHub futuramente para exibir os repositórios automaticamente no perfil.
-                        </p>
-
-                    </div>
-
-                </div>
-
-            <?php } ?>
-
-        </div>
-
-    <?php } ?>
-
-    <!-- PUBLICAÇÕES -->
-    <div class="linkedin-section">
-
-        <h4>
-
-            <i class="bi bi-postcard"></i>
-
-            Publicações
-
-        </h4>
-
-        <?php if (!empty($this->view->publicacoes)) { ?>
-
-            <?php foreach ($this->view->publicacoes as $publicacao) { ?>
-
-                <div class="post-card">
-
-                    <!-- HEADER -->
-                    <div class="post-header">
-
-                        <div class="post-user">
-
-                            <img src="<?= !empty($publicacao['foto'])
-                                ? '/uploads/fotos/' . $publicacao['foto']
-                                : '/uploads/fotos/default-user.png' ?>" class="post-avatar">
-
-                            <div>
-
-                                <strong>
-                                    <?= $publicacao['nome'] ?>
-                                </strong>
-
-                                <div class="post-time">
-
-                                    <?=
-                                        date(
-                                            'd/m/Y H:i',
-                                            strtotime($publicacao['created_at'])
-                                        )
-                                        ?>
-
-                                </div>
-
-                            </div>
-
-                        </div>
-
-                    </div>
+                    <input type="hidden" name="id" id="editPostId">
 
                     <!-- TEXTO -->
-                    <?php if (!empty($publicacao['conteudo'])) { ?>
+                    <textarea name="conteudo" id="editPostTexto" class="form-control mb-3" rows="5"></textarea>
 
-                        <div class="post-content">
+                    <!-- PREVIEW IMAGEM -->
+                    <div id="editPreviewContainer" class="mb-3 d-none">
+                        <img id="editPreviewImagem" class="img-fluid rounded">
+                    </div>
 
-                            <?= nl2br(htmlspecialchars($publicacao['conteudo'])) ?>
+                    <label class="btn btn-light border w-100">
+                        <i class="bi bi-image"></i>
+                        Alterar imagem
 
-                        </div>
+                        <input type="file" name="imagem" id="editPostFileInput" hidden accept="image/*">
+                    </label>
 
-                    <?php } ?>
+                </div>
 
-                    <!-- IMAGEM -->
-                    <?php if (!empty($publicacao['imagem'])) { ?>
 
-                        <div class="post-image-container">
 
-                            <img src="/uploads/publicacoes/<?= $publicacao['imagem'] ?>" class="post-image">
+                <div class="modal-footer">
 
-                        </div>
+                    <button type="submit" class="btn btn-primary">
 
-                    <?php } ?>
+                        Salvar alterações
 
-                    <!-- ACTIONS -->
-                    <div class="post-actions">
+                    </button>
 
-                        <button class="post-action-btn">
+                </div>
 
-                            <i class="bi bi-hand-thumbs-up"></i>
+            </form>
 
-                            Curtir
+        </div>
 
-                        </button>
+    </div>
 
-                        <button class="post-action-btn">
+</div>
 
-                            <i class="bi bi-chat"></i>
+<div class="modal fade" id="editarVagaModal" tabindex="-1">
 
-                            Comentar
+    <div class="modal-dialog modal-lg">
 
-                        </button>
+        <div class="modal-content">
 
-                        <button class="post-action-btn">
+            <form method="POST" action="/updateVacancy" enctype="multipart/form-data">
 
-                            <i class="bi bi-share"></i>
+                <!-- HEADER -->
+                <div class="modal-header">
 
-                            Compartilhar
+                    <h5 class="modal-title">
 
-                        </button>
+                        Editar vaga
 
+                    </h5>
+
+                    <button type="button" class="btn-close" data-bs-dismiss="modal">
+                    </button>
+
+                </div>
+
+                <!-- BODY -->
+                <div class="modal-body">
+
+                    <!-- ID -->
+                    <input type="hidden" name="id" id="editVagaId">
+
+                    <!-- TÍTULO -->
+                    <div class="mb-3">
+
+                        <label class="form-label">
+
+                            Título da vaga
+
+                        </label>
+
+                        <input type="text" name="titulo" id="editVagaTitulo" class="form-control">
+
+                    </div>
+
+                    <div class="mb-3">
+
+                        <label class="form-label">
+
+                            Empresa
+
+                        </label>
+
+                        <input type="text" name="empresa" id="editVagaEmpresa" class="form-control">
+
+                    </div>
+
+                    <!-- DESCRIÇÃO -->
+                    <div class="mb-3">
+
+                        <label class="form-label">
+
+                            Descrição
+
+                        </label>
+
+                        <textarea name="conteudo" id="editVagaTexto" class="form-control" rows="5"></textarea>
+
+                    </div>
+
+                    <!-- SALÁRIO -->
+                    <div class="mb-3">
+
+                        <label class="form-label">
+
+                            Salário
+
+                        </label>
+
+                        <input type="text" name="salario" id="editVagaSalario" class="form-control">
+
+                    </div>
+
+                    <!-- LOCALIZAÇÃO -->
+                    <div class="mb-3">
+
+                        <label class="form-label">
+
+                            Localização
+
+                        </label>
+
+                        <input type="text" name="localizacao" id="editVagaLocalizacao" class="form-control">
+
+                    </div>
+
+                    <!-- MODALIDADE -->
+                    <div class="mb-3">
+
+                        <label class="form-label">
+
+                            Modalidade
+
+                        </label>
+
+                        <select name="modalidade" id="editVagaModalidade" class="form-select">
+
+                            <option value="Presencial">
+                                Presencial
+                            </option>
+
+                            <option value="Híbrido">
+                                Híbrido
+                            </option>
+
+                            <option value="Remoto">
+                                Remoto
+                            </option>
+
+                        </select>
+
+                    </div>
+
+                    <!-- ALTERAR IMAGEM -->
+                    <div id="editVagaPreviewContainer" class="mb-3 d-none">
+                        <img id="editVagaPreviewImagem" class="img-fluid rounded w-100">
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="btn btn-light border w-100">
+                            <i class="bi bi-image"></i>
+                            Alterar imagem
+
+                            <input type="file" name="imagem" id="editVagaFileInput" hidden accept="image/*">
+
+                        </label>
                     </div>
 
                 </div>
 
-            <?php } ?>
+                <!-- FOOTER -->
+                <div class="modal-footer">
 
-        <?php } else { ?>
+                    <button type="submit" class="btn btn-success">
 
-            <div class="text-muted">
+                        Salvar alterações
 
-                Nenhuma publicação encontrada.
+                    </button>
 
-            </div>
+                </div>
 
-        <?php } ?>
+            </form>
+
+        </div>
 
     </div>
 
