@@ -214,7 +214,7 @@ $publicacoes = $this->view->publicacoes;
             <i class="bi bi-geo-alt-fill"></i>
 
             <?= $_SESSION['cidade'] ?> -
-            <?= $_SESSION['estado'] ?>
+            <?= $_SESSION['uf'] ?>
 
           </small>
 
@@ -349,8 +349,13 @@ $publicacoes = $this->view->publicacoes;
                         </button>
                       </li>
                       <hr class="dropdown-divider">
-                      <li><a class="dropdown-item text-danger" href="/excluirpost?id=<?= $publicacao['id'] ?>"><i
-                            class="bi bi-trash me-2"></i>Excluir</a></li>
+                      <li><a class="dropdown-item text-danger" href="/deletePost?id=<?= $publicacao['id'] ?>"
+                          onclick="return confirm('Deseja excluir esta publicação?')">
+
+                          <i class="bi bi-trash me-2"></i>
+                          Excluir
+
+                        </a></li>
                     </ul>
                   </div>
                 <?php } ?>
@@ -451,8 +456,13 @@ $publicacoes = $this->view->publicacoes;
                       </button>
                       <hr class="dropdown-divider">
                       </li>
-                      <li><a class="dropdown-item text-danger" href="/excluir-vaga?id=<?= $publicacao['id'] ?>"><i
-                            class="bi bi-trash me-2"></i>Excluir Vaga</a></li>
+                      <li><a class="dropdown-item text-danger" href="/deleteVacancy?id=<?= $publicacao['id'] ?>"
+                          onclick="return confirm('Deseja excluir esta vaga?')">
+
+                          <i class="bi bi-trash me-2"></i>
+                          Excluir vaga
+
+                        </a></li>
                     </ul>
                   </div>
                 <?php } ?>
@@ -1195,3 +1205,55 @@ $publicacoes = $this->view->publicacoes;
         </div>
 
       </div>
+
+      <?php if (isset($_GET['delete']) && $_GET['delete'] == 'success') { ?>
+
+        <div class="modal fade" id="modalDeleteSucesso" tabindex="-1">
+
+          <div class="modal-dialog modal-dialog-centered">
+
+            <div class="modal-content border-0 shadow-lg rounded-4">
+
+              <div class="modal-body text-center p-5">
+
+                <div class="success-icon mb-3">
+                  <i class="bi bi-trash-fill text-danger"></i>
+                </div>
+
+                <h3 class="fw-bold">
+                  Excluído com sucesso!
+                </h3>
+
+                <p class="text-muted">
+                  A publicação foi removida 🚀
+                </p>
+
+                <button class="btn btn-danger px-4" data-bs-dismiss="modal">
+                  Fechar
+                </button>
+
+              </div>
+
+            </div>
+
+          </div>
+
+        </div>
+
+      <?php } ?>
+
+      <?php if (isset($_GET['delete']) && $_GET['delete'] == 'success') { ?>
+
+        <script>
+
+          document.addEventListener('DOMContentLoaded', function () {
+
+            new bootstrap.Modal(
+              document.getElementById('modalDeleteSucesso')
+            ).show();
+
+          });
+
+        </script>
+
+      <?php } ?>

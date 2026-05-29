@@ -294,9 +294,12 @@ $modoLeitura = $this->view->modo_leitura ?? false;
                                             <hr class="dropdown-divider">
                                         </li>
                                         <li>
-                                            <a class="dropdown-item text-danger" href="/excluirpost?id=<?= $publicacao['id'] ?>"
+                                            <a class="dropdown-item text-danger" href="/deletePost?id=<?= $publicacao['id'] ?>"
                                                 onclick="return confirm('Deseja excluir esta publicação?')">
-                                                <i class="bi bi-trash me-2"></i> Excluir
+
+                                                <i class="bi bi-trash me-2"></i>
+                                                Excluir
+
                                             </a>
                                         </li>
                                     </ul>
@@ -373,9 +376,12 @@ $modoLeitura = $this->view->modo_leitura ?? false;
                                         <hr class="dropdown-divider">
                                         </li>
                                         <li>
-                                            <a class="dropdown-item text-danger" href="/excluirpost?id=<?= $publicacao['id'] ?>"
+                                            <a class="dropdown-item text-danger" href="/deleteVacancy?id=<?= $publicacao['id'] ?>"
                                                 onclick="return confirm('Deseja excluir esta vaga?')">
-                                                <i class="bi bi-trash me-2"></i> Excluir Vaga
+
+                                                <i class="bi bi-trash me-2"></i>
+                                                Excluir vaga
+
                                             </a>
                                         </li>
                                     </ul>

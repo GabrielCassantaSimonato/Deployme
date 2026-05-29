@@ -238,4 +238,49 @@ class Publicacao extends Model
 
         return $stmt->execute();
     }
+
+    public function excluirPost()
+    {
+        $query = "
+        DELETE FROM publicacoes
+        WHERE id = :id
+        AND usuario_id = :usuario_id
+    ";
+
+        $stmt = $this->db->prepare($query);
+
+        $stmt->bindValue(':id', $this->__get('id'));
+        $stmt->bindValue(':usuario_id', $this->__get('usuario_id'));
+
+        return $stmt->execute();
+    }
+
+    public function excluirVaga()
+    {
+        // PRIMEIRO EXCLUI A VAGA
+        $query = "
+        DELETE FROM vagas
+        WHERE publicacao_id = :publicacao_id
+    ";
+
+        $stmt = $this->db->prepare($query);
+
+        $stmt->bindValue(':publicacao_id', $this->__get('id'));
+
+        $stmt->execute();
+
+        // DEPOIS EXCLUI A PUBLICAÇÃO
+        $query2 = "
+        DELETE FROM publicacoes
+        WHERE id = :id
+        AND usuario_id = :usuario_id
+    ";
+
+        $stmt2 = $this->db->prepare($query2);
+
+        $stmt2->bindValue(':id', $this->__get('id'));
+        $stmt2->bindValue(':usuario_id', $this->__get('usuario_id'));
+
+        return $stmt2->execute();
+    }
 }

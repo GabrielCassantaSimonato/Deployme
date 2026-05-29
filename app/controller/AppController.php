@@ -185,5 +185,33 @@ class AppController extends Action
 
         header('Location: /timeline?edit=vaga_sucesso');
     }
+
+    public function deletePost()
+    {
+        Auth::validarAutenticacao();
+
+        $publicacao = Container::getModel('Publicacao');
+
+        $publicacao->__set('id', $_GET['id']);
+        $publicacao->__set('usuario_id', $_SESSION['id']);
+
+        $publicacao->excluirPost();
+
+        header('Location: /timeline?delete=success');
+    }
+
+    public function deleteVacancy()
+    {
+        Auth::validarAutenticacao();
+
+        $vaga = Container::getModel('Publicacao');
+
+        $vaga->__set('id', $_GET['id']);
+        $vaga->__set('usuario_id', $_SESSION['id']);
+
+        $vaga->excluirVaga();
+
+        header('Location: /timeline?delete=success');
+    }
 }
 ?>
