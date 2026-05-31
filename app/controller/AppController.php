@@ -42,6 +42,20 @@ class AppController extends Action
         }
 
         $publicacao = Container::getModel('Publicacao');
+        $moderacao = Container::getModel('ModeracaoAI');
+
+        $analise = $moderacao->analisar(
+            $_POST['conteudo']
+        );
+        if (!$analise['aprovado']) {
+
+            header(
+                'Location: /timeline?moderacao=bloqueado&motivo=' .
+                urlencode($analise['motivo'])
+            );
+
+            exit;
+        }
 
         $publicacao->__set('usuario_id', $_SESSION['id']);
         $publicacao->__set('conteudo', $_POST['conteudo']);
@@ -78,7 +92,6 @@ class AppController extends Action
 
         // SALVA PUBLICAÇÃO
         $publicacao = Container::getModel('Publicacao');
-
         $publicacao->__set('usuario_id', $_SESSION['id']);
         $publicacao->__set('conteudo', $_POST['conteudo']);
         $publicacao->__set('imagem', $imagem);
@@ -108,6 +121,19 @@ class AppController extends Action
         Auth::validarAutenticacao();
 
         $publicacao = Container::getModel('Publicacao');
+        $moderacao = Container::getModel('ModeracaoAI');
+
+        $resultado = $moderacao->analisar($_POST['conteudo']);
+
+        if (!$resultado['aprovado']) {
+
+            header(
+                'Location: /timeline?moderacao=bloqueado&motivo=' .
+                urlencode($resultado['motivo'])
+            );
+
+            exit;
+        }
 
         $publicacao->__set('id', $_POST['id']);
         $publicacao->__set('conteudo', $_POST['conteudo']);

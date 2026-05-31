@@ -1257,3 +1257,56 @@ $publicacoes = $this->view->publicacoes;
         </script>
 
       <?php } ?>
+
+      <?php if (isset($_GET['moderacao'])) { ?>
+
+        <div class="modal fade" id="modalModeracao" tabindex="-1">
+
+          <div class="modal-dialog modal-dialog-centered">
+
+            <div class="modal-content border-0 shadow-lg rounded-4">
+
+              <div class="modal-body text-center p-5">
+
+                <div class="mb-3 text-danger">
+
+                  <i class="bi bi-shield-x display-3"></i>
+
+                </div>
+
+                <h3 class="fw-bold text-danger">
+
+                  Publicação bloqueada
+
+                </h3>
+
+                <p class="text-muted">
+
+                  <?= htmlspecialchars($_GET['motivo']) ?>
+
+                </p>
+
+                <button class="btn btn-danger" data-bs-dismiss="modal">
+
+                  Entendi
+
+                </button>
+
+              </div>
+
+            </div>
+
+          </div>
+
+        </div>
+
+      <?php } ?>
+      <script>
+        <?php if (isset($_GET['moderacao'])) { ?>
+
+          new bootstrap.Modal(
+            document.getElementById('modalModeracao')
+          ).show();
+
+        <?php } ?>
+      </script>
