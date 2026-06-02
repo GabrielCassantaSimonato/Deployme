@@ -322,16 +322,29 @@ $modoLeitura = $this->view->modo_leitura ?? false;
                             <?php } ?>
                         </div>
 
-                        <div class="post-actions d-flex justify-content-around border-top pt-2">
+                        <div class="d-flex justify-content-around post-actions">
+
+                            <a href="#" class="post-action-btn btn btn-light text-muted w-100 btn-curtir"
+                                data-id="<?= $publicacao['id'] ?>" data-curtido="<?= $publicacao['curtido'] ? 1 : 0 ?>">
+
+                                <span class="icone">
+                                    <?= $publicacao['curtido'] ? '❤️' : '🤍' ?>
+                                </span>
+
+                                <span class="total">
+                                    <?= $publicacao['curtidas'] ?>
+                                </span>
+
+                            </a>
+
                             <button class="post-action-btn btn btn-light text-muted w-100">
-                                <i class="bi bi-hand-thumbs-up"></i> Curtir
+                                💬 Comentar
                             </button>
+
                             <button class="post-action-btn btn btn-light text-muted w-100">
-                                <i class="bi bi-chat"></i> Comentar
+                                🔁 Compartilhar
                             </button>
-                            <button class="post-action-btn btn btn-light text-muted w-100">
-                                <i class="bi bi-share"></i> Compartilhar
-                            </button>
+
                         </div>
                     </div>
                 <?php } ?>
@@ -434,27 +447,41 @@ $modoLeitura = $this->view->modo_leitura ?? false;
                             </button>
                         </div>
 
-                        <div class="post-actions d-flex justify-content-around border-top pt-2">
+                        <div class="d-flex justify-content-around post-actions">
+
+                            <a href="#" class="post-action-btn btn btn-light text-muted w-100 btn-curtir"
+                                data-id="<?= $publicacao['id'] ?>" data-curtido="<?= $publicacao['curtido'] ? 1 : 0 ?>">
+
+                                <span class="icone">
+                                    <?= $publicacao['curtido'] ? '❤️' : '🤍' ?>
+                                </span>
+
+                                <span class="total">
+                                    <?= $publicacao['curtidas'] ?>
+                                </span>
+
+                            </a>
+
                             <button class="post-action-btn btn btn-light text-muted w-100">
-                                <i class="bi bi-hand-thumbs-up"></i> Curtir
+                                💬 Comentar
                             </button>
+
                             <button class="post-action-btn btn btn-light text-muted w-100">
-                                <i class="bi bi-chat"></i> Comentar
+                                🔁 Compartilhar
                             </button>
-                            <button class="post-action-btn btn btn-light text-muted w-100">
-                                <i class="bi bi-share"></i> Compartilhar
-                            </button>
+
                         </div>
                     </div>
-                <?php } ?>
-
+                </div>
             <?php } ?>
-        <?php } else { ?>
-            <div class="text-muted text-center p-4 card-custom">Nenhuma publicação encontrada.</div>
-        <?php } ?>
-    </div>
 
-    </form>
+        <?php } ?>
+    <?php } else { ?>
+        <div class="text-muted text-center p-4 card-custom">Nenhuma publicação encontrada.</div>
+    <?php } ?>
+</div>
+
+</form>
 
 </div>
 

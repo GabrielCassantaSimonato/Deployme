@@ -10,10 +10,27 @@ class AppController extends Action
     public function timeline()
     {
         Auth::validarAutenticacao();
+
         $publicacao = Container::getModel('Publicacao');
 
-        $this->view->publicacoes =
-            $publicacao->listarPublicacoes();
+        $publicacoes = $publicacao->listarPublicacoes();
+
+        // CURTIDAS
+        $curtida = Container::getModel('Curtida');
+
+        foreach ($publicacoes as &$pub) {
+
+            $pub['curtidas'] =
+                $curtida->totalCurtidas($pub['id'])['total'];
+
+            $pub['curtido'] =
+                $curtida->usuarioCurtiu(
+                    $_SESSION['id'],
+                    $pub['id']
+                ) ? true : false;
+        }
+
+        $this->view->publicacoes = $publicacoes;
 
         $this->render('timeline');
     }
@@ -239,5 +256,51 @@ class AppController extends Action
 
         header('Location: /timeline?delete=success');
     }
+    public function like()
+    {
+        Auth::validarAutenticacao();
+
+        $curtida = Container::getModel('Curtida');
+
+        $curtida->curtir(
+            $_SESSION['id'],
+            $_POST['publicacao']
+        );
+
+        $total = $curtida->totalCurtidas(
+            $_POST['publicacao']
+        );
+
+        echo json_encode([
+            'status' => 'ok',
+            'total' => $total['total']
+        ]);
+
+        exit;
+    }
+
+    public function unlike()
+    {
+        Auth::validarAutenticacao();
+
+        $curtida = Container::getModel('Curtida');
+
+        $curtida->descurtir(
+            $_SESSION['id'],
+            $_POST['publicacao']
+        );
+
+        $total = $curtida->totalCurtidas(
+            $_POST['publicacao']
+        );
+
+        echo json_encode([
+            'status' => 'ok',
+            'total' => $total['total']
+        ]);
+
+        exit;
+    }
+
 }
 ?>

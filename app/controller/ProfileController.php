@@ -21,11 +21,8 @@ class ProfileController extends Action
 
             // SE FOR O PRÓPRIO PERFIL
             if ($id == $_SESSION['id']) {
-
                 $modoLeitura = false;
-
             } else {
-
                 $modoLeitura = true;
             }
 
@@ -40,20 +37,37 @@ class ProfileController extends Action
         $dadosUsuario = $usuarioModel->buscarUsuarioCompleto($id);
 
         if (!$dadosUsuario) {
-
             echo "Usuário não encontrado.";
             exit;
         }
 
         $this->view->dadosUsuario = $dadosUsuario;
         $this->view->modo_leitura = $modoLeitura;
+
         $publicacao = Container::getModel('Publicacao');
 
         $publicacao->__set('usuario_id', $id);
 
         $publicacoes = $publicacao->getPublicacoesUsuario();
-        $this->view->publicacoes = $publicacoes;
 
+        // ==========================
+        // CURTIDAS
+        // ==========================
+        $curtida = Container::getModel('Curtida');
+
+        foreach ($publicacoes as &$pub) {
+
+            $resultado = $curtida->totalCurtidas($pub['id']);
+
+            $pub['curtidas'] = $resultado['total'] ?? 0;
+
+            $pub['curtido'] = $curtida->usuarioCurtiu(
+                $_SESSION['id'],
+                $pub['id']
+            ) ? true : false;
+        }
+
+        $this->view->publicacoes = $publicacoes;
 
         $this->render('profile');
     }

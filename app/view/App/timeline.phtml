@@ -383,20 +383,28 @@ $publicacoes = $this->view->publicacoes;
               <!-- ACTIONS -->
               <div class="d-flex justify-content-around post-actions">
 
-                <button>
-                  👍 Curtir
-                </button>
+                <a href="#" class="post-action-btn btn btn-light text-muted w-100 btn-curtir"
+                  data-id="<?= $publicacao['id'] ?>" data-curtido="<?= $publicacao['curtido'] ? 1 : 0 ?>">
 
-                <button>
+                  <span class="icone">
+                    <?= $publicacao['curtido'] ? '❤️' : '🤍' ?>
+                  </span>
+
+                  <span class="total">
+                    <?= $publicacao['curtidas'] ?>
+                  </span>
+
+                </a>
+
+                <button class="post-action-btn btn btn-light text-muted w-100">
                   💬 Comentar
                 </button>
 
-                <button>
+                <button class="post-action-btn btn btn-light text-muted w-100">
                   🔁 Compartilhar
                 </button>
 
               </div>
-
             </div>
 
           <?php } ?>
@@ -558,15 +566,24 @@ $publicacoes = $this->view->publicacoes;
               <!-- ACTIONS -->
               <div class="d-flex justify-content-around post-actions">
 
-                <button>
-                  👍 Curtir
-                </button>
+                <a href="#" class="post-action-btn btn btn-light text-muted w-100 btn-curtir"
+                  data-id="<?= $publicacao['id'] ?>" data-curtido="<?= $publicacao['curtido'] ? 1 : 0 ?>">
 
-                <button>
+                  <span class="icone">
+                    <?= $publicacao['curtido'] ? '❤️' : '🤍' ?>
+                  </span>
+
+                  <span class="total">
+                    <?= $publicacao['curtidas'] ?>
+                  </span>
+
+                </a>
+
+                <button class="post-action-btn btn btn-light text-muted w-100">
                   💬 Comentar
                 </button>
 
-                <button>
+                <button class="post-action-btn btn btn-light text-muted w-100">
                   🔁 Compartilhar
                 </button>
 
