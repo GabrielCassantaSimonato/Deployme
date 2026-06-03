@@ -322,30 +322,44 @@ $modoLeitura = $this->view->modo_leitura ?? false;
                             <?php } ?>
                         </div>
 
-                        <div class="d-flex justify-content-around post-actions">
+                        <div class="d-flex justify-content-around align-items-center post-actions py-2">
 
-                            <a href="#" class="post-action-btn btn btn-light text-muted w-100 btn-curtir"
+                            <a href="#"
+                                class="post-action-btn btn btn-light text-muted d-flex align-items-center gap-2 btn-curtir border-0 bg-transparent"
                                 data-id="<?= $publicacao['id'] ?>" data-curtido="<?= $publicacao['curtido'] ? 1 : 0 ?>">
-
                                 <span class="icone">
                                     <?= $publicacao['curtido'] ? '❤️' : '🤍' ?>
                                 </span>
-
                                 <span class="total">
                                     <?= $publicacao['curtidas'] ?>
                                 </span>
-
                             </a>
 
-                            <button class="post-action-btn btn btn-light text-muted w-100">
+                            <button
+                                class="btn btn-light text-muted d-flex align-items-center gap-2 btn-comentario border-0 bg-transparent"
+                                data-id="<?= $publicacao['id'] ?>">
                                 💬 Comentar
                             </button>
 
-                            <button class="post-action-btn btn btn-light text-muted w-100">
+                            <button
+                                class="post-action-btn btn btn-light text-muted d-flex align-items-center gap-2 border-0 bg-transparent">
                                 🔁 Compartilhar
                             </button>
 
                         </div>
+
+                        <div class="comentarios-container d-none" id="comentarios-<?= $publicacao['id'] ?>">
+                            <hr>
+                            <form action="/comment" method="POST">
+                                <input type="hidden" name="publicacao_id" value="<?= $publicacao['id'] ?>">
+                                <textarea class="form-control mb-2" name="comentario"
+                                    placeholder="Escreva um comentário..."></textarea>
+                                <button type="submit" class="btn btn-primary btn-sm">
+                                    Comentar
+                                </button>
+                            </form>
+                        </div>
+
                     </div>
                 <?php } ?>
 
@@ -447,41 +461,53 @@ $modoLeitura = $this->view->modo_leitura ?? false;
                             </button>
                         </div>
 
-                        <div class="d-flex justify-content-around post-actions">
+                        <div class="d-flex justify-content-around align-items-center post-actions py-2">
 
-                            <a href="#" class="post-action-btn btn btn-light text-muted w-100 btn-curtir"
+                            <a href="#"
+                                class="post-action-btn btn btn-light text-muted d-flex align-items-center gap-2 btn-curtir border-0 bg-transparent"
                                 data-id="<?= $publicacao['id'] ?>" data-curtido="<?= $publicacao['curtido'] ? 1 : 0 ?>">
-
                                 <span class="icone">
                                     <?= $publicacao['curtido'] ? '❤️' : '🤍' ?>
                                 </span>
-
                                 <span class="total">
                                     <?= $publicacao['curtidas'] ?>
                                 </span>
-
                             </a>
 
-                            <button class="post-action-btn btn btn-light text-muted w-100">
+                            <button
+                                class="btn btn-light text-muted d-flex align-items-center gap-2 btn-comentario border-0 bg-transparent"
+                                data-id="<?= $publicacao['id'] ?>">
                                 💬 Comentar
                             </button>
 
-                            <button class="post-action-btn btn btn-light text-muted w-100">
+                            <button
+                                class="post-action-btn btn btn-light text-muted d-flex align-items-center gap-2 border-0 bg-transparent">
                                 🔁 Compartilhar
                             </button>
 
                         </div>
+                        <div class="comentarios-container d-none" id="comentarios-<?= $publicacao['id'] ?>">
+                            <hr>
+                            <form action="/comment" method="POST">
+                                <input type="hidden" name="publicacao_id" value="<?= $publicacao['id'] ?>">
+                                <textarea class="form-control mb-2" name="comentario"
+                                    placeholder="Escreva um comentário..."></textarea>
+                                <button type="submit" class="btn btn-primary btn-sm">
+                                    Comentar
+                                </button>
+                            </form>
+                        </div>
+
                     </div>
-                </div>
+                <?php } ?>
             <?php } ?>
 
+        <?php } else { ?>
+            <div class="text-muted text-center p-4 card-custom">Nenhuma publicação encontrada.</div>
         <?php } ?>
-    <?php } else { ?>
-        <div class="text-muted text-center p-4 card-custom">Nenhuma publicação encontrada.</div>
-    <?php } ?>
-</div>
+    </div>
 
-</form>
+    </form>
 
 </div>
 

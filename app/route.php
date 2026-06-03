@@ -32,6 +32,7 @@ class route extends Bootstrap
         $routes['deleteVacancy'] = array('route' => '/deleteVacancy', 'controller' => 'AppController', 'action' => 'deleteVacancy');
         $routes['like'] = array('route' => '/like', 'controller' => 'AppController', 'action' => 'like');
         $routes['unlike'] = array('route' => '/unlike', 'controller' => 'AppController', 'action' => 'unlike');
+        $routes['comentar'] = array('route' => '/comment', 'controller' => 'AppController', 'action' => 'comment');
         $this->setRoutes($routes);//seta a rota no objeto
     }
 }

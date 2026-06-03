@@ -380,35 +380,45 @@ $publicacoes = $this->view->publicacoes;
 
               <hr>
 
-              <!-- ACTIONS -->
-              <div class="d-flex justify-content-around post-actions">
+              <div class="d-flex justify-content-around align-items-center post-actions py-2">
 
-                <a href="#" class="post-action-btn btn btn-light text-muted w-100 btn-curtir"
+                <a href="#"
+                  class="post-action-btn btn btn-light text-muted d-flex align-items-center gap-2 btn-curtir border-0 bg-transparent"
                   data-id="<?= $publicacao['id'] ?>" data-curtido="<?= $publicacao['curtido'] ? 1 : 0 ?>">
-
                   <span class="icone">
                     <?= $publicacao['curtido'] ? '❤️' : '🤍' ?>
                   </span>
-
                   <span class="total">
                     <?= $publicacao['curtidas'] ?>
                   </span>
-
                 </a>
 
-                <button class="post-action-btn btn btn-light text-muted w-100">
+                <button
+                  class="btn btn-light text-muted d-flex align-items-center gap-2 btn-comentario border-0 bg-transparent"
+                  data-id="<?= $publicacao['id'] ?>">
                   💬 Comentar
                 </button>
 
-                <button class="post-action-btn btn btn-light text-muted w-100">
+                <button
+                  class="post-action-btn btn btn-light text-muted d-flex align-items-center gap-2 border-0 bg-transparent">
                   🔁 Compartilhar
                 </button>
 
               </div>
+
+              <div class="comentarios-container d-none" id="comentarios-<?= $publicacao['id'] ?>">
+                <hr>
+                <form action="/comment" method="POST">
+                  <input type="hidden" name="publicacao_id" value="<?= $publicacao['id'] ?>">
+                  <textarea class="form-control mb-2" name="comentario" placeholder="Escreva um comentário..."></textarea>
+                  <button type="submit" class="btn btn-primary btn-sm">
+                    Comentar
+                  </button>
+                </form>
+              </div>
+
             </div>
-
           <?php } ?>
-
           <!-- POST VAGA -->
           <?php if ($publicacao['tipo'] == 'vaga') { ?>
 
@@ -563,36 +573,44 @@ $publicacoes = $this->view->publicacoes;
 
               <hr>
 
-              <!-- ACTIONS -->
-              <div class="d-flex justify-content-around post-actions">
+              <div class="d-flex justify-content-around align-items-center post-actions py-2">
 
-                <a href="#" class="post-action-btn btn btn-light text-muted w-100 btn-curtir"
+                <a href="#"
+                  class="post-action-btn btn btn-light text-muted d-flex align-items-center gap-2 btn-curtir border-0 bg-transparent"
                   data-id="<?= $publicacao['id'] ?>" data-curtido="<?= $publicacao['curtido'] ? 1 : 0 ?>">
-
                   <span class="icone">
                     <?= $publicacao['curtido'] ? '❤️' : '🤍' ?>
                   </span>
-
                   <span class="total">
                     <?= $publicacao['curtidas'] ?>
                   </span>
-
                 </a>
 
-                <button class="post-action-btn btn btn-light text-muted w-100">
+                <button
+                  class="btn btn-light text-muted d-flex align-items-center gap-2 btn-comentario border-0 bg-transparent"
+                  data-id="<?= $publicacao['id'] ?>">
                   💬 Comentar
                 </button>
 
-                <button class="post-action-btn btn btn-light text-muted w-100">
+                <button
+                  class="post-action-btn btn btn-light text-muted d-flex align-items-center gap-2 border-0 bg-transparent">
                   🔁 Compartilhar
                 </button>
 
               </div>
+              <div class="comentarios-container d-none" id="comentarios-<?= $publicacao['id'] ?>">
+                <hr>
+                <form action="/comment" method="POST">
+                  <input type="hidden" name="publicacao_id" value="<?= $publicacao['id'] ?>">
+                  <textarea class="form-control mb-2" name="comentario" placeholder="Escreva um comentário..."></textarea>
+                  <button type="submit" class="btn btn-primary btn-sm">
+                    Comentar
+                  </button>
+                </form>
+              </div>
 
             </div>
-
           <?php } ?>
-
         <?php } ?>
 
       <?php } else { ?>
@@ -839,57 +857,6 @@ $publicacoes = $this->view->publicacoes;
                 </form>
 
               <?php } ?>
-
-            </div>
-
-          </div>
-
-        </div>
-
-      </div>
-
-      <!-- MODAL COMENTÁRIOS -->
-      <div class="modal fade" id="comentariosModal" tabindex="-1">
-
-        <div class="modal-dialog">
-
-          <div class="modal-content">
-
-            <div class="modal-header">
-
-              <h5 class="modal-title">
-                Comentários
-              </h5>
-
-              <button class="btn-close" data-bs-dismiss="modal"></button>
-
-            </div>
-
-            <div class="modal-body">
-
-              <div class="mb-3">
-
-                <strong>João Silva</strong><br>
-
-                <small>Muito bom!</small>
-
-              </div>
-
-              <div class="mb-3">
-
-                <strong>Ana Souza</strong><br>
-
-                <small>Excelente oportunidade 👏</small>
-
-              </div>
-
-              <hr>
-
-              <textarea class="form-control mb-2" placeholder="Escreva um comentário..."></textarea>
-
-              <button class="btn btn-primary btn-sm">
-                Comentar
-              </button>
 
             </div>
 

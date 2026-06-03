@@ -180,3 +180,20 @@ document.addEventListener('DOMContentLoaded', function () {
     });
 
 });
+
+document.querySelectorAll('.btn-comentario').forEach(btn => {
+
+    btn.addEventListener('click', function(){
+
+        const id = this.dataset.id;
+
+        const container =
+            document.getElementById(
+                'comentarios-' + id
+            );
+
+        container.classList.toggle('d-none');
+
+    });
+
+});

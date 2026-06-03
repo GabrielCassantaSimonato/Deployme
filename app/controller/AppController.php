@@ -302,5 +302,20 @@ class AppController extends Action
         exit;
     }
 
+    public function comment()
+    {
+        Auth::validarAutenticacao();
+
+        $comentario = Container::getModel('Comentario');
+
+        $comentario->comentar(
+            $_SESSION['id'],
+            $_POST['publicacao_id'],
+            $_POST['comentario']
+        );
+
+        header('Location: /timeline');
+    }
+
 }
 ?>
