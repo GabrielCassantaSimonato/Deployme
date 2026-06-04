@@ -15,8 +15,9 @@ class AppController extends Action
 
         $publicacoes = $publicacao->listarPublicacoes();
 
-        // CURTIDAS
+        // CURTIDAS, COMENTÁRIOS
         $curtida = Container::getModel('Curtida');
+        $comentario = Container::getModel('Comentario');
 
         foreach ($publicacoes as &$pub) {
 
@@ -28,6 +29,16 @@ class AppController extends Action
                     $_SESSION['id'],
                     $pub['id']
                 ) ? true : false;
+
+            $pub['comentarios'] =
+                $comentario->listarComentarios(
+                    $pub['id']
+                );
+
+            $pub['total_comentarios'] =
+                $comentario->totalComentarios(
+                    $pub['id']
+                )['total'];
         }
 
         $this->view->publicacoes = $publicacoes;
@@ -314,7 +325,86 @@ class AppController extends Action
             $_POST['comentario']
         );
 
+        // SE FOR AJAX
+        if (
+            isset($_SERVER['HTTP_X_REQUESTED_WITH']) &&
+            strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) == 'xmlhttprequest'
+        ) {
+
+            $comentarioModel = Container::getModel('Comentario');
+
+            echo json_encode([
+                'success' => true,
+                'nome' => $_SESSION['nome'],
+                'foto' => !empty($_SESSION['foto_perfil'])
+                    ? '/uploads/fotos/' . $_SESSION['foto_perfil']
+                    : '/uploads/fotos/default-user.png',
+                'comentario' => $_POST['comentario'],
+                'data' => date('d/m/Y H:i'),
+                'total_comentarios' =>
+                    $comentarioModel->totalComentarios(
+                        $_POST['publicacao_id']
+                    )['total']
+            ]);
+
+            exit;
+        }
+
+        // FUNCIONAMENTO NORMAL
         header('Location: /timeline');
+    }
+
+    public function deleteComment()
+    {
+        Auth::validarAutenticacao();
+
+        $comentario = Container::getModel('Comentario');
+
+        $comentario->delete(
+            $_GET['id'],
+            $_SESSION['id']
+        );
+
+        if (
+            isset($_SERVER['HTTP_X_REQUESTED_WITH']) &&
+            strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) == 'xmlhttprequest'
+        ) {
+
+            $comentarioModel =
+                Container::getModel('Comentario');
+
+            echo json_encode([
+                'success' => true,
+                'publicacao_id' => $_GET['publicacao_id'],
+                'total_comentarios' =>
+                    $comentarioModel
+                        ->totalComentarios(
+                            $_GET['publicacao_id']
+                        )['total']
+            ]);
+
+            exit;
+        }
+
+        header('Location: /timeline');
+    }
+
+    public function editComment()
+    {
+        Auth::validarAutenticacao();
+
+        $comentario = Container::getModel('Comentario');
+
+        $comentario->editar(
+            $_POST['id'],
+            $_SESSION['id'],
+            $_POST['comentario']
+        );
+
+        // Retorna um JSON de sucesso para o nosso JavaScript ler
+        header('Content-Type: application/json');
+        echo json_encode(['sucesso' => true]);
+        exit;
     }
 
 }

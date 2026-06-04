@@ -51,9 +51,10 @@ class ProfileController extends Action
         $publicacoes = $publicacao->getPublicacoesUsuario();
 
         // ==========================
-        // CURTIDAS
+        // CURTIDAS,COMENTÁRIOS
         // ==========================
         $curtida = Container::getModel('Curtida');
+        $comentario = Container::getModel('Comentario');
 
         foreach ($publicacoes as &$pub) {
 
@@ -65,6 +66,16 @@ class ProfileController extends Action
                 $_SESSION['id'],
                 $pub['id']
             ) ? true : false;
+
+            $pub['comentarios'] =
+                $comentario->listarComentarios(
+                    $pub['id']
+                );
+
+            $pub['total_comentarios'] =
+                $comentario->totalComentarios(
+                    $pub['id']
+                )['total'];
         }
 
         $this->view->publicacoes = $publicacoes;

@@ -147,6 +147,7 @@ $modoLeitura = $this->view->modo_leitura ?? false;
             </div>
         <?php } ?>
     </div>
+
     <div class="linkedin-section">
         <h4><i class="bi bi-person-lines-fill"></i> Informações pessoais</h4>
         <div class="linkedin-info-grid">
@@ -280,12 +281,10 @@ $modoLeitura = $this->view->modo_leitura ?? false;
                                         <i class="bi bi-three-dots-vertical fs-5"></i>
                                     </button>
                                     <ul class="dropdown-menu dropdown-menu-end shadow border-0">
-
                                         <li>
                                             <button class="dropdown-item editar-post-btn" data-id="<?= $publicacao['id'] ?>"
                                                 data-texto="<?= htmlspecialchars($publicacao['conteudo'] ?? $publicacao['publicacao']) ?>"
                                                 data-imagem="<?= $publicacao['imagem'] ?>">
-
                                                 <i class="bi bi-pencil me-2"></i>
                                                 Editar
                                             </button>
@@ -296,10 +295,8 @@ $modoLeitura = $this->view->modo_leitura ?? false;
                                         <li>
                                             <a class="dropdown-item text-danger" href="/deletePost?id=<?= $publicacao['id'] ?>"
                                                 onclick="return confirm('Deseja excluir esta publicação?')">
-
                                                 <i class="bi bi-trash me-2"></i>
                                                 Excluir
-
                                             </a>
                                         </li>
                                     </ul>
@@ -322,8 +319,9 @@ $modoLeitura = $this->view->modo_leitura ?? false;
                             <?php } ?>
                         </div>
 
-                        <div class="d-flex justify-content-around align-items-center post-actions py-2">
+                        <hr>
 
+                        <div class="d-flex justify-content-around align-items-center post-actions py-2">
                             <a href="#"
                                 class="post-action-btn btn btn-light text-muted d-flex align-items-center gap-2 btn-curtir border-0 bg-transparent"
                                 data-id="<?= $publicacao['id'] ?>" data-curtido="<?= $publicacao['curtido'] ? 1 : 0 ?>">
@@ -335,25 +333,77 @@ $modoLeitura = $this->view->modo_leitura ?? false;
                                 </span>
                             </a>
 
-                            <button
-                                class="btn btn-light text-muted d-flex align-items-center gap-2 btn-comentario border-0 bg-transparent"
+                            <button type="button"
+                                class="post-action-btn btn btn-light text-muted d-flex align-items-center gap-2 btn-comentario border-0 bg-transparent"
                                 data-id="<?= $publicacao['id'] ?>">
-                                💬 Comentar
+                                💬
+                                <span>
+                                    <?= $publicacao['total_comentarios'] ?>
+                                </span>
                             </button>
 
-                            <button
+                            <button type="button"
                                 class="post-action-btn btn btn-light text-muted d-flex align-items-center gap-2 border-0 bg-transparent">
                                 🔁 Compartilhar
                             </button>
-
                         </div>
 
-                        <div class="comentarios-container d-none" id="comentarios-<?= $publicacao['id'] ?>">
+                        <div class="comentarios-container d-none mt-3" id="comentarios-<?= $publicacao['id'] ?>">
                             <hr>
-                            <form action="/comment" method="POST">
+                            <?php if (!empty($publicacao['comentarios'])) { ?>
+                                <?php foreach ($publicacao['comentarios'] as $comentario) { ?>
+                                    <div id="comentario-<?= $comentario['id'] ?>" class="d-flex mb-3 comentario-item">
+                                        <img src="<?= !empty($comentario['foto']) ? '/uploads/fotos/' . $comentario['foto'] : '/uploads/fotos/default-user.png' ?>"
+                                            class="rounded-circle me-2" style="width:40px; height:40px; object-fit:cover;">
+
+                                        <div class="flex-grow-1">
+                                            <div class="bg-light rounded-4 p-3 position-relative">
+                                                <strong>
+                                                    <?= htmlspecialchars($comentario['nome']) ?>
+                                                </strong>
+
+                                                <?php if ($comentario['usuario_id'] == $_SESSION['id']) { ?>
+                                                    <div class="dropdown position-absolute top-0 end-0 mt-2 me-2">
+                                                        <button class="btn btn-sm border-0 bg-transparent text-muted p-0"
+                                                            data-bs-toggle="dropdown">
+                                                            <i class="bi bi-three-dots-vertical"></i>
+                                                        </button>
+                                                        <ul class="dropdown-menu dropdown-menu-end shadow border-0">
+                                                            <li>
+                                                                <button class="dropdown-item editar-comentario-btn"
+                                                                    data-id="<?= $comentario['id'] ?>"
+                                                                    data-publicacao="<?= $publicacao['id'] ?>"
+                                                                    data-comentario="<?= htmlspecialchars($comentario['comentario']) ?>">
+                                                                    <i class="bi bi-pencil me-2"></i> Editar
+                                                                </button>
+                                                            </li>
+                                                            <li>
+                                                                <a class="dropdown-item text-danger btn-excluir-comentario" href="#"
+                                                                    data-id="<?= $comentario['id'] ?>"
+                                                                    data-publicacao="<?= $publicacao['id'] ?>">
+                                                                    <i class="bi bi-trash me-2"></i> Excluir
+                                                                </a>
+                                                            </li>
+                                                        </ul>
+                                                    </div>
+                                                <?php } ?>
+
+                                                <div class="mt-1" id="texto-comentario-<?= $comentario['id'] ?>">
+                                                    <?= nl2br(htmlspecialchars($comentario['comentario'])) ?>
+                                                </div>
+                                            </div>
+                                            <small class="text-muted">
+                                                <?= date('d/m/Y H:i', strtotime($comentario['created_at'])) ?>
+                                            </small>
+                                        </div>
+                                    </div>
+                                <?php } ?>
+                            <?php } ?>
+
+                            <form class="form-comentario" action="/comment" method="POST">
                                 <input type="hidden" name="publicacao_id" value="<?= $publicacao['id'] ?>">
-                                <textarea class="form-control mb-2" name="comentario"
-                                    placeholder="Escreva um comentário..."></textarea>
+                                <textarea class="form-control mb-2" name="comentario" rows="2"
+                                    placeholder="Escreva um comentário..." required></textarea>
                                 <button type="submit" class="btn btn-primary btn-sm">
                                     Comentar
                                 </button>
@@ -389,26 +439,29 @@ $modoLeitura = $this->view->modo_leitura ?? false;
                                         <i class="bi bi-three-dots-vertical fs-5"></i>
                                     </button>
                                     <ul class="dropdown-menu dropdown-menu-end shadow border-0">
-                                        <button type="button" class="dropdown-item editar-vaga-btn" data-id="<?= $publicacao['id'] ?>"
-                                            data-titulo="<?= htmlspecialchars($publicacao['titulo'] ?? '') ?>"
-                                            data-empresa="<?= htmlspecialchars($publicacao['empresa'] ?? '') ?>"
-                                            data-texto="<?= htmlspecialchars($publicacao['conteudo'] ?? '') ?>"
-                                            data-salario="<?= htmlspecialchars($publicacao['salario'] ?? '') ?>"
-                                            data-localizacao="<?= htmlspecialchars($publicacao['localizacao'] ?? '') ?>"
-                                            data-modalidade="<?= htmlspecialchars($publicacao['modalidade'] ?? '') ?>"
-                                            data-imagem="<?= htmlspecialchars($publicacao['imagem'] ?? '') ?>">
-                                            <i class="bi bi-pencil me-2"></i>
-                                            Editar vaga
-                                        </button>
-                                        <hr class="dropdown-divider">
+                                        <li>
+                                            <button type="button" class="dropdown-item editar-vaga-btn"
+                                                data-id="<?= $publicacao['id'] ?>"
+                                                data-titulo="<?= htmlspecialchars($publicacao['titulo'] ?? '') ?>"
+                                                data-empresa="<?= htmlspecialchars($publicacao['empresa'] ?? '') ?>"
+                                                data-texto="<?= htmlspecialchars($publicacao['conteudo'] ?? '') ?>"
+                                                data-salario="<?= htmlspecialchars($publicacao['salario'] ?? '') ?>"
+                                                data-localizacao="<?= htmlspecialchars($publicacao['localizacao'] ?? '') ?>"
+                                                data-modalidade="<?= htmlspecialchars($publicacao['modalidade'] ?? '') ?>"
+                                                data-imagem="<?= htmlspecialchars($publicacao['imagem'] ?? '') ?>"
+                                                data-bs-toggle="modal" data-bs-target="#editarVagaModal">
+                                                <i class="bi bi-pencil me-2"></i>
+                                                Editar vaga
+                                            </button>
+                                        </li>
+                                        <li>
+                                            <hr class="dropdown-divider">
                                         </li>
                                         <li>
                                             <a class="dropdown-item text-danger" href="/deleteVacancy?id=<?= $publicacao['id'] ?>"
                                                 onclick="return confirm('Deseja excluir esta vaga?')">
-
                                                 <i class="bi bi-trash me-2"></i>
                                                 Excluir vaga
-
                                             </a>
                                         </li>
                                     </ul>
@@ -461,8 +514,9 @@ $modoLeitura = $this->view->modo_leitura ?? false;
                             </button>
                         </div>
 
-                        <div class="d-flex justify-content-around align-items-center post-actions py-2">
+                        <hr>
 
+                        <div class="d-flex justify-content-around align-items-center post-actions py-2">
                             <a href="#"
                                 class="post-action-btn btn btn-light text-muted d-flex align-items-center gap-2 btn-curtir border-0 bg-transparent"
                                 data-id="<?= $publicacao['id'] ?>" data-curtido="<?= $publicacao['curtido'] ? 1 : 0 ?>">
@@ -474,24 +528,77 @@ $modoLeitura = $this->view->modo_leitura ?? false;
                                 </span>
                             </a>
 
-                            <button
-                                class="btn btn-light text-muted d-flex align-items-center gap-2 btn-comentario border-0 bg-transparent"
+                            <button type="button"
+                                class="post-action-btn btn btn-light text-muted d-flex align-items-center gap-2 btn-comentario border-0 bg-transparent"
                                 data-id="<?= $publicacao['id'] ?>">
-                                💬 Comentar
+                                💬
+                                <span>
+                                    <?= $publicacao['total_comentarios'] ?>
+                                </span>
                             </button>
 
-                            <button
+                            <button type="button"
                                 class="post-action-btn btn btn-light text-muted d-flex align-items-center gap-2 border-0 bg-transparent">
                                 🔁 Compartilhar
                             </button>
-
                         </div>
-                        <div class="comentarios-container d-none" id="comentarios-<?= $publicacao['id'] ?>">
+
+                        <div class="comentarios-container d-none mt-3" id="comentarios-<?= $publicacao['id'] ?>">
                             <hr>
-                            <form action="/comment" method="POST">
+                            <?php if (!empty($publicacao['comentarios'])) { ?>
+                                <?php foreach ($publicacao['comentarios'] as $comentario) { ?>
+                                    <div id="comentario-<?= $comentario['id'] ?>" class="d-flex mb-3 comentario-item">
+                                        <img src="<?= !empty($comentario['foto']) ? '/uploads/fotos/' . $comentario['foto'] : '/uploads/fotos/default-user.png' ?>"
+                                            class="rounded-circle me-2" style="width:40px; height:40px; object-fit:cover;">
+
+                                        <div class="flex-grow-1">
+                                            <div class="bg-light rounded-4 p-3 position-relative">
+                                                <strong>
+                                                    <?= htmlspecialchars($comentario['nome']) ?>
+                                                </strong>
+
+                                                <?php if ($comentario['usuario_id'] == $_SESSION['id']) { ?>
+                                                    <div class="dropdown position-absolute top-0 end-0 mt-2 me-2">
+                                                        <button class="btn btn-sm border-0 bg-transparent text-muted p-0"
+                                                            data-bs-toggle="dropdown">
+                                                            <i class="bi bi-three-dots-vertical"></i>
+                                                        </button>
+                                                        <ul class="dropdown-menu dropdown-menu-end shadow border-0">
+                                                            <li>
+                                                                <button class="dropdown-item editar-comentario-btn"
+                                                                    data-id="<?= $comentario['id'] ?>"
+                                                                    data-publicacao="<?= $publicacao['id'] ?>"
+                                                                    data-comentario="<?= htmlspecialchars($comentario['comentario']) ?>">
+                                                                    <i class="bi bi-pencil me-2"></i> Editar
+                                                                </button>
+                                                            </li>
+                                                            <li>
+                                                                <a class="dropdown-item text-danger btn-excluir-comentario" href="#"
+                                                                    data-id="<?= $comentario['id'] ?>"
+                                                                    data-publicacao="<?= $publicacao['id'] ?>">
+                                                                    <i class="bi bi-trash me-2"></i> Excluir
+                                                                </a>
+                                                            </li>
+                                                        </ul>
+                                                    </div>
+                                                <?php } ?>
+
+                                                <div class="mt-1" id="texto-comentario-<?= $comentario['id'] ?>">
+                                                    <?= nl2br(htmlspecialchars($comentario['comentario'])) ?>
+                                                </div>
+                                            </div>
+                                            <small class="text-muted">
+                                                <?= date('d/m/Y H:i', strtotime($comentario['created_at'])) ?>
+                                            </small>
+                                        </div>
+                                    </div>
+                                <?php } ?>
+                            <?php } ?>
+
+                            <form class="form-comentario" action="/comment" method="POST">
                                 <input type="hidden" name="publicacao_id" value="<?= $publicacao['id'] ?>">
-                                <textarea class="form-control mb-2" name="comentario"
-                                    placeholder="Escreva um comentário..."></textarea>
+                                <textarea class="form-control mb-2" name="comentario" rows="2"
+                                    placeholder="Escreva um comentário..." required></textarea>
                                 <button type="submit" class="btn btn-primary btn-sm">
                                     Comentar
                                 </button>
@@ -507,297 +614,206 @@ $modoLeitura = $this->view->modo_leitura ?? false;
         <?php } ?>
     </div>
 
-    </form>
-
-</div>
-
-</div>
-
 </div>
 
 <?php if (isset($_GET['edit']) && $_GET['edit'] == 'post_sucesso') { ?>
-
     <div class="modal fade" id="modalEditPostSucesso" tabindex="-1">
-
         <div class="modal-dialog modal-dialog-centered">
-
             <div class="modal-content border-0 shadow-lg rounded-4">
-
                 <div class="modal-body text-center p-5">
-
                     <div class="success-icon mb-3">
                         <i class="bi bi-check-circle-fill text-primary"></i>
                     </div>
-
                     <h3 class="fw-bold">
                         Publicação atualizada!
                     </h3>
-
                     <p class="text-muted">
                         Sua publicação foi editada com sucesso 🚀
                     </p>
-
                     <button class="btn btn-primary px-4" data-bs-dismiss="modal">
                         Fechar
                     </button>
-
                 </div>
-
             </div>
-
         </div>
-
     </div>
-
 <?php } ?>
 
 <?php if (isset($_GET['edit']) && $_GET['edit'] == 'vaga_sucesso') { ?>
-
     <div class="modal fade" id="modalEditVagaSucesso" tabindex="-1">
-
         <div class="modal-dialog modal-dialog-centered">
-
             <div class="modal-content border-0 shadow-lg rounded-4">
-
                 <div class="modal-body text-center p-5">
-
                     <div class="success-icon mb-3">
                         <i class="bi bi-briefcase-fill text-success"></i>
                     </div>
-
                     <h3 class="fw-bold">
                         Vaga atualizada!
                     </h3>
-
                     <p class="text-muted">
                         Sua vaga foi editada com sucesso 🎯
                     </p>
-
                     <button class="btn btn-success px-4" data-bs-dismiss="modal">
                         Fechar
                     </button>
-
                 </div>
-
             </div>
-
         </div>
-
     </div>
-
 <?php } ?>
 
 <div class="modal fade" id="editarPostModal" tabindex="-1">
-
     <div class="modal-dialog">
-
         <div class="modal-content">
-
             <form method="POST" action="/updatePost" enctype="multipart/form-data">
-
                 <div class="modal-header">
-
                     <h5 class="modal-title">
                         Editar publicação
                     </h5>
-
                     <button type="button" class="btn-close" data-bs-dismiss="modal">
                     </button>
-
                 </div>
-
                 <div class="modal-body">
-
                     <input type="hidden" name="id" id="editPostId">
-
-                    <!-- TEXTO -->
                     <textarea name="conteudo" id="editPostTexto" class="form-control mb-3" rows="5"></textarea>
-
-                    <!-- PREVIEW IMAGEM -->
                     <div id="editPreviewContainer" class="mb-3 d-none">
                         <img id="editPreviewImagem" class="img-fluid rounded">
                     </div>
-
                     <label class="btn btn-light border w-100">
                         <i class="bi bi-image"></i>
                         Alterar imagem
-
                         <input type="file" name="imagem" id="editPostFileInput" hidden accept="image/*">
                     </label>
-
                 </div>
-
-
-
                 <div class="modal-footer">
-
                     <button type="submit" class="btn btn-primary">
-
                         Salvar alterações
-
                     </button>
-
                 </div>
-
             </form>
-
         </div>
-
     </div>
-
 </div>
 
 <div class="modal fade" id="editarVagaModal" tabindex="-1">
-
     <div class="modal-dialog modal-lg">
-
         <div class="modal-content">
-
             <form method="POST" action="/updateVacancy" enctype="multipart/form-data">
-
-                <!-- HEADER -->
                 <div class="modal-header">
-
                     <h5 class="modal-title">
-
                         Editar vaga
-
                     </h5>
-
                     <button type="button" class="btn-close" data-bs-dismiss="modal">
                     </button>
-
                 </div>
-
-                <!-- BODY -->
                 <div class="modal-body">
-
-                    <!-- ID -->
                     <input type="hidden" name="id" id="editVagaId">
-
-                    <!-- TÍTULO -->
                     <div class="mb-3">
-
                         <label class="form-label">
-
                             Título da vaga
-
                         </label>
-
                         <input type="text" name="titulo" id="editVagaTitulo" class="form-control">
-
                     </div>
-
                     <div class="mb-3">
-
                         <label class="form-label">
-
                             Empresa
-
                         </label>
-
                         <input type="text" name="empresa" id="editVagaEmpresa" class="form-control">
-
                     </div>
-
-                    <!-- DESCRIÇÃO -->
                     <div class="mb-3">
-
                         <label class="form-label">
-
                             Descrição
-
                         </label>
-
                         <textarea name="conteudo" id="editVagaTexto" class="form-control" rows="5"></textarea>
-
                     </div>
-
-                    <!-- SALÁRIO -->
                     <div class="mb-3">
-
                         <label class="form-label">
-
                             Salário
-
                         </label>
-
                         <input type="text" name="salario" id="editVagaSalario" class="form-control">
-
                     </div>
-
-                    <!-- LOCALIZAÇÃO -->
                     <div class="mb-3">
-
                         <label class="form-label">
-
                             Localização
-
                         </label>
-
                         <input type="text" name="localizacao" id="editVagaLocalizacao" class="form-control">
-
                     </div>
-
-                    <!-- MODALIDADE -->
                     <div class="mb-3">
-
                         <label class="form-label">
-
                             Modalidade
-
                         </label>
-
                         <select name="modalidade" id="editVagaModalidade" class="form-select">
-
                             <option value="Presencial">
                                 Presencial
                             </option>
-
                             <option value="Híbrido">
                                 Híbrido
                             </option>
-
                             <option value="Remoto">
                                 Remoto
                             </option>
-
                         </select>
-
                     </div>
-
-                    <!-- ALTERAR IMAGEM -->
                     <div id="editVagaPreviewContainer" class="mb-3 d-none">
                         <img id="editVagaPreviewImagem" class="img-fluid rounded w-100">
                     </div>
-
                     <div class="mb-3">
                         <label class="btn btn-light border w-100">
                             <i class="bi bi-image"></i>
                             Alterar imagem
-
                             <input type="file" name="imagem" id="editVagaFileInput" hidden accept="image/*">
-
                         </label>
                     </div>
-
                 </div>
-
-                <!-- FOOTER -->
                 <div class="modal-footer">
-
                     <button type="submit" class="btn btn-success">
-
                         Salvar alterações
-
                     </button>
-
                 </div>
-
             </form>
-
         </div>
-
     </div>
-
 </div>
+
+<div class="modal fade" id="editarComentarioModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0 shadow-lg rounded-4">
+            <form id="formEditarComentario" action="/editComment" method="POST">
+                <div class="modal-header border-0">
+                    <h5 class="modal-title fw-bold">Editar comentário</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body p-4">
+                    <input type="hidden" name="id" id="editComentarioId">
+                    <textarea name="comentario" id="editComentarioTexto" class="form-control" rows="4"
+                        placeholder="Digite seu comentário..." required></textarea>
+                </div>
+                <div class="modal-footer border-0">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="submit" class="btn btn-primary" id="salvarComentario">Salvar alterações</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Abertura do modal de edição (Funciona para comentários antigos e novos!)
+    document.addEventListener('click', function (e) {
+        // O closest garante que funciona mesmo se clicar no ícone ✏️ dentro do botão
+        const btnEditar = e.target.closest('.editar-comentario-btn');
+
+        if (btnEditar) {
+            e.preventDefault(); // Evita que o link faça a página pular
+
+            // Preenche os dados no modal
+            document.getElementById('editComentarioId').value = btnEditar.dataset.id;
+            document.getElementById('editComentarioTexto').value = btnEditar.dataset.comentario;
+
+            // Abre o modal de forma segura
+            const modalElement = document.getElementById('editarComentarioModal');
+            const modalInstance = bootstrap.Modal.getOrCreateInstance(modalElement);
+            modalInstance.show();
+        }
+    });
+</script>
