@@ -258,173 +258,26 @@ $modoLeitura = $this->view->modo_leitura ?? false;
         <?php if (!empty($this->view->publicacoes)) { ?>
             <?php foreach ($this->view->publicacoes as $publicacao) { ?>
 
-                <?php if (!isset($publicacao['tipo']) || $publicacao['tipo'] == 'post') { ?>
+                <!-- ============================================== -->
+                <!-- CARD DE COMPARTILHAMENTO -->
+                <!-- ============================================== -->
+                <?php if (!empty($publicacao['publicacao_original_id'])) { ?>
                     <div class="post-card mb-3">
+
+                        <!-- QUEM COMPARTILHOU -->
                         <div class="post-header d-flex align-items-center mb-3">
                             <div class="post-user-info d-flex align-items-center">
                                 <img src="<?= !empty($publicacao['foto']) ? '/uploads/fotos/' . $publicacao['foto'] : '/uploads/fotos/default-user.png' ?>"
                                     class="post-avatar me-2" style="width:50px; height:50px; border-radius:50%; object-fit:cover;">
                                 <div>
                                     <strong class="d-block">
-                                        <?= $publicacao['nome'] ?>
-                                    </strong>
-                                    <div class="post-date text-muted small">
-                                        <?= date('d/m/Y H:i', strtotime($publicacao['created_at'])) ?>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <?php if ($publicacao['usuario_id'] == $_SESSION['id']) { ?>
-                                <div class="dropdown ms-auto">
-                                    <button class="btn btn-link text-muted p-0 text-decoration-none" type="button"
-                                        data-bs-toggle="dropdown" aria-expanded="false">
-                                        <i class="bi bi-three-dots-vertical fs-5"></i>
-                                    </button>
-                                    <ul class="dropdown-menu dropdown-menu-end shadow border-0">
-                                        <li>
-                                            <button class="dropdown-item editar-post-btn" data-id="<?= $publicacao['id'] ?>"
-                                                data-texto="<?= htmlspecialchars($publicacao['conteudo'] ?? $publicacao['publicacao']) ?>"
-                                                data-imagem="<?= $publicacao['imagem'] ?>">
-                                                <i class="bi bi-pencil me-2"></i>
-                                                Editar
-                                            </button>
-                                        </li>
-                                        <li>
-                                            <hr class="dropdown-divider">
-                                        </li>
-                                        <li>
-                                            <a class="dropdown-item text-danger" href="/deletePost?id=<?= $publicacao['id'] ?>"
-                                                onclick="return confirm('Deseja excluir esta publicação?')">
-                                                <i class="bi bi-trash me-2"></i>
-                                                Excluir
-                                            </a>
-                                        </li>
-                                    </ul>
-                                </div>
-                            <?php } ?>
-                        </div>
-
-                        <div class="post-body">
-                            <?php if (!empty($publicacao['conteudo'])) { ?>
-                                <div class="post-content mb-3">
-                                    <?= nl2br(htmlspecialchars($publicacao['conteudo'])) ?>
-                                </div>
-                            <?php } ?>
-
-                            <?php if (!empty($publicacao['imagem'])) { ?>
-                                <div class="post-image-container mb-3">
-                                    <img src="/uploads/publicacoes/<?= $publicacao['imagem'] ?>"
-                                        class="post-image img-fluid rounded w-100" style="max-height: 500px; object-fit: cover;">
-                                </div>
-                            <?php } ?>
-                        </div>
-
-                        <hr>
-
-                        <div class="d-flex justify-content-around align-items-center post-actions py-2">
-                            <a href="#"
-                                class="post-action-btn btn btn-light text-muted d-flex align-items-center gap-2 btn-curtir border-0 bg-transparent"
-                                data-id="<?= $publicacao['id'] ?>" data-curtido="<?= $publicacao['curtido'] ? 1 : 0 ?>">
-                                <span class="icone">
-                                    <?= $publicacao['curtido'] ? '❤️' : '🤍' ?>
-                                </span>
-                                <span class="total">
-                                    <?= $publicacao['curtidas'] ?>
-                                </span>
-                            </a>
-
-                            <button type="button"
-                                class="post-action-btn btn btn-light text-muted d-flex align-items-center gap-2 btn-comentario border-0 bg-transparent"
-                                data-id="<?= $publicacao['id'] ?>">
-                                💬
-                                <span>
-                                    <?= $publicacao['total_comentarios'] ?>
-                                </span>
-                            </button>
-
-                            <button type="button"
-                                class="post-action-btn btn btn-light text-muted d-flex align-items-center gap-2 border-0 bg-transparent">
-                                🔁 Compartilhar
-                            </button>
-                        </div>
-
-                        <div class="comentarios-container d-none mt-3" id="comentarios-<?= $publicacao['id'] ?>">
-                            <hr>
-                            <?php if (!empty($publicacao['comentarios'])) { ?>
-                                <?php foreach ($publicacao['comentarios'] as $comentario) { ?>
-                                    <div id="comentario-<?= $comentario['id'] ?>" class="d-flex mb-3 comentario-item">
-                                        <img src="<?= !empty($comentario['foto']) ? '/uploads/fotos/' . $comentario['foto'] : '/uploads/fotos/default-user.png' ?>"
-                                            class="rounded-circle me-2" style="width:40px; height:40px; object-fit:cover;">
-
-                                        <div class="flex-grow-1">
-                                            <div class="bg-light rounded-4 p-3 position-relative">
-                                                <strong>
-                                                    <?= htmlspecialchars($comentario['nome']) ?>
-                                                </strong>
-
-                                                <?php if ($comentario['usuario_id'] == $_SESSION['id']) { ?>
-                                                    <div class="dropdown position-absolute top-0 end-0 mt-2 me-2">
-                                                        <button class="btn btn-sm border-0 bg-transparent text-muted p-0"
-                                                            data-bs-toggle="dropdown">
-                                                            <i class="bi bi-three-dots-vertical"></i>
-                                                        </button>
-                                                        <ul class="dropdown-menu dropdown-menu-end shadow border-0">
-                                                            <li>
-                                                                <button class="dropdown-item editar-comentario-btn"
-                                                                    data-id="<?= $comentario['id'] ?>"
-                                                                    data-publicacao="<?= $publicacao['id'] ?>"
-                                                                    data-comentario="<?= htmlspecialchars($comentario['comentario']) ?>">
-                                                                    <i class="bi bi-pencil me-2"></i> Editar
-                                                                </button>
-                                                            </li>
-                                                            <li>
-                                                                <a class="dropdown-item text-danger btn-excluir-comentario" href="#"
-                                                                    data-id="<?= $comentario['id'] ?>"
-                                                                    data-publicacao="<?= $publicacao['id'] ?>">
-                                                                    <i class="bi bi-trash me-2"></i> Excluir
-                                                                </a>
-                                                            </li>
-                                                        </ul>
-                                                    </div>
-                                                <?php } ?>
-
-                                                <div class="mt-1" id="texto-comentario-<?= $comentario['id'] ?>">
-                                                    <?= nl2br(htmlspecialchars($comentario['comentario'])) ?>
-                                                </div>
-                                            </div>
-                                            <small class="text-muted">
-                                                <?= date('d/m/Y H:i', strtotime($comentario['created_at'])) ?>
-                                            </small>
-                                        </div>
-                                    </div>
-                                <?php } ?>
-                            <?php } ?>
-
-                            <form class="form-comentario" action="/comment" method="POST">
-                                <input type="hidden" name="publicacao_id" value="<?= $publicacao['id'] ?>">
-                                <textarea class="form-control mb-2" name="comentario" rows="2"
-                                    placeholder="Escreva um comentário..." required></textarea>
-                                <button type="submit" class="btn btn-primary btn-sm">
-                                    Comentar
-                                </button>
-                            </form>
-                        </div>
-
-                    </div>
-                <?php } ?>
-
-                <?php if (isset($publicacao['tipo']) && $publicacao['tipo'] == 'vaga') { ?>
-                    <div class="post-card mb-3 border-start border-success border-4 p-3 shadow-sm bg-white rounded">
-                        <div class="post-header d-flex align-items-center mb-3">
-                            <div class="post-user-info d-flex align-items-center">
-                                <img src="<?= !empty($publicacao['foto']) ? '/uploads/fotos/' . $publicacao['foto'] : '/uploads/fotos/default-user.png' ?>"
-                                    class="post-avatar me-2" style="width:50px; height:50px; border-radius:50%; object-fit:cover;">
-                                <div>
-                                    <strong class="d-block">
-                                        <?= $publicacao['nome'] ?>
+                                        <?= htmlspecialchars($publicacao['nome']) ?>
                                     </strong>
                                     <div class="text-muted small">
-                                        <?= $publicacao['empresa'] ?? 'Empresa Confidencial' ?>
+                                        <i class="bi bi-arrow-repeat"></i> Compartilhou uma publicação de
+                                        <strong>
+                                            <?= htmlspecialchars($publicacao['autor_original_nome'] ?? '') ?>
+                                        </strong>
                                     </div>
                                     <div class="post-date text-muted small">
                                         <?= date('d/m/Y H:i', strtotime($publicacao['created_at'])) ?>
@@ -432,6 +285,7 @@ $modoLeitura = $this->view->modo_leitura ?? false;
                                 </div>
                             </div>
 
+                            <!-- 3 PONTINHOS DO COMPARTILHAMENTO -->
                             <?php if ($publicacao['usuario_id'] == $_SESSION['id']) { ?>
                                 <div class="dropdown ms-auto">
                                     <button class="btn btn-link text-muted p-0 text-decoration-none" type="button"
@@ -440,28 +294,9 @@ $modoLeitura = $this->view->modo_leitura ?? false;
                                     </button>
                                     <ul class="dropdown-menu dropdown-menu-end shadow border-0">
                                         <li>
-                                            <button type="button" class="dropdown-item editar-vaga-btn"
-                                                data-id="<?= $publicacao['id'] ?>"
-                                                data-titulo="<?= htmlspecialchars($publicacao['titulo'] ?? '') ?>"
-                                                data-empresa="<?= htmlspecialchars($publicacao['empresa'] ?? '') ?>"
-                                                data-texto="<?= htmlspecialchars($publicacao['conteudo'] ?? '') ?>"
-                                                data-salario="<?= htmlspecialchars($publicacao['salario'] ?? '') ?>"
-                                                data-localizacao="<?= htmlspecialchars($publicacao['localizacao'] ?? '') ?>"
-                                                data-modalidade="<?= htmlspecialchars($publicacao['modalidade'] ?? '') ?>"
-                                                data-imagem="<?= htmlspecialchars($publicacao['imagem'] ?? '') ?>"
-                                                data-bs-toggle="modal" data-bs-target="#editarVagaModal">
-                                                <i class="bi bi-pencil me-2"></i>
-                                                Editar vaga
-                                            </button>
-                                        </li>
-                                        <li>
-                                            <hr class="dropdown-divider">
-                                        </li>
-                                        <li>
-                                            <a class="dropdown-item text-danger" href="/deleteVacancy?id=<?= $publicacao['id'] ?>"
-                                                onclick="return confirm('Deseja excluir esta vaga?')">
-                                                <i class="bi bi-trash me-2"></i>
-                                                Excluir vaga
+                                            <a class="dropdown-item text-danger" href="/deletePost?id=<?= $publicacao['id'] ?>"
+                                                onclick="return confirm('Deseja excluir este compartilhamento?')">
+                                                <i class="bi bi-trash me-2"></i> Excluir
                                             </a>
                                         </li>
                                     </ul>
@@ -469,53 +304,99 @@ $modoLeitura = $this->view->modo_leitura ?? false;
                             <?php } ?>
                         </div>
 
-                        <div class="post-body">
-                            <span class="badge bg-success mb-3 px-3 py-2">
-                                <i class="bi bi-briefcase-fill"></i> Vaga publicada
-                            </span>
-
-                            <h5 class="fw-bold mb-3">
-                                <?= $publicacao['titulo'] ?? 'Título da Vaga' ?>
-                            </h5>
-
-                            <div class="d-flex flex-wrap gap-2 mb-3">
-                                <?php if (!empty($publicacao['localizacao'])) { ?>
-                                    <span class="badge bg-light text-dark border"><i class="bi bi-geo-alt-fill"></i>
-                                        <?= $publicacao['localizacao'] ?>
-                                    </span>
-                                <?php } ?>
-                                <?php if (!empty($publicacao['modalidade'])) { ?>
-                                    <span class="badge bg-light text-dark border"><i class="bi bi-building"></i>
-                                        <?= ucfirst($publicacao['modalidade']) ?>
-                                    </span>
-                                <?php } ?>
-                                <?php if (!empty($publicacao['salario'])) { ?>
-                                    <span class="badge bg-light text-success border"><i class="bi bi-cash"></i> R$
-                                        <?= $publicacao['salario'] ?>
-                                    </span>
-                                <?php } ?>
+                        <!-- TEXTO DE QUEM COMPARTILHOU (OPCIONAL) -->
+                        <?php if (!empty($publicacao['conteudo'])) { ?>
+                            <div class="post-content mb-3">
+                                <?= nl2br(htmlspecialchars($publicacao['conteudo'])) ?>
                             </div>
+                        <?php } ?>
 
-                            <?php if (!empty($publicacao['conteudo'])) { ?>
-                                <div class="post-content mb-3">
-                                    <?= nl2br(htmlspecialchars($publicacao['conteudo'])) ?>
+                        <!-- POST ORIGINAL EMBUTIDO -->
+                        <div class="border rounded-4 overflow-hidden mb-3 bg-white" style="border-color: #dee2e6;">
+
+                            <?php if (isset($publicacao['post_original_tipo']) && $publicacao['post_original_tipo'] == 'vaga') { ?>
+                                <!-- LAYOUT ORIGINAL DE VAGA EMBUTIDO -->
+                                <div class="p-3 border-start border-success border-4 h-100">
+                                    <div class="d-flex align-items-center mb-3">
+                                        <img src="<?= !empty($publicacao['autor_original_foto']) ? '/uploads/fotos/' . $publicacao['autor_original_foto'] : '/uploads/fotos/default-user.png' ?>"
+                                            class="rounded-circle me-2" style="width:45px; height:45px; object-fit:cover;">
+                                        <div>
+                                            <strong class="d-block lh-1 text-dark">
+                                                <?= htmlspecialchars($publicacao['autor_original_nome'] ?? '') ?>
+                                            </strong>
+                                            <span class="text-muted small">
+                                                <?= htmlspecialchars($publicacao['post_original_empresa'] ?? '') ?>
+                                            </span>
+                                        </div>
+                                    </div>
+
+                                    <span class="badge bg-success mb-3 px-3 py-2"><i class="bi bi-briefcase-fill"></i> Vaga
+                                        publicada</span>
+                                    <h5 class="fw-bold mb-3 text-dark">
+                                        <?= htmlspecialchars($publicacao['post_original_titulo'] ?? '') ?>
+                                    </h5>
+
+                                    <div class="d-flex flex-wrap gap-2 mb-3">
+                                        <?php if (!empty($publicacao['post_original_localizacao'])) { ?>
+                                            <span class="badge bg-light text-dark border"><i class="bi bi-geo-alt-fill"></i>
+                                                <?= $publicacao['post_original_localizacao'] ?>
+                                            </span>
+                                        <?php } ?>
+                                        <?php if (!empty($publicacao['post_original_modalidade'])) { ?>
+                                            <span class="badge bg-light text-dark border"><i class="bi bi-building"></i>
+                                                <?= ucfirst($publicacao['post_original_modalidade']) ?>
+                                            </span>
+                                        <?php } ?>
+                                        <?php if (!empty($publicacao['post_original_salario'])) { ?>
+                                            <span class="badge bg-light text-success border"><i class="bi bi-cash"></i> R$
+                                                <?= $publicacao['post_original_salario'] ?>
+                                            </span>
+                                        <?php } ?>
+                                    </div>
+
+                                    <p class="mb-3 fs-6 text-dark">
+                                        <?= nl2br(htmlspecialchars($publicacao['post_original_conteudo'] ?? '')) ?>
+                                    </p>
+
+                                    <?php if (!empty($publicacao['post_original_imagem'])) { ?>
+                                        <img src="/uploads/publicacoes/<?= $publicacao['post_original_imagem'] ?>"
+                                            class="img-fluid rounded-4 mb-3 w-100" style="max-height:400px; object-fit:cover;">
+                                    <?php } ?>
+
+                                    <button class="btn btn-success rounded-pill px-4 mb-2">
+                                        <i class="bi bi-arrow-right-circle"></i> Ver vaga
+                                    </button>
+                                </div>
+
+                            <?php } else { ?>
+                                <!-- LAYOUT ORIGINAL DE POST NORMAL EMBUTIDO -->
+                                <div class="p-3 h-100">
+                                    <div class="d-flex align-items-center mb-3">
+                                        <img src="<?= !empty($publicacao['autor_original_foto']) ? '/uploads/fotos/' . $publicacao['autor_original_foto'] : '/uploads/fotos/default-user.png' ?>"
+                                            class="rounded-circle me-2" style="width:45px; height:45px; object-fit:cover;">
+                                        <div>
+                                            <strong class="d-block lh-1 text-dark">
+                                                <?= htmlspecialchars($publicacao['autor_original_nome'] ?? '') ?>
+                                            </strong>
+                                            <span class="text-muted small">Publicação original</span>
+                                        </div>
+                                    </div>
+
+                                    <p class="mb-3 fs-6 text-dark">
+                                        <?= nl2br(htmlspecialchars($publicacao['post_original_conteudo'] ?? '')) ?>
+                                    </p>
+
+                                    <?php if (!empty($publicacao['post_original_imagem'])) { ?>
+                                        <img src="/uploads/publicacoes/<?= $publicacao['post_original_imagem'] ?>"
+                                            class="img-fluid rounded-4 w-100 mb-2" style="max-height:400px; object-fit:cover;">
+                                    <?php } ?>
                                 </div>
                             <?php } ?>
-
-                            <?php if (!empty($publicacao['imagem'])) { ?>
-                                <div class="post-image-container mb-3">
-                                    <img src="/uploads/publicacoes/<?= $publicacao['imagem'] ?>"
-                                        class="post-image img-fluid rounded w-100" style="max-height: 500px; object-fit: cover;">
-                                </div>
-                            <?php } ?>
-
-                            <button class="btn btn-success rounded-pill px-4 mb-3 w-100">
-                                <i class="bi bi-arrow-right-circle"></i> Ver vaga
-                            </button>
                         </div>
 
                         <hr>
 
+                        <!-- AÇÕES -->
                         <div class="d-flex justify-content-around align-items-center post-actions py-2">
                             <a href="#"
                                 class="post-action-btn btn btn-light text-muted d-flex align-items-center gap-2 btn-curtir border-0 bg-transparent"
@@ -537,12 +418,13 @@ $modoLeitura = $this->view->modo_leitura ?? false;
                                 </span>
                             </button>
 
-                            <button type="button"
-                                class="post-action-btn btn btn-light text-muted d-flex align-items-center gap-2 border-0 bg-transparent">
+                            <a href="/share?id=<?= $publicacao['publicacao_original_id'] ?>"
+                                class="post-action-btn btn btn-light text-muted d-flex align-items-center gap-2 border-0 bg-transparent text-decoration-none">
                                 🔁 Compartilhar
-                            </button>
+                            </a>
                         </div>
 
+                        <!-- COMENTÁRIOS DO COMPARTILHAMENTO -->
                         <div class="comentarios-container d-none mt-3" id="comentarios-<?= $publicacao['id'] ?>">
                             <hr>
                             <?php if (!empty($publicacao['comentarios'])) { ?>
@@ -599,15 +481,370 @@ $modoLeitura = $this->view->modo_leitura ?? false;
                                 <input type="hidden" name="publicacao_id" value="<?= $publicacao['id'] ?>">
                                 <textarea class="form-control mb-2" name="comentario" rows="2"
                                     placeholder="Escreva um comentário..." required></textarea>
-                                <button type="submit" class="btn btn-primary btn-sm">
-                                    Comentar
-                                </button>
+                                <button type="submit" class="btn btn-primary btn-sm">Comentar</button>
                             </form>
                         </div>
 
                     </div>
-                <?php } ?>
-            <?php } ?>
+                    <!-- FIM DO CARD DE COMPARTILHAMENTO -->
+
+                    <!-- ============================================== -->
+                    <!-- SE NÃO FOR COMPARTILHAMENTO, É POST OU VAGA -->
+                    <!-- ============================================== -->
+                <?php } else { ?>
+
+                    <?php if (!isset($publicacao['tipo']) || $publicacao['tipo'] == 'post') { ?>
+                        <div class="post-card mb-3">
+                            <div class="post-header d-flex align-items-center mb-3">
+                                <div class="post-user-info d-flex align-items-center">
+                                    <img src="<?= !empty($publicacao['foto']) ? '/uploads/fotos/' . $publicacao['foto'] : '/uploads/fotos/default-user.png' ?>"
+                                        class="post-avatar me-2" style="width:50px; height:50px; border-radius:50%; object-fit:cover;">
+                                    <div>
+                                        <strong class="d-block">
+                                            <?= $publicacao['nome'] ?>
+                                        </strong>
+                                        <div class="post-date text-muted small">
+                                            <?= date('d/m/Y H:i', strtotime($publicacao['created_at'])) ?>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <?php if ($publicacao['usuario_id'] == $_SESSION['id']) { ?>
+                                    <div class="dropdown ms-auto">
+                                        <button class="btn btn-link text-muted p-0 text-decoration-none" type="button"
+                                            data-bs-toggle="dropdown" aria-expanded="false">
+                                            <i class="bi bi-three-dots-vertical fs-5"></i>
+                                        </button>
+                                        <ul class="dropdown-menu dropdown-menu-end shadow border-0">
+                                            <li>
+                                                <button class="dropdown-item editar-post-btn" data-id="<?= $publicacao['id'] ?>"
+                                                    data-texto="<?= htmlspecialchars($publicacao['conteudo'] ?? $publicacao['publicacao']) ?>"
+                                                    data-imagem="<?= $publicacao['imagem'] ?>">
+                                                    <i class="bi bi-pencil me-2"></i>
+                                                    Editar
+                                                </button>
+                                            </li>
+                                            <li>
+                                                <hr class="dropdown-divider">
+                                            </li>
+                                            <li>
+                                                <a class="dropdown-item text-danger" href="/deletePost?id=<?= $publicacao['id'] ?>"
+                                                    onclick="return confirm('Deseja excluir esta publicação?')">
+                                                    <i class="bi bi-trash me-2"></i>
+                                                    Excluir
+                                                </a>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                <?php } ?>
+                            </div>
+
+                            <div class="post-body">
+                                <?php if (!empty($publicacao['conteudo'])) { ?>
+                                    <div class="post-content mb-3">
+                                        <?= nl2br(htmlspecialchars($publicacao['conteudo'])) ?>
+                                    </div>
+                                <?php } ?>
+
+                                <?php if (!empty($publicacao['imagem'])) { ?>
+                                    <div class="post-image-container mb-3">
+                                        <img src="/uploads/publicacoes/<?= $publicacao['imagem'] ?>"
+                                            class="post-image img-fluid rounded w-100" style="max-height: 500px; object-fit: cover;">
+                                    </div>
+                                <?php } ?>
+                            </div>
+
+                            <hr>
+
+                            <div class="d-flex justify-content-around align-items-center post-actions py-2">
+                                <a href="#"
+                                    class="post-action-btn btn btn-light text-muted d-flex align-items-center gap-2 btn-curtir border-0 bg-transparent"
+                                    data-id="<?= $publicacao['id'] ?>" data-curtido="<?= $publicacao['curtido'] ? 1 : 0 ?>">
+                                    <span class="icone">
+                                        <?= $publicacao['curtido'] ? '❤️' : '🤍' ?>
+                                    </span>
+                                    <span class="total">
+                                        <?= $publicacao['curtidas'] ?>
+                                    </span>
+                                </a>
+
+                                <button type="button"
+                                    class="post-action-btn btn btn-light text-muted d-flex align-items-center gap-2 btn-comentario border-0 bg-transparent"
+                                    data-id="<?= $publicacao['id'] ?>">
+                                    💬
+                                    <span>
+                                        <?= $publicacao['total_comentarios'] ?>
+                                    </span>
+                                </button>
+
+                                <a href="/share?id=<?= $publicacao['id'] ?>"
+                                    class="post-action-btn btn btn-light text-muted d-flex align-items-center gap-2 border-0 bg-transparent">
+                                    🔁 Compartilhar
+                                </a>
+                            </div>
+
+                            <div class="comentarios-container d-none mt-3" id="comentarios-<?= $publicacao['id'] ?>">
+                                <hr>
+                                <?php if (!empty($publicacao['comentarios'])) { ?>
+                                    <?php foreach ($publicacao['comentarios'] as $comentario) { ?>
+                                        <div id="comentario-<?= $comentario['id'] ?>" class="d-flex mb-3 comentario-item">
+                                            <img src="<?= !empty($comentario['foto']) ? '/uploads/fotos/' . $comentario['foto'] : '/uploads/fotos/default-user.png' ?>"
+                                                class="rounded-circle me-2" style="width:40px; height:40px; object-fit:cover;">
+
+                                            <div class="flex-grow-1">
+                                                <div class="bg-light rounded-4 p-3 position-relative">
+                                                    <strong>
+                                                        <?= htmlspecialchars($comentario['nome']) ?>
+                                                    </strong>
+
+                                                    <?php if ($comentario['usuario_id'] == $_SESSION['id']) { ?>
+                                                        <div class="dropdown position-absolute top-0 end-0 mt-2 me-2">
+                                                            <button class="btn btn-sm border-0 bg-transparent text-muted p-0"
+                                                                data-bs-toggle="dropdown">
+                                                                <i class="bi bi-three-dots-vertical"></i>
+                                                            </button>
+                                                            <ul class="dropdown-menu dropdown-menu-end shadow border-0">
+                                                                <li>
+                                                                    <button class="dropdown-item editar-comentario-btn"
+                                                                        data-id="<?= $comentario['id'] ?>"
+                                                                        data-publicacao="<?= $publicacao['id'] ?>"
+                                                                        data-comentario="<?= htmlspecialchars($comentario['comentario']) ?>">
+                                                                        <i class="bi bi-pencil me-2"></i> Editar
+                                                                    </button>
+                                                                </li>
+                                                                <li>
+                                                                    <a class="dropdown-item text-danger btn-excluir-comentario" href="#"
+                                                                        data-id="<?= $comentario['id'] ?>"
+                                                                        data-publicacao="<?= $publicacao['id'] ?>">
+                                                                        <i class="bi bi-trash me-2"></i> Excluir
+                                                                    </a>
+                                                                </li>
+                                                            </ul>
+                                                        </div>
+                                                    <?php } ?>
+
+                                                    <div class="mt-1" id="texto-comentario-<?= $comentario['id'] ?>">
+                                                        <?= nl2br(htmlspecialchars($comentario['comentario'])) ?>
+                                                    </div>
+                                                </div>
+                                                <small class="text-muted">
+                                                    <?= date('d/m/Y H:i', strtotime($comentario['created_at'])) ?>
+                                                </small>
+                                            </div>
+                                        </div>
+                                    <?php } ?>
+                                <?php } ?>
+
+                                <form class="form-comentario" action="/comment" method="POST">
+                                    <input type="hidden" name="publicacao_id" value="<?= $publicacao['id'] ?>">
+                                    <textarea class="form-control mb-2" name="comentario" rows="2"
+                                        placeholder="Escreva um comentário..." required></textarea>
+                                    <button type="submit" class="btn btn-primary btn-sm">
+                                        Comentar
+                                    </button>
+                                </form>
+                            </div>
+
+                        </div>
+                    <?php } ?>
+
+                    <?php if (isset($publicacao['tipo']) && $publicacao['tipo'] == 'vaga') { ?>
+                        <div class="post-card mb-3 border-start border-success border-4 p-3 shadow-sm bg-white rounded">
+                            <div class="post-header d-flex align-items-center mb-3">
+                                <div class="post-user-info d-flex align-items-center">
+                                    <img src="<?= !empty($publicacao['foto']) ? '/uploads/fotos/' . $publicacao['foto'] : '/uploads/fotos/default-user.png' ?>"
+                                        class="post-avatar me-2" style="width:50px; height:50px; border-radius:50%; object-fit:cover;">
+                                    <div>
+                                        <strong class="d-block">
+                                            <?= $publicacao['nome'] ?>
+                                        </strong>
+                                        <div class="text-muted small">
+                                            <?= $publicacao['empresa'] ?? 'Empresa Confidencial' ?>
+                                        </div>
+                                        <div class="post-date text-muted small">
+                                            <?= date('d/m/Y H:i', strtotime($publicacao['created_at'])) ?>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <?php if ($publicacao['usuario_id'] == $_SESSION['id']) { ?>
+                                    <div class="dropdown ms-auto">
+                                        <button class="btn btn-link text-muted p-0 text-decoration-none" type="button"
+                                            data-bs-toggle="dropdown" aria-expanded="false">
+                                            <i class="bi bi-three-dots-vertical fs-5"></i>
+                                        </button>
+                                        <ul class="dropdown-menu dropdown-menu-end shadow border-0">
+                                            <li>
+                                                <button type="button" class="dropdown-item editar-vaga-btn"
+                                                    data-id="<?= $publicacao['id'] ?>"
+                                                    data-titulo="<?= htmlspecialchars($publicacao['titulo'] ?? '') ?>"
+                                                    data-empresa="<?= htmlspecialchars($publicacao['empresa'] ?? '') ?>"
+                                                    data-texto="<?= htmlspecialchars($publicacao['conteudo'] ?? '') ?>"
+                                                    data-salario="<?= htmlspecialchars($publicacao['salario'] ?? '') ?>"
+                                                    data-localizacao="<?= htmlspecialchars($publicacao['localizacao'] ?? '') ?>"
+                                                    data-modalidade="<?= htmlspecialchars($publicacao['modalidade'] ?? '') ?>"
+                                                    data-imagem="<?= htmlspecialchars($publicacao['imagem'] ?? '') ?>"
+                                                    data-bs-toggle="modal" data-bs-target="#editarVagaModal">
+                                                    <i class="bi bi-pencil me-2"></i>
+                                                    Editar vaga
+                                                </button>
+                                            </li>
+                                            <li>
+                                                <hr class="dropdown-divider">
+                                            </li>
+                                            <li>
+                                                <a class="dropdown-item text-danger" href="/deleteVacancy?id=<?= $publicacao['id'] ?>"
+                                                    onclick="return confirm('Deseja excluir esta vaga?')">
+                                                    <i class="bi bi-trash me-2"></i>
+                                                    Excluir vaga
+                                                </a>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                <?php } ?>
+                            </div>
+
+                            <div class="post-body">
+                                <span class="badge bg-success mb-3 px-3 py-2">
+                                    <i class="bi bi-briefcase-fill"></i> Vaga publicada
+                                </span>
+
+                                <h5 class="fw-bold mb-3">
+                                    <?= $publicacao['titulo'] ?? 'Título da Vaga' ?>
+                                </h5>
+
+                                <div class="d-flex flex-wrap gap-2 mb-3">
+                                    <?php if (!empty($publicacao['localizacao'])) { ?>
+                                        <span class="badge bg-light text-dark border"><i class="bi bi-geo-alt-fill"></i>
+                                            <?= $publicacao['localizacao'] ?>
+                                        </span>
+                                    <?php } ?>
+                                    <?php if (!empty($publicacao['modalidade'])) { ?>
+                                        <span class="badge bg-light text-dark border"><i class="bi bi-building"></i>
+                                            <?= ucfirst($publicacao['modalidade']) ?>
+                                        </span>
+                                    <?php } ?>
+                                    <?php if (!empty($publicacao['salario'])) { ?>
+                                        <span class="badge bg-light text-success border"><i class="bi bi-cash"></i> R$
+                                            <?= $publicacao['salario'] ?>
+                                        </span>
+                                    <?php } ?>
+                                </div>
+
+                                <?php if (!empty($publicacao['conteudo'])) { ?>
+                                    <div class="post-content mb-3">
+                                        <?= nl2br(htmlspecialchars($publicacao['conteudo'])) ?>
+                                    </div>
+                                <?php } ?>
+
+                                <?php if (!empty($publicacao['imagem'])) { ?>
+                                    <div class="post-image-container mb-3">
+                                        <img src="/uploads/publicacoes/<?= $publicacao['imagem'] ?>"
+                                            class="post-image img-fluid rounded w-100" style="max-height: 500px; object-fit: cover;">
+                                    </div>
+                                <?php } ?>
+
+                                <button class="btn btn-success rounded-pill px-4 mb-3 w-100">
+                                    <i class="bi bi-arrow-right-circle"></i> Ver vaga
+                                </button>
+                            </div>
+
+                            <hr>
+
+                            <div class="d-flex justify-content-around align-items-center post-actions py-2">
+                                <a href="#"
+                                    class="post-action-btn btn btn-light text-muted d-flex align-items-center gap-2 btn-curtir border-0 bg-transparent"
+                                    data-id="<?= $publicacao['id'] ?>" data-curtido="<?= $publicacao['curtido'] ? 1 : 0 ?>">
+                                    <span class="icone">
+                                        <?= $publicacao['curtido'] ? '❤️' : '🤍' ?>
+                                    </span>
+                                    <span class="total">
+                                        <?= $publicacao['curtidas'] ?>
+                                    </span>
+                                </a>
+
+                                <button type="button"
+                                    class="post-action-btn btn btn-light text-muted d-flex align-items-center gap-2 btn-comentario border-0 bg-transparent"
+                                    data-id="<?= $publicacao['id'] ?>">
+                                    💬
+                                    <span>
+                                        <?= $publicacao['total_comentarios'] ?>
+                                    </span>
+                                </button>
+
+                                <a href="/share?id=<?= $publicacao['id'] ?>"
+                                    class="post-action-btn btn btn-light text-muted d-flex align-items-center gap-2 border-0 bg-transparent">
+                                    🔁 Compartilhar
+                                </a>
+                            </div>
+
+                            <div class="comentarios-container d-none mt-3" id="comentarios-<?= $publicacao['id'] ?>">
+                                <hr>
+                                <?php if (!empty($publicacao['comentarios'])) { ?>
+                                    <?php foreach ($publicacao['comentarios'] as $comentario) { ?>
+                                        <div id="comentario-<?= $comentario['id'] ?>" class="d-flex mb-3 comentario-item">
+                                            <img src="<?= !empty($comentario['foto']) ? '/uploads/fotos/' . $comentario['foto'] : '/uploads/fotos/default-user.png' ?>"
+                                                class="rounded-circle me-2" style="width:40px; height:40px; object-fit:cover;">
+
+                                            <div class="flex-grow-1">
+                                                <div class="bg-light rounded-4 p-3 position-relative">
+                                                    <strong>
+                                                        <?= htmlspecialchars($comentario['nome']) ?>
+                                                    </strong>
+
+                                                    <?php if ($comentario['usuario_id'] == $_SESSION['id']) { ?>
+                                                        <div class="dropdown position-absolute top-0 end-0 mt-2 me-2">
+                                                            <button class="btn btn-sm border-0 bg-transparent text-muted p-0"
+                                                                data-bs-toggle="dropdown">
+                                                                <i class="bi bi-three-dots-vertical"></i>
+                                                            </button>
+                                                            <ul class="dropdown-menu dropdown-menu-end shadow border-0">
+                                                                <li>
+                                                                    <button class="dropdown-item editar-comentario-btn"
+                                                                        data-id="<?= $comentario['id'] ?>"
+                                                                        data-publicacao="<?= $publicacao['id'] ?>"
+                                                                        data-comentario="<?= htmlspecialchars($comentario['comentario']) ?>">
+                                                                        <i class="bi bi-pencil me-2"></i> Editar
+                                                                    </button>
+                                                                </li>
+                                                                <li>
+                                                                    <a class="dropdown-item text-danger btn-excluir-comentario" href="#"
+                                                                        data-id="<?= $comentario['id'] ?>"
+                                                                        data-publicacao="<?= $publicacao['id'] ?>">
+                                                                        <i class="bi bi-trash me-2"></i> Excluir
+                                                                    </a>
+                                                                </li>
+                                                            </ul>
+                                                        </div>
+                                                    <?php } ?>
+
+                                                    <div class="mt-1" id="texto-comentario-<?= $comentario['id'] ?>">
+                                                        <?= nl2br(htmlspecialchars($comentario['comentario'])) ?>
+                                                    </div>
+                                                </div>
+                                                <small class="text-muted">
+                                                    <?= date('d/m/Y H:i', strtotime($comentario['created_at'])) ?>
+                                                </small>
+                                            </div>
+                                        </div>
+                                    <?php } ?>
+                                <?php } ?>
+
+                                <form class="form-comentario" action="/comment" method="POST">
+                                    <input type="hidden" name="publicacao_id" value="<?= $publicacao['id'] ?>">
+                                    <textarea class="form-control mb-2" name="comentario" rows="2"
+                                        placeholder="Escreva um comentário..." required></textarea>
+                                    <button type="submit" class="btn btn-primary btn-sm">
+                                        Comentar
+                                    </button>
+                                </form>
+                            </div>
+
+                        </div>
+                    <?php } ?>
+
+                <?php } ?> <!-- FIM DA CONDICIONAL (COMPARTILHAMENTO VS NORMAL/VAGA) -->
+            <?php } ?> <!-- FIM DO FOREACH -->
 
         <?php } else { ?>
             <div class="text-muted text-center p-4 card-custom">Nenhuma publicação encontrada.</div>
@@ -798,6 +1035,17 @@ $modoLeitura = $this->view->modo_leitura ?? false;
 </div>
 
 <script>
+    // Inicialização dos modais de sucesso
+    document.addEventListener('DOMContentLoaded', () => {
+        <?php if (isset($_GET['edit']) && $_GET['edit'] == 'post_sucesso') { ?>
+                new bootstrap.Modal(document.getElementById('modalEditPostSucesso')).show();
+        <?php } ?>
+
+        <?php if (isset($_GET['edit']) && $_GET['edit'] == 'vaga_sucesso') { ?>
+                new bootstrap.Modal(document.getElementById('modalEditVagaSucesso')).show();
+        <?php } ?>
+    });
+
     // Abertura do modal de edição (Funciona para comentários antigos e novos!)
     document.addEventListener('click', function (e) {
         // O closest garante que funciona mesmo se clicar no ícone ✏️ dentro do botão

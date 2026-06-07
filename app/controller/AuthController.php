@@ -55,7 +55,7 @@ class AuthController extends Action
             $_SESSION['cidade'] =
                 $dadosEstudante['cidade'];
 
-            $_SESSION['estado'] =
+            $_SESSION['uf'] =
                 $dadosEstudante['uf'];
         }
 

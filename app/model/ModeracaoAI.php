@@ -23,6 +23,7 @@ class ModeracaoAI extends Model
         - Bloquear discursos de ódio, preconceito, discriminação ou ataques a grupos.
         - Bloquear ofensas, xingamentos, ameaças ou assédio.
         - Bloquear conteúdos violentos ou que incentivem violência.
+        - Bloquear conteúdos falando mal de instituições e empresas.
         - Permitir conteúdos relacionados a tecnologia, programação, carreira, estudo, vagas de emprego, experiências profissionais, networking e dúvidas técnicas.
         - Permitir saudações e conversas respeitosas.
             Se a publicação for bloqueada:

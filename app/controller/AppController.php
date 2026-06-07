@@ -407,5 +407,14 @@ class AppController extends Action
         exit;
     }
 
+    public function share()
+    {
+        Auth::validarAutenticacao();
+
+        $publicacao = Container::getModel('Publicacao');
+        $publicacao->compartilhar($_SESSION['id'], $_GET['id']);
+        header('Location:/timeline?share=sucesso');
+    }
+
 }
 ?>
