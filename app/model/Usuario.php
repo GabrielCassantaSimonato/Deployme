@@ -285,6 +285,30 @@ WHERE u.id = :id
 
         }
     }
+
+    public function atualizarSenha()
+    {
+        $query = "
+        UPDATE usuarios
+        SET senha = :senha
+        WHERE email = :email
+    ";
+
+        $stmt = $this->db->prepare($query);
+
+        $stmt->bindValue(
+            ':email',
+            $this->__get('email')
+        );
+
+        $stmt->bindValue(
+            ':senha',
+            $this->__get('senha')
+        );
+
+        return $stmt->execute();
+    }
+
 }
 
 

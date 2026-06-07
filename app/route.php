@@ -36,6 +36,8 @@ class route extends Bootstrap
         $routes['deleteComment'] = array('route' => '/deleteComment', 'controller' => 'AppController', 'action' => 'deleteComment');
         $routes['editComment'] = array('route' => '/editComment', 'controller' => 'AppController', 'action' => 'editComment');
         $routes['share'] = array('route' => '/share', 'controller' => 'AppController', 'action' => 'share');
+        $routes['forgotPassword'] = array('route' => '/forgotPassword', 'controller' => 'IndexController', 'action' => 'forgotPassword');
+        $routes['resetPassword'] = array('route' => '/resetPassword', 'controller' => 'IndexController', 'action' => 'resetPassword');
         $this->setRoutes($routes);//seta a rota no objeto
     }
 }

@@ -46,7 +46,7 @@
                 </div>
 
                 <div class="d-flex justify-content-between align-items-center mb-4 px-1">
-                    <a href="#" class="small text-primary text-decoration-none fw-600">Esqueci a senha</a>
+                    <a href="/forgotPassword" class="small text-primary text-decoration-none fw-600">Esqueci a senha</a>
                 </div>
 
                 <button type="submit" class="btn btn-primary btn-lg w-100 py-3 shadow-lg mb-4">
@@ -72,3 +72,71 @@
         </div>
     </div>
 </div>
+
+<?php if (
+    isset($_GET['password']) &&
+    $_GET['password'] == 'updated'
+) { ?>
+
+    <div class="modal fade" id="modalSenhaAtualizada" tabindex="-1">
+
+        <div class="modal-dialog modal-dialog-centered">
+
+            <div class="modal-content border-0 shadow-lg rounded-4">
+
+                <div class="modal-body text-center p-5">
+
+                    <div class="mb-3 text-success">
+
+                        <i class="bi bi-check-circle-fill display-3"></i>
+
+                    </div>
+
+                    <h3 class="fw-bold text-success">
+
+                        Senha atualizada
+
+                    </h3>
+
+                    <p class="text-muted">
+
+                        Sua senha foi alterada com sucesso.
+
+                    </p>
+
+                    <button class="btn btn-success" data-bs-dismiss="modal">
+
+                        Entendi
+
+                    </button>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+<?php } ?>
+
+<script>
+
+    document.addEventListener('DOMContentLoaded', () => {
+
+        <?php if (
+            isset($_GET['password']) &&
+            $_GET['password'] == 'updated'
+        ) { ?>
+
+                new bootstrap.Modal(
+                    document.getElementById(
+                        'modalSenhaAtualizada'
+                    )
+                ).show();
+
+        <?php } ?>
+
+    });
+
+</script>

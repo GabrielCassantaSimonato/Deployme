@@ -231,4 +231,72 @@ class IndexController extends Action
         $this->view->semestres = $semestre->getSemestres();
         $this->view->senioridade = $senioridade->getSenioridades();
     }
+
+    public function forgotPassword()
+    {
+        $this->render('forgotPassword');
+    }
+
+    public function resetPassword()
+    {
+        $usuario = Container::getModel('Usuario');
+
+        $email = trim($_POST['email']);
+        $senha = $_POST['senha'];
+        $confirmarSenha = $_POST['confirmar_senha'];
+
+        // Validação tamanho mínimo
+        if (strlen($senha) < 8) {
+
+            header(
+                'Location: /forgotPassword?erro=' .
+                urlencode('A senha deve ter no mínimo 8 caracteres.')
+            );
+
+            exit;
+        }
+
+        // Confirmação de senha
+        if ($senha !== $confirmarSenha) {
+
+            header(
+                'Location: /forgotPassword?erro=' .
+                urlencode('As senhas não coincidem.')
+            );
+
+            exit;
+        }
+
+        // Verifica se o email existe
+        $usuario->__set('email', $email);
+
+        $usuarioEncontrado = $usuario->buscarPorEmail();
+
+        if (!$usuarioEncontrado) {
+
+            header(
+                'Location: /forgotPassword?erro=' .
+                urlencode('E-mail não encontrado.')
+            );
+
+            exit;
+        }
+
+        // Atualiza senha
+        $usuario->__set('email', $email);
+
+        $usuario->__set(
+            'senha',
+            password_hash(
+                $senha,
+                PASSWORD_DEFAULT
+            )
+        );
+
+        $usuario->atualizarSenha();
+
+        header('Location: /login?password=updated');
+
+        exit;
+    }
 }
