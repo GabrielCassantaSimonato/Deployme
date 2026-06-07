@@ -1,0 +1,220 @@
+<?php
+$tipo = $_SESSION['tipo'];
+require_once('../app/view/navbar.phtml');
+?>
+
+<div class="container py-4">
+
+    <h2 class="fw-bold mb-4">
+        Pessoas
+    </h2>
+
+    <!-- FILTROS -->
+    <div class="card border-0 shadow-sm mb-4">
+
+        <div class="card-body">
+
+            <div class="row g-2">
+
+                <div class="col-md-3">
+                    <input type="text" class="form-control filtro" placeholder="Nome">
+                </div>
+
+                <div class="col-md-2">
+                    <input type="text" class="form-control filtro" placeholder="Cidade">
+                </div>
+
+                <div class="col-md-1">
+                    <input type="text" class="form-control filtro" placeholder="UF">
+                </div>
+
+                <div class="col-md-3">
+                    <input type="text" class="form-control filtro" placeholder="Universidade">
+                </div>
+
+                <div class="col-md-3">
+                    <input type="text" class="form-control filtro" placeholder="Curso ou Empresa">
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <!-- USUÁRIOS -->
+    <div class="row">
+
+        <?php foreach ($this->view->usuarios as $usuario) { ?>
+
+            <div class="col-md-4 mb-4 usuario-card">
+
+                <div class="card border-0 shadow-sm h-100">
+
+                    <div class="card-body text-center">
+
+                        <!-- FOTO -->
+                        <a href="/profile?id=<?= $usuario['id'] ?>">
+
+                            <img src="<?= !empty($usuario['foto'])
+                                ? '/uploads/fotos/' . $usuario['foto']
+                                : '/uploads/fotos/default-user.png' ?>" class="rounded-circle mb-3" style="
+                                    width:90px;
+                                    height:90px;
+                                    object-fit:cover;
+                                ">
+
+                        </a>
+
+                        <!-- NOME -->
+                        <h5>
+
+                            <a href="/profile?id=<?= $usuario['id'] ?>" class="text-decoration-none text-dark">
+
+                                <?= htmlspecialchars($usuario['nome']) ?>
+
+                            </a>
+
+                        </h5>
+
+                        <!-- LOCALIZAÇÃO -->
+                        <?php if (
+                            !empty($usuario['cidade']) ||
+                            !empty($usuario['uf'])
+                        ) { ?>
+
+                            <div class="text-muted">
+
+                                <?= htmlspecialchars($usuario['cidade']) ?>
+
+                                <?php if (!empty($usuario['uf'])) { ?>
+
+                                    -
+                                    <?= htmlspecialchars($usuario['uf']) ?>
+
+                                <?php } ?>
+
+                            </div>
+
+                        <?php } ?>
+
+                        <!-- ESTUDANTE -->
+                        <?php if ($usuario['tipo'] == 'estudante') { ?>
+
+                            <?php if (!empty($usuario['curso'])) { ?>
+
+                                <div class="text-muted">
+
+                                    <?= htmlspecialchars(
+                                        $usuario['curso']
+                                    ) ?>
+
+                                </div>
+
+                            <?php } ?>
+
+                            <?php if (!empty($usuario['universidade'])) { ?>
+
+                                <div class="text-muted mb-3">
+
+                                    <?= htmlspecialchars(
+                                        $usuario['universidade']
+                                    ) ?>
+
+                                </div>
+
+                            <?php } ?>
+
+                        <?php } ?>
+
+                        <!-- RECRUTADOR -->
+                        <?php if ($usuario['tipo'] == 'recrutador') { ?>
+
+                            <div class="text-primary fw-semibold">
+
+                                Recrutador
+
+                            </div>
+
+                            <div class="text-muted mb-3">
+
+                                <?= htmlspecialchars(
+                                    $usuario['empresa']
+                                ) ?>
+
+                            </div>
+
+                        <?php } ?>
+
+                        <!-- BOTÃO SEGUIR -->
+                        <button class="btn btn-seguir
+    <?= $usuario['seguindo']
+        ? 'btn-danger'
+        : 'btn-primary'
+        ?>" data-id="<?= $usuario['id'] ?>" data-seguindo="<?= $usuario['seguindo'] ?>">
+
+                            <?= $usuario['seguindo']
+                                ? 'Deixar de seguir'
+                                : 'Seguir'
+                                ?>
+
+                        </button>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        <?php } ?>
+
+    </div>
+
+</div>
+
+<script>
+
+    document
+        .querySelectorAll('.filtro')
+        .forEach(input => {
+
+            input.addEventListener(
+                'keyup',
+                filtrarUsuarios
+            );
+
+        });
+
+    function filtrarUsuarios() {
+        const filtros =
+            Array.from(
+                document.querySelectorAll('.filtro')
+            )
+                .map(
+                    campo => campo.value.toLowerCase()
+                );
+
+        document
+            .querySelectorAll('.usuario-card')
+            .forEach(card => {
+
+                const texto =
+                    card.innerText.toLowerCase();
+
+                const exibir =
+                    filtros.every(
+                        filtro =>
+                            !filtro ||
+                            texto.includes(filtro)
+                    );
+
+                card.style.display =
+                    exibir
+                        ? ''
+                        : 'none';
+
+            });
+
+    }
+
+</script>

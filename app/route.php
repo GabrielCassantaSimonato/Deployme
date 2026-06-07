@@ -38,6 +38,10 @@ class route extends Bootstrap
         $routes['share'] = array('route' => '/share', 'controller' => 'AppController', 'action' => 'share');
         $routes['forgotPassword'] = array('route' => '/forgotPassword', 'controller' => 'IndexController', 'action' => 'forgotPassword');
         $routes['resetPassword'] = array('route' => '/resetPassword', 'controller' => 'IndexController', 'action' => 'resetPassword');
+        $routes['people'] = array('route' => '/people', 'controller' => 'AppController', 'action' => 'people');
+        $routes['follow'] = array('route' => '/follow', 'controller' => 'AppController', 'action' => 'follow');
+        $routes['unFollow'] = array('route' => '/unFollow', 'controller' => 'AppController', 'action' => 'unFollow');
+        $routes['followers'] = ['route' => '/followers', 'controller' => 'AppController', 'action' => 'followers'];
         $this->setRoutes($routes);//seta a rota no objeto
     }
 }

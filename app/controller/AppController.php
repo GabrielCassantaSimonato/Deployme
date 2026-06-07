@@ -416,5 +416,76 @@ class AppController extends Action
         header('Location:/timeline?share=sucesso');
     }
 
+    public function people()
+    {
+        Auth::validarAutenticacao();
+
+        $usuario = Container::getModel('Usuario');
+
+        $this->view->usuarios =
+            $usuario->listarUsuarios();
+
+        $this->render('people');
+    }
+
+    public function follow()
+    {
+        Auth::validarAutenticacao();
+
+        $seguidor = Container::getModel('Seguidores');
+        $seguidor->seguir($_SESSION['id'], $_POST['usuario_id']);
+        echo json_encode(['success' => true]);
+        exit;
+    }
+
+    public function unfollow()
+    {
+        Auth::validarAutenticacao();
+
+        $seguidor =
+            Container::getModel(
+                'Seguidores'
+            );
+
+        $seguidor->deixarDeSeguir(
+            $_SESSION['id'],
+            $_POST['usuario_id']
+        );
+
+        header(
+            'Content-Type: application/json'
+        );
+
+        echo json_encode([
+            'success' => true
+        ]);
+
+        exit;
+    }
+
+    public function followers()
+    {
+        Auth::validarAutenticacao();
+
+        $seguidor =
+            Container::getModel(
+                'Seguidores'
+            );
+
+        $this->view->seguidores =
+            $seguidor->listarSeguidores(
+                $_SESSION['id']
+            );
+
+        $this->view->seguindo =
+            $seguidor->listarSeguindo(
+                $_SESSION['id']
+            );
+
+        $this->render(
+            'followers'
+        );
+    }
+
 }
 ?>

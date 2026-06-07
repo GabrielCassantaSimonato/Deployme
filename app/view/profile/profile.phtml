@@ -2,63 +2,8 @@
 $usuario = $this->view->dadosUsuario;
 $tipo = $usuario['tipo'];
 $modoLeitura = $this->view->modo_leitura ?? false;
+require_once('../app/view/navbar.phtml');
 ?>
-
-<nav class="navbar-custom">
-    <div class="nav-left">
-        <a href="/timeline">
-            <img src="/img/logo_deployme.png" alt="Deployme" class="logo-navbar">
-        </a>
-    </div>
-
-    <div class="nav-center">
-        <div class="nav-icon">
-            <i class="bi bi-people"></i>
-            <span>Pessoas</span>
-        </div>
-
-        <?php if ($tipo == 'estudante') { ?>
-            <div class="nav-icon">
-                <i class="bi bi-briefcase"></i>
-                <span>Minhas candidaturas</span>
-            </div>
-            <div class="nav-icon">
-                <i class="bi bi-globe"></i>
-                <span>Ver vagas</span>
-            </div>
-        <?php } ?>
-
-        <?php if ($tipo == 'recrutador') { ?>
-            <div class="nav-icon">
-                <i class="bi bi-file-earmark-text"></i>
-                <span>Vagas postadas</span>
-            </div>
-            <div class="nav-icon">
-                <i class="bi bi-people-fill"></i>
-                <span>Candidaturas</span>
-            </div>
-        <?php } ?>
-
-        <div class="nav-icon">
-            <i class="bi bi-chat-dots"></i>
-            <span>Chat</span>
-        </div>
-
-        <div class="nav-icon position-relative">
-            <i class="bi bi-bell"></i>
-            <span>Notificações</span>
-            <span class="notification-badge">3</span>
-        </div>
-    </div>
-
-    <div class="nav-right">
-        <a href="/logout" class="nav-icon logout text-decoration-none">
-            <i class="bi bi-box-arrow-right"></i>
-            <span>Sair</span>
-        </a>
-    </div>
-</nav>
-
 <div class="linkedin-profile-container">
 
     <div class="linkedin-cover"></div>
@@ -83,9 +28,21 @@ $modoLeitura = $this->view->modo_leitura ?? false;
 
                 <?php if (!$modoLeitura) { ?>
                     <div class="linkedin-profile-actions">
-                        <a href="/editProfile" class="linkedin-edit-btn">
-                            <i class="bi bi-pencil-square"></i> Editar perfil
-                        </a>
+                        <div class="d-flex gap-2">
+
+                            <a href="/editProfile" class="btn btn-primary">
+
+                                Editar Perfil
+
+                            </a>
+
+                            <a href="/followers" class="btn btn-outline-primary">
+
+                                Seguidores
+
+                            </a>
+
+                        </div>
                     </div>
                 <?php } ?>
 
@@ -147,6 +104,8 @@ $modoLeitura = $this->view->modo_leitura ?? false;
             </div>
         <?php } ?>
     </div>
+
+
 
     <div class="linkedin-section">
         <h4><i class="bi bi-person-lines-fill"></i> Informações pessoais</h4>
@@ -251,6 +210,8 @@ $modoLeitura = $this->view->modo_leitura ?? false;
             <?php } ?>
         </div>
     <?php } ?>
+
+
 
     <div class="linkedin-section">
         <h4><i class="bi bi-postcard"></i> Publicações</h4>
@@ -850,218 +811,215 @@ $modoLeitura = $this->view->modo_leitura ?? false;
             <div class="text-muted text-center p-4 card-custom">Nenhuma publicação encontrada.</div>
         <?php } ?>
     </div>
-
-</div>
-
-<?php if (isset($_GET['edit']) && $_GET['edit'] == 'post_sucesso') { ?>
-    <div class="modal fade" id="modalEditPostSucesso" tabindex="-1">
-        <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content border-0 shadow-lg rounded-4">
-                <div class="modal-body text-center p-5">
-                    <div class="success-icon mb-3">
-                        <i class="bi bi-check-circle-fill text-primary"></i>
+    <?php if (isset($_GET['edit']) && $_GET['edit'] == 'post_sucesso') { ?>
+        <div class="modal fade" id="modalEditPostSucesso" tabindex="-1">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content border-0 shadow-lg rounded-4">
+                    <div class="modal-body text-center p-5">
+                        <div class="success-icon mb-3">
+                            <i class="bi bi-check-circle-fill text-primary"></i>
+                        </div>
+                        <h3 class="fw-bold">
+                            Publicação atualizada!
+                        </h3>
+                        <p class="text-muted">
+                            Sua publicação foi editada com sucesso 🚀
+                        </p>
+                        <button class="btn btn-primary px-4" data-bs-dismiss="modal">
+                            Fechar
+                        </button>
                     </div>
-                    <h3 class="fw-bold">
-                        Publicação atualizada!
-                    </h3>
-                    <p class="text-muted">
-                        Sua publicação foi editada com sucesso 🚀
-                    </p>
-                    <button class="btn btn-primary px-4" data-bs-dismiss="modal">
-                        Fechar
-                    </button>
                 </div>
             </div>
         </div>
-    </div>
-<?php } ?>
+    <?php } ?>
 
-<?php if (isset($_GET['edit']) && $_GET['edit'] == 'vaga_sucesso') { ?>
-    <div class="modal fade" id="modalEditVagaSucesso" tabindex="-1">
-        <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content border-0 shadow-lg rounded-4">
-                <div class="modal-body text-center p-5">
-                    <div class="success-icon mb-3">
-                        <i class="bi bi-briefcase-fill text-success"></i>
+    <?php if (isset($_GET['edit']) && $_GET['edit'] == 'vaga_sucesso') { ?>
+        <div class="modal fade" id="modalEditVagaSucesso" tabindex="-1">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content border-0 shadow-lg rounded-4">
+                    <div class="modal-body text-center p-5">
+                        <div class="success-icon mb-3">
+                            <i class="bi bi-briefcase-fill text-success"></i>
+                        </div>
+                        <h3 class="fw-bold">
+                            Vaga atualizada!
+                        </h3>
+                        <p class="text-muted">
+                            Sua vaga foi editada com sucesso 🎯
+                        </p>
+                        <button class="btn btn-success px-4" data-bs-dismiss="modal">
+                            Fechar
+                        </button>
                     </div>
-                    <h3 class="fw-bold">
-                        Vaga atualizada!
-                    </h3>
-                    <p class="text-muted">
-                        Sua vaga foi editada com sucesso 🎯
-                    </p>
-                    <button class="btn btn-success px-4" data-bs-dismiss="modal">
-                        Fechar
-                    </button>
                 </div>
             </div>
         </div>
-    </div>
-<?php } ?>
+    <?php } ?>
 
-<div class="modal fade" id="editarPostModal" tabindex="-1">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <form method="POST" action="/updatePost" enctype="multipart/form-data">
-                <div class="modal-header">
-                    <h5 class="modal-title">
-                        Editar publicação
-                    </h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal">
-                    </button>
-                </div>
-                <div class="modal-body">
-                    <input type="hidden" name="id" id="editPostId">
-                    <textarea name="conteudo" id="editPostTexto" class="form-control mb-3" rows="5"></textarea>
-                    <div id="editPreviewContainer" class="mb-3 d-none">
-                        <img id="editPreviewImagem" class="img-fluid rounded">
+    <div class="modal fade" id="editarPostModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <form method="POST" action="/updatePost" enctype="multipart/form-data">
+                    <div class="modal-header">
+                        <h5 class="modal-title">
+                            Editar publicação
+                        </h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal">
+                        </button>
                     </div>
-                    <label class="btn btn-light border w-100">
-                        <i class="bi bi-image"></i>
-                        Alterar imagem
-                        <input type="file" name="imagem" id="editPostFileInput" hidden accept="image/*">
-                    </label>
-                </div>
-                <div class="modal-footer">
-                    <button type="submit" class="btn btn-primary">
-                        Salvar alterações
-                    </button>
-                </div>
-            </form>
-        </div>
-    </div>
-</div>
-
-<div class="modal fade" id="editarVagaModal" tabindex="-1">
-    <div class="modal-dialog modal-lg">
-        <div class="modal-content">
-            <form method="POST" action="/updateVacancy" enctype="multipart/form-data">
-                <div class="modal-header">
-                    <h5 class="modal-title">
-                        Editar vaga
-                    </h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal">
-                    </button>
-                </div>
-                <div class="modal-body">
-                    <input type="hidden" name="id" id="editVagaId">
-                    <div class="mb-3">
-                        <label class="form-label">
-                            Título da vaga
-                        </label>
-                        <input type="text" name="titulo" id="editVagaTitulo" class="form-control">
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label">
-                            Empresa
-                        </label>
-                        <input type="text" name="empresa" id="editVagaEmpresa" class="form-control">
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label">
-                            Descrição
-                        </label>
-                        <textarea name="conteudo" id="editVagaTexto" class="form-control" rows="5"></textarea>
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label">
-                            Salário
-                        </label>
-                        <input type="text" name="salario" id="editVagaSalario" class="form-control">
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label">
-                            Localização
-                        </label>
-                        <input type="text" name="localizacao" id="editVagaLocalizacao" class="form-control">
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label">
-                            Modalidade
-                        </label>
-                        <select name="modalidade" id="editVagaModalidade" class="form-select">
-                            <option value="Presencial">
-                                Presencial
-                            </option>
-                            <option value="Híbrido">
-                                Híbrido
-                            </option>
-                            <option value="Remoto">
-                                Remoto
-                            </option>
-                        </select>
-                    </div>
-                    <div id="editVagaPreviewContainer" class="mb-3 d-none">
-                        <img id="editVagaPreviewImagem" class="img-fluid rounded w-100">
-                    </div>
-                    <div class="mb-3">
+                    <div class="modal-body">
+                        <input type="hidden" name="id" id="editPostId">
+                        <textarea name="conteudo" id="editPostTexto" class="form-control mb-3" rows="5"></textarea>
+                        <div id="editPreviewContainer" class="mb-3 d-none">
+                            <img id="editPreviewImagem" class="img-fluid rounded">
+                        </div>
                         <label class="btn btn-light border w-100">
                             <i class="bi bi-image"></i>
                             Alterar imagem
-                            <input type="file" name="imagem" id="editVagaFileInput" hidden accept="image/*">
+                            <input type="file" name="imagem" id="editPostFileInput" hidden accept="image/*">
                         </label>
                     </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="submit" class="btn btn-success">
-                        Salvar alterações
-                    </button>
-                </div>
-            </form>
+                    <div class="modal-footer">
+                        <button type="submit" class="btn btn-primary">
+                            Salvar alterações
+                        </button>
+                    </div>
+                </form>
+            </div>
         </div>
     </div>
-</div>
 
-<div class="modal fade" id="editarComentarioModal" tabindex="-1">
-    <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content border-0 shadow-lg rounded-4">
-            <form id="formEditarComentario" action="/editComment" method="POST">
-                <div class="modal-header border-0">
-                    <h5 class="modal-title fw-bold">Editar comentário</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                </div>
-                <div class="modal-body p-4">
-                    <input type="hidden" name="id" id="editComentarioId">
-                    <textarea name="comentario" id="editComentarioTexto" class="form-control" rows="4"
-                        placeholder="Digite seu comentário..." required></textarea>
-                </div>
-                <div class="modal-footer border-0">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                    <button type="submit" class="btn btn-primary" id="salvarComentario">Salvar alterações</button>
-                </div>
-            </form>
+    <div class="modal fade" id="editarVagaModal" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <form method="POST" action="/updateVacancy" enctype="multipart/form-data">
+                    <div class="modal-header">
+                        <h5 class="modal-title">
+                            Editar vaga
+                        </h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal">
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <input type="hidden" name="id" id="editVagaId">
+                        <div class="mb-3">
+                            <label class="form-label">
+                                Título da vaga
+                            </label>
+                            <input type="text" name="titulo" id="editVagaTitulo" class="form-control">
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">
+                                Empresa
+                            </label>
+                            <input type="text" name="empresa" id="editVagaEmpresa" class="form-control">
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">
+                                Descrição
+                            </label>
+                            <textarea name="conteudo" id="editVagaTexto" class="form-control" rows="5"></textarea>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">
+                                Salário
+                            </label>
+                            <input type="text" name="salario" id="editVagaSalario" class="form-control">
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">
+                                Localização
+                            </label>
+                            <input type="text" name="localizacao" id="editVagaLocalizacao" class="form-control">
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">
+                                Modalidade
+                            </label>
+                            <select name="modalidade" id="editVagaModalidade" class="form-select">
+                                <option value="Presencial">
+                                    Presencial
+                                </option>
+                                <option value="Híbrido">
+                                    Híbrido
+                                </option>
+                                <option value="Remoto">
+                                    Remoto
+                                </option>
+                            </select>
+                        </div>
+                        <div id="editVagaPreviewContainer" class="mb-3 d-none">
+                            <img id="editVagaPreviewImagem" class="img-fluid rounded w-100">
+                        </div>
+                        <div class="mb-3">
+                            <label class="btn btn-light border w-100">
+                                <i class="bi bi-image"></i>
+                                Alterar imagem
+                                <input type="file" name="imagem" id="editVagaFileInput" hidden accept="image/*">
+                            </label>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="submit" class="btn btn-success">
+                            Salvar alterações
+                        </button>
+                    </div>
+                </form>
+            </div>
         </div>
     </div>
-</div>
 
-<script>
-    // Inicialização dos modais de sucesso
-    document.addEventListener('DOMContentLoaded', () => {
-        <?php if (isset($_GET['edit']) && $_GET['edit'] == 'post_sucesso') { ?>
+    <div class="modal fade" id="editarComentarioModal" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content border-0 shadow-lg rounded-4">
+                <form id="formEditarComentario" action="/editComment" method="POST">
+                    <div class="modal-header border-0">
+                        <h5 class="modal-title fw-bold">Editar comentário</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    </div>
+                    <div class="modal-body p-4">
+                        <input type="hidden" name="id" id="editComentarioId">
+                        <textarea name="comentario" id="editComentarioTexto" class="form-control" rows="4"
+                            placeholder="Digite seu comentário..." required></textarea>
+                    </div>
+                    <div class="modal-footer border-0">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                        <button type="submit" class="btn btn-primary" id="salvarComentario">Salvar alterações</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Inicialização dos modais de sucesso
+        document.addEventListener('DOMContentLoaded', () => {
+            <?php if (isset($_GET['edit']) && $_GET['edit'] == 'post_sucesso') { ?>
                 new bootstrap.Modal(document.getElementById('modalEditPostSucesso')).show();
-        <?php } ?>
+            <?php } ?>
 
-        <?php if (isset($_GET['edit']) && $_GET['edit'] == 'vaga_sucesso') { ?>
+            <?php if (isset($_GET['edit']) && $_GET['edit'] == 'vaga_sucesso') { ?>
                 new bootstrap.Modal(document.getElementById('modalEditVagaSucesso')).show();
-        <?php } ?>
-    });
+            <?php } ?>
+        });
 
-    // Abertura do modal de edição (Funciona para comentários antigos e novos!)
-    document.addEventListener('click', function (e) {
-        // O closest garante que funciona mesmo se clicar no ícone ✏️ dentro do botão
-        const btnEditar = e.target.closest('.editar-comentario-btn');
+        // Abertura do modal de edição (Funciona para comentários antigos e novos!)
+        document.addEventListener('click', function (e) {
+            // O closest garante que funciona mesmo se clicar no ícone ✏️ dentro do botão
+            const btnEditar = e.target.closest('.editar-comentario-btn');
 
-        if (btnEditar) {
-            e.preventDefault(); // Evita que o link faça a página pular
+            if (btnEditar) {
+                e.preventDefault(); // Evita que o link faça a página pular
 
-            // Preenche os dados no modal
-            document.getElementById('editComentarioId').value = btnEditar.dataset.id;
-            document.getElementById('editComentarioTexto').value = btnEditar.dataset.comentario;
+                // Preenche os dados no modal
+                document.getElementById('editComentarioId').value = btnEditar.dataset.id;
+                document.getElementById('editComentarioTexto').value = btnEditar.dataset.comentario;
 
-            // Abre o modal de forma segura
-            const modalElement = document.getElementById('editarComentarioModal');
-            const modalInstance = bootstrap.Modal.getOrCreateInstance(modalElement);
-            modalInstance.show();
-        }
-    });
-</script>
+                // Abre o modal de forma segura
+                const modalElement = document.getElementById('editarComentarioModal');
+                const modalInstance = bootstrap.Modal.getOrCreateInstance(modalElement);
+                modalInstance.show();
+            }
+        });
+    </script>

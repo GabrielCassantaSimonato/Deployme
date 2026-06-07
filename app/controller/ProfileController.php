@@ -12,18 +12,28 @@ class ProfileController extends Action
     {
         Auth::validarAutenticacao();
 
-        $usuarioModel = Container::getModel('Usuario');
+        $usuarioModel =
+            Container::getModel(
+                'Usuario'
+            );
 
         // PERFIL VIA URL
-        if (isset($_GET['id']) && !empty($_GET['id'])) {
+        if (
+            isset($_GET['id']) &&
+            !empty($_GET['id'])
+        ) {
 
             $id = $_GET['id'];
 
             // SE FOR O PRÓPRIO PERFIL
             if ($id == $_SESSION['id']) {
+
                 $modoLeitura = false;
+
             } else {
+
                 $modoLeitura = true;
+
             }
 
         } else {
@@ -34,38 +44,72 @@ class ProfileController extends Action
             $modoLeitura = false;
         }
 
-        $dadosUsuario = $usuarioModel->buscarUsuarioCompleto($id);
+        $dadosUsuario =
+            $usuarioModel->buscarUsuarioCompleto(
+                $id
+            );
 
         if (!$dadosUsuario) {
+
             echo "Usuário não encontrado.";
+
             exit;
         }
 
-        $this->view->dadosUsuario = $dadosUsuario;
-        $this->view->modo_leitura = $modoLeitura;
+        $this->view->dadosUsuario =
+            $dadosUsuario;
 
-        $publicacao = Container::getModel('Publicacao');
-
-        $publicacao->__set('usuario_id', $id);
-
-        $publicacoes = $publicacao->getPublicacoesUsuario();
+        $this->view->modo_leitura =
+            $modoLeitura;
 
         // ==========================
-        // CURTIDAS,COMENTÁRIOS
+        // PUBLICAÇÕES
         // ==========================
-        $curtida = Container::getModel('Curtida');
-        $comentario = Container::getModel('Comentario');
+
+        $publicacao =
+            Container::getModel(
+                'Publicacao'
+            );
+
+        $publicacao->__set(
+            'usuario_id',
+            $id
+        );
+
+        $publicacoes =
+            $publicacao->getPublicacoesUsuario();
+
+        // ==========================
+        // CURTIDAS E COMENTÁRIOS
+        // ==========================
+
+        $curtida =
+            Container::getModel(
+                'Curtida'
+            );
+
+        $comentario =
+            Container::getModel(
+                'Comentario'
+            );
 
         foreach ($publicacoes as &$pub) {
 
-            $resultado = $curtida->totalCurtidas($pub['id']);
+            $resultado =
+                $curtida->totalCurtidas(
+                    $pub['id']
+                );
 
-            $pub['curtidas'] = $resultado['total'] ?? 0;
+            $pub['curtidas'] =
+                $resultado['total'] ?? 0;
 
-            $pub['curtido'] = $curtida->usuarioCurtiu(
-                $_SESSION['id'],
-                $pub['id']
-            ) ? true : false;
+            $pub['curtido'] =
+                $curtida->usuarioCurtiu(
+                    $_SESSION['id'],
+                    $pub['id']
+                )
+                ? true
+                : false;
 
             $pub['comentarios'] =
                 $comentario->listarComentarios(
@@ -78,7 +122,26 @@ class ProfileController extends Action
                 )['total'];
         }
 
-        $this->view->publicacoes = $publicacoes;
+        $this->view->publicacoes =
+            $publicacoes;
+
+        // ==========================
+        // USUÁRIOS QUE ELE SEGUE
+        // ==========================
+
+        $seguidor =
+            Container::getModel(
+                'Seguidores'
+            );
+
+        $this->view->seguindo =
+            $seguidor->listarSeguindo(
+                $id
+            );
+
+        // ==========================
+        // RENDER
+        // ==========================
 
         $this->render('profile');
     }

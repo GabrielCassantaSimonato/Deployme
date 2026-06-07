@@ -5,6 +5,7 @@ if (session_status() !== PHP_SESSION_ACTIVE) {
 
 $tipo = $_SESSION['tipo'];
 $publicacoes = $this->view->publicacoes;
+require_once('../app/view/navbar.phtml');
 ?>
 
 <?php if (isset($_GET['erro']) && $_GET['erro'] == 'sem_permissao') { ?>
@@ -46,66 +47,6 @@ $publicacoes = $this->view->publicacoes;
     </div>
   </div>
 <?php } ?>
-
-<nav class="navbar-custom">
-  <!-- ESQUERDA -->
-  <div class="nav-left">
-    <a href="/timeline">
-      <img src="/img/logo_deployme.png" alt="Deployme" class="logo-navbar">
-    </a>
-  </div>
-
-  <!-- CENTRO -->
-  <div class="nav-center">
-    <div class="nav-icon">
-      <i class="bi bi-people"></i>
-      <span>Pessoas</span>
-    </div>
-
-    <!-- ESTUDANTE -->
-    <?php if ($tipo == 'estudante') { ?>
-      <div class="nav-icon">
-        <i class="bi bi-briefcase"></i>
-        <span>Minhas candidaturas</span>
-      </div>
-      <div class="nav-icon">
-        <i class="bi bi-globe"></i>
-        <span>Ver vagas</span>
-      </div>
-    <?php } ?>
-
-    <!-- RECRUTADOR -->
-    <?php if ($tipo == 'recrutador') { ?>
-      <div class="nav-icon">
-        <i class="bi bi-file-earmark-text"></i>
-        <span>Vagas postadas</span>
-      </div>
-      <div class="nav-icon">
-        <i class="bi bi-people-fill"></i>
-        <span>Candidaturas</span>
-      </div>
-    <?php } ?>
-
-    <div class="nav-icon">
-      <i class="bi bi-chat-dots"></i>
-      <span>Chat</span>
-    </div>
-
-    <div class="nav-icon position-relative">
-      <i class="bi bi-bell"></i>
-      <span>Notificações</span>
-      <span class="notification-badge">3</span>
-    </div>
-  </div>
-
-  <!-- DIREITA -->
-  <div class="nav-right">
-    <a href="/logout" class="nav-icon logout text-decoration-none">
-      <i class="bi bi-box-arrow-right"></i>
-      <span>Sair</span>
-    </a>
-  </div>
-</nav>
 
 <!-- INÍCIO DO CONTEÚDO PRINCIPAL (GRID) -->
 <div class="container mt-3">

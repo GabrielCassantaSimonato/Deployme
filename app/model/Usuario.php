@@ -309,6 +309,69 @@ WHERE u.id = :id
         return $stmt->execute();
     }
 
+    public function listarUsuarios()
+    {
+        $query = "
+        SELECT
+            u.id,
+            u.nome,
+            u.foto,
+            u.tipo,
+
+            e.cidade,
+            e.uf,
+
+            c.nome AS curso,
+            uni.nome AS universidade,
+
+            r.empresa,
+
+            CASE
+                WHEN s.id IS NULL THEN 0
+                ELSE 1
+            END AS seguindo
+
+        FROM usuarios u
+
+        LEFT JOIN estudantes e
+            ON e.usuario_id = u.id
+
+        LEFT JOIN cursos c
+            ON c.id = e.curso_id
+
+        LEFT JOIN universidades uni
+            ON uni.id = e.universidade_id
+
+        LEFT JOIN recrutadores r
+            ON r.usuario_id = u.id
+
+        LEFT JOIN seguidores s
+            ON s.seguindo_id = u.id
+            AND s.usuario_id = :usuario_logado
+
+        WHERE
+            u.id <> :usuario_logado
+
+        AND
+            u.tipo <> 'admin'
+
+        ORDER BY u.nome ASC
+    ";
+
+        $stmt = $this->db->prepare($query);
+
+        $stmt->bindValue(
+            ':usuario_logado',
+            $_SESSION['id']
+        );
+
+        $stmt->execute();
+
+        return $stmt->fetchAll(
+            \PDO::FETCH_ASSOC
+        );
+    }
+
 }
 
 
