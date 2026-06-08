@@ -11,9 +11,15 @@ class AppController extends Action
     {
         Auth::validarAutenticacao();
 
+        // SEGUIDORES
+        $seguidores = Container::getModel('Seguidores');
+        $this->view->totalSeguidores = $seguidores->totalSeguidores($_SESSION['id']);
+        $this->view->totalSeguindo = $seguidores->totalSeguindo($_SESSION['id']);
+
+        // PUBLICAÇÕES
         $publicacao = Container::getModel('Publicacao');
 
-        $publicacoes = $publicacao->listarPublicacoes();
+        $publicacoes = $publicacao->listarPublicacoes($_SESSION['id']);
 
         // CURTIDAS, COMENTÁRIOS
         $curtida = Container::getModel('Curtida');
@@ -21,28 +27,16 @@ class AppController extends Action
 
         foreach ($publicacoes as &$pub) {
 
-            $pub['curtidas'] =
-                $curtida->totalCurtidas($pub['id'])['total'];
+            $pub['curtidas'] = $curtida->totalCurtidas($pub['id'])['total'];
 
-            $pub['curtido'] =
-                $curtida->usuarioCurtiu(
-                    $_SESSION['id'],
-                    $pub['id']
-                ) ? true : false;
+            $pub['curtido'] = $curtida->usuarioCurtiu($_SESSION['id'], $pub['id']) ? true : false;
 
-            $pub['comentarios'] =
-                $comentario->listarComentarios(
-                    $pub['id']
-                );
+            $pub['comentarios'] = $comentario->listarComentarios($pub['id']);
 
-            $pub['total_comentarios'] =
-                $comentario->totalComentarios(
-                    $pub['id']
-                )['total'];
+            $pub['total_comentarios'] = $comentario->totalComentarios($pub['id'])['total'];
         }
 
         $this->view->publicacoes = $publicacoes;
-
         $this->render('timeline');
     }
     public function post()

@@ -1,6 +1,9 @@
-<div class="container py-4">
+<?php
+$tipo = $_SESSION['tipo'];
+require_once('../app/view/navbar.phtml');
+?>
 
-    ```
+<div class="container py-4">
     <!-- TOPO -->
     <div class="card border-0 shadow-sm rounded-4 mb-4">
 
@@ -155,8 +158,6 @@
         <?php } ?>
 
     </div>
-    ```
-
 </div>
 
 <script>

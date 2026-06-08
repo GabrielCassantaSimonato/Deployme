@@ -80,8 +80,8 @@ require_once('../app/view/navbar.phtml');
         <?php } ?>
 
         <div class="mt-2">
-          <small><strong>320</strong> seguidores</small><br>
-          <small><strong>180</strong> seguindo</small>
+          <small><strong><?= $this->view->totalSeguidores ?></strong> seguidores</small><br>
+          <small><strong> <?= $this->view->totalSeguindo ?></strong> seguindo</small>
         </div>
       </div>
     </div>

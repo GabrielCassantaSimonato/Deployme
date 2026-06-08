@@ -103,7 +103,7 @@ class Publicacao extends Model
 
     }
 
-    public function listarPublicacoes()
+    public function listarPublicacoes($usuarioLogado)
     {
         $query = "
         SELECT
@@ -128,11 +128,11 @@ class Publicacao extends Model
             po.conteudo AS post_original_conteudo,
             po.imagem AS post_original_imagem,
 
-            /* Dados do Autor do Post Original */
+            /* Autor Original */
             uo.nome AS autor_original_nome,
             uo.foto AS autor_original_foto,
 
-            /* Dados da Vaga do Post Original (O PULO DO GATO) */
+            /* Dados da Vaga Original */
             vo.titulo AS post_original_titulo,
             vo.empresa AS post_original_empresa,
             vo.localizacao AS post_original_localizacao,
@@ -141,23 +141,48 @@ class Publicacao extends Model
 
         FROM publicacoes p
 
-        INNER JOIN usuarios u ON u.id = p.usuario_id
+        INNER JOIN usuarios u
+            ON u.id = p.usuario_id
 
-        LEFT JOIN estudantes e ON e.usuario_id = u.id
-        LEFT JOIN recrutadores r ON r.usuario_id = u.id
-        LEFT JOIN vagas v ON v.publicacao_id = p.id
+        LEFT JOIN estudantes e
+            ON e.usuario_id = u.id
 
-        /* Join para pegar o post original */
-        LEFT JOIN publicacoes po ON po.id = p.publicacao_original_id
-        LEFT JOIN usuarios uo ON uo.id = po.usuario_id
+        LEFT JOIN recrutadores r
+            ON r.usuario_id = u.id
 
-        /* Join para pegar os detalhes DA VAGA do post original */
-        LEFT JOIN vagas vo ON vo.publicacao_id = po.id
+        LEFT JOIN vagas v
+            ON v.publicacao_id = p.id
+
+        /* Compartilhamentos */
+        LEFT JOIN publicacoes po
+            ON po.id = p.publicacao_original_id
+
+        LEFT JOIN usuarios uo
+            ON uo.id = po.usuario_id
+
+        LEFT JOIN vagas vo
+            ON vo.publicacao_id = po.id
+
+        /* Pessoas seguidas */
+        LEFT JOIN seguidores s
+            ON s.seguindo_id = p.usuario_id
+            AND s.usuario_id = :usuarioLogado
+
+        WHERE
+
+            p.usuario_id = :usuarioLogado
+
+            OR
+
+            s.usuario_id IS NOT NULL
 
         ORDER BY p.created_at DESC
     ";
 
         $stmt = $this->db->prepare($query);
+
+        $stmt->bindValue(':usuarioLogado', $usuarioLogado);
+
         $stmt->execute();
 
         return $stmt->fetchAll(\PDO::FETCH_ASSOC);

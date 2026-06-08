@@ -154,4 +154,48 @@ class Seguidores extends Model
             \PDO::FETCH_ASSOC
         );
     }
+
+    public function totalSeguidores($usuario_id)
+    {
+        $query = "
+        SELECT COUNT(*) total
+        FROM seguidores
+        WHERE seguindo_id = :usuario_id
+    ";
+
+        $stmt = $this->db->prepare($query);
+
+        $stmt->bindValue(
+            ':usuario_id',
+            $usuario_id
+        );
+
+        $stmt->execute();
+
+        return $stmt->fetch(
+            \PDO::FETCH_ASSOC
+        )['total'];
+    }
+
+    public function totalSeguindo($usuario_id)
+    {
+        $query = "
+        SELECT COUNT(*) total
+        FROM seguidores
+        WHERE usuario_id = :usuario_id
+    ";
+
+        $stmt = $this->db->prepare($query);
+
+        $stmt->bindValue(
+            ':usuario_id',
+            $usuario_id
+        );
+
+        $stmt->execute();
+
+        return $stmt->fetch(
+            \PDO::FETCH_ASSOC
+        )['total'];
+    }
 }
