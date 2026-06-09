@@ -701,9 +701,10 @@ require_once('../app/view/navbar.phtml');
                                     </div>
                                 <?php } ?>
 
-                                <button class="btn btn-success rounded-pill px-4 mb-3 w-100">
-                                    <i class="bi bi-arrow-right-circle"></i> Ver vaga
-                                </button>
+                                <a href="/vacancyDetails?id=<?= $publicacao['id'] ?>" class="btn btn-success rounded-pill px-4 mb-3">
+                                    <i class="bi bi-arrow-right-circle"></i>
+                                    Ver vaga
+                                </a>
                             </div>
 
                             <hr>

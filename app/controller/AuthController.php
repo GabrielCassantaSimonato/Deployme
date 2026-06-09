@@ -43,6 +43,7 @@ class AuthController extends Action
         $_SESSION['nome'] = $dadosUsuario['nome'];
         $_SESSION['tipo'] = $dadosUsuario['tipo'];
         $_SESSION['foto_perfil'] = $dadosUsuario['foto'];
+        $_SESSION['email'] = $dadosUsuario['email'];
 
         // ESTUDANTE
         if ($dadosUsuario['tipo'] == 'estudante') {

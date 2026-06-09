@@ -42,6 +42,9 @@ class route extends Bootstrap
         $routes['follow'] = array('route' => '/follow', 'controller' => 'AppController', 'action' => 'follow');
         $routes['unFollow'] = array('route' => '/unFollow', 'controller' => 'AppController', 'action' => 'unFollow');
         $routes['followers'] = ['route' => '/followers', 'controller' => 'AppController', 'action' => 'followers'];
+        $routes['viewVacancies'] = ['route' => '/viewVacancies', 'controller' => 'AppController', 'action' => 'viewVacancies'];
+        $routes['vacancyDetails'] = ['route' => '/vacancyDetails', 'controller' => 'appController', 'action' => 'vacancyDetails'];
+        $routes['applyVacancy'] = array('route' => '/applyVacancy', 'controller' => 'AppController', 'action' => 'applyVacancy');
         $this->setRoutes($routes);//seta a rota no objeto
     }
 }

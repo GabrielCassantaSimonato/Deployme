@@ -377,4 +377,77 @@ class Publicacao extends Model
 
         return $stmt->execute();
     }
+
+    public function listarTodasVagas()
+    {
+        $query = "
+        SELECT
+
+            v.*,
+
+            u.nome,
+
+            u.foto,
+
+            r.empresa
+
+        FROM vagas v
+
+        INNER JOIN publicacoes p
+            ON p.id = v.publicacao_id
+
+        INNER JOIN usuarios u
+            ON u.id = p.usuario_id
+
+        INNER JOIN recrutadores r
+            ON r.usuario_id = u.id
+
+        ORDER BY v.id DESC
+    ";
+
+        $stmt = $this->db->prepare($query);
+
+        $stmt->execute();
+
+        return $stmt->fetchAll(\PDO::FETCH_ASSOC);
+    }
+
+    public function buscarVagaPorPublicacao($publicacao_id)
+    {
+        $query = "
+
+        SELECT
+
+            v.*,
+
+            u.nome,
+
+            u.foto,
+
+            r.empresa
+
+        FROM vagas v
+
+        INNER JOIN publicacoes p
+            ON p.id = v.publicacao_id
+
+        INNER JOIN usuarios u
+            ON u.id = p.usuario_id
+
+        INNER JOIN recrutadores r
+            ON r.usuario_id = u.id
+
+        WHERE v.publicacao_id =
+            :publicacao_id
+
+    ";
+
+        $stmt = $this->db->prepare($query);
+
+        $stmt->bindValue(':publicacao_id', $publicacao_id);
+
+        $stmt->execute();
+
+        return $stmt->fetch(\PDO::FETCH_ASSOC);
+    }
 }

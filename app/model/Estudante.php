@@ -72,6 +72,28 @@ class Estudante extends Model
 
         return $stmt->fetch(\PDO::FETCH_ASSOC);
     }
+
+    public function buscarCurriculo($usuario_id)
+    {
+        $query = "
+        SELECT curriculo
+        FROM estudantes
+        WHERE usuario_id = :usuario_id
+    ";
+
+        $stmt = $this->db->prepare($query);
+
+        $stmt->bindValue(
+            ':usuario_id',
+            $usuario_id
+        );
+
+        $stmt->execute();
+
+        return $stmt->fetch(
+            \PDO::FETCH_ASSOC
+        );
+    }
 }
 
 ?>

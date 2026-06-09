@@ -1,0 +1,132 @@
+<?php
+
+$tipo = $_SESSION['tipo'];
+require_once('../app/view/navbar.phtml');
+
+?>
+<div class="container py-4">
+
+    <div class="card border-0 shadow-sm rounded-4 mb-4">
+
+        <div class="card-body">
+
+            <h2 class="fw-bold mb-2">
+
+                Vagas Disponíveis
+
+            </h2>
+
+            <p class="text-muted mb-0">
+
+                Explore as oportunidades disponíveis.
+
+            </p>
+
+        </div>
+
+    </div>
+
+    <?php foreach ($this->view->vagas as $vaga) { ?>
+
+        <div class="card border-0 shadow-sm rounded-4 mb-3">
+
+            <div class="card-body">
+
+                <div class="d-flex align-items-center mb-3">
+
+                    <img src="<?= !empty($vaga['foto'])
+                        ? '/uploads/fotos/' . $vaga['foto']
+                        : '/uploads/fotos/default-user.png'
+                        ?>" width="50" height="50" class="rounded-circle me-3" style="object-fit:cover;">
+
+                    <div>
+
+                        <div class="fw-bold">
+
+                            <?= htmlspecialchars(
+                                $vaga['empresa']
+                            ) ?>
+
+                        </div>
+
+                        <small class="text-muted">
+
+                            Publicado por
+                            <?= htmlspecialchars(
+                                $vaga['nome']
+                            ) ?>
+
+                        </small>
+
+                    </div>
+
+                </div>
+
+                <h5 class="fw-bold">
+
+                    <?= htmlspecialchars(
+                        $vaga['titulo']
+                    ) ?>
+
+                </h5>
+
+                <?php if (!empty($vaga['descricao'])) { ?>
+
+                    <p class="text-muted mt-2 mb-3">
+
+                        <?= nl2br(
+                            htmlspecialchars(
+                                $vaga['descricao']
+                            )
+                        ) ?>
+
+                    </p>
+
+                <?php } ?>
+
+                <div class="text-muted mb-3">
+
+                    <i class="bi bi-geo-alt"></i>
+
+                    <?= htmlspecialchars(
+                        $vaga['localizacao']
+                    ) ?>
+
+                    •
+
+                    <?= htmlspecialchars(
+                        $vaga['modalidade']
+                    ) ?>
+
+                </div>
+
+                <?php if (!empty($vaga['salario'])) { ?>
+
+                    <div class="mb-3">
+
+                        💰 R$
+                        <?= number_format(
+                            $vaga['salario'],
+                            2,
+                            ',',
+                            '.'
+                        ) ?>
+
+                    </div>
+
+
+
+                <?php } ?>
+
+                <a href="/vacancyDetails?id=<?= $vaga['publicacao_id'] ?>" class="btn btn-success rounded-pill px-4 mb-3">
+                    <i class="bi bi-arrow-right-circle"></i>
+                    Ver vaga
+                </a>
+
+            </div>
+
+        </div>
+
+    <?php } ?>
+
+</div>

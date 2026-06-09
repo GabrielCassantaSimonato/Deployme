@@ -481,5 +481,71 @@ class AppController extends Action
         );
     }
 
+    public function viewVacancies()
+    {
+        Auth::validarAutenticacao();
+
+        $vaga = Container::getModel('Publicacao');
+
+        $this->view->vagas = $vaga->listarTodasVagas();
+
+        $this->render('viewVacancies');
+    }
+
+    public function vacancyDetails()
+    {
+        Auth::validarAutenticacao();
+
+        $vaga = Container::getModel('Publicacao');
+        $this->view->vaga = $vaga->buscarVagaPorPublicacao($_GET['id']);
+        $estudante = Container::getModel('Estudante');
+        $this->view->curriculo = $estudante->buscarCurriculo($_SESSION['id']);
+        $this->render('vacancyDetails');
+    }
+
+    public function applyVacancy()
+    {
+        Auth::validarAutenticacao();
+
+        $candidatura =
+            Container::getModel(
+                'Candidatura'
+            );
+
+        $jaExiste =
+            $candidatura->jaCandidatou(
+                $_POST['vaga_id'],
+                $_SESSION['id']
+            );
+
+        if ($jaExiste) {
+
+            header(
+                'Location: /vacancyDetails?id=' .
+                $_POST['vaga_id'] .
+                '&alreadyApplied=1'
+            );
+
+            exit;
+        }
+
+        $candidatura->salvar(
+            $_POST['vaga_id'],
+            $_SESSION['id'],
+            $_POST['email'],
+            $_POST['celular'],
+            $_POST['github'] ?? null,
+            $_POST['curriculo']
+        );
+
+        header(
+            'Location: /vacancyDetails?id=' .
+            $_POST['vaga_id'] .
+            '&successApply=1'
+        );
+
+        exit;
+    }
+
 }
 ?>

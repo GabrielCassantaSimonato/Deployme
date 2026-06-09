@@ -1,0 +1,430 @@
+<?php
+
+$tipo = $_SESSION['tipo'];
+
+require_once('../app/view/navbar.phtml');
+
+?>
+
+<?php if (isset($_GET['alreadyApplied'])) { ?>
+
+    <div class="container mt-4">
+
+        <div class="alert alert-warning rounded-4 shadow-sm">
+
+            <i class="bi bi-exclamation-triangle-fill me-2"></i>
+
+            Você já se candidatou para esta vaga.
+
+        </div>
+
+    </div>
+
+<?php } ?>
+
+<?php if (isset($_GET['successApply'])) { ?>
+
+    <script>
+
+        document.addEventListener(
+            'DOMContentLoaded',
+            function () {
+
+                const modal =
+                    new bootstrap.Modal(
+                        document.getElementById(
+                            'modalSuccessApply'
+                        )
+                    );
+
+                modal.show();
+
+            }
+        );
+
+    </script>
+
+<?php } ?>
+
+<div class="container py-5">
+
+    <div class="row justify-content-center">
+
+        <div class="col-lg-9">
+
+            <div class="card border-0 shadow rounded-4">
+
+                <div class="card-body p-5">
+
+                    <!-- TOPO -->
+
+                    <div class="text-center mb-5">
+
+                        <img src="<?= !empty($this->view->vaga['foto'])
+                            ? '/uploads/fotos/' . $this->view->vaga['foto']
+                            : '/uploads/fotos/default-user.png'
+                            ?>" width="90" height="90" class="rounded-circle shadow-sm mb-3"
+                            style="object-fit:cover;">
+
+                        <h2 class="fw-bold">
+
+                            <?= htmlspecialchars(
+                                $this->view->vaga['titulo']
+                            ) ?>
+
+                        </h2>
+
+                        <h5 class="text-primary">
+
+                            <?= htmlspecialchars(
+                                $this->view->vaga['empresa']
+                            ) ?>
+
+                        </h5>
+
+                        <small class="text-muted">
+
+                            Publicado por
+                            <?= htmlspecialchars(
+                                $this->view->vaga['nome']
+                            ) ?>
+
+                        </small>
+
+                    </div>
+
+                    <!-- CARDS DE INFORMAÇÃO -->
+
+                    <div class="row text-center mb-5">
+
+                        <div class="col-md-4 mb-3">
+
+                            <div class="border rounded-4 p-4 h-100">
+
+                                <i class="bi bi-geo-alt-fill fs-3 text-primary"></i>
+
+                                <h6 class="mt-3 fw-bold">
+
+                                    Localização
+
+                                </h6>
+
+                                <p class="mb-0">
+
+                                    <?= htmlspecialchars(
+                                        $this->view->vaga['localizacao']
+                                    ) ?>
+
+                                </p>
+
+                            </div>
+
+                        </div>
+
+                        <div class="col-md-4 mb-3">
+
+                            <div class="border rounded-4 p-4 h-100">
+
+                                <i class="bi bi-laptop fs-3 text-primary"></i>
+
+                                <h6 class="mt-3 fw-bold">
+
+                                    Modalidade
+
+                                </h6>
+
+                                <p class="mb-0">
+
+                                    <?= htmlspecialchars(
+                                        $this->view->vaga['modalidade']
+                                    ) ?>
+
+                                </p>
+
+                            </div>
+
+                        </div>
+
+                        <div class="col-md-4 mb-3">
+
+                            <div class="border rounded-4 p-4 h-100">
+
+                                <i class="bi bi-cash-stack fs-3 text-success"></i>
+
+                                <h6 class="mt-3 fw-bold">
+
+                                    Salário
+
+                                </h6>
+
+                                <p class="mb-0">
+
+                                    <?php if (!empty($this->view->vaga['salario'])) { ?>
+
+                                        R$
+                                        <?= number_format(
+                                            $this->view->vaga['salario'],
+                                            2,
+                                            ',',
+                                            '.'
+                                        ) ?>
+
+                                    <?php } else { ?>
+
+                                        Não informado
+
+                                    <?php } ?>
+
+                                </p>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                    <!-- DESCRIÇÃO -->
+
+                    <h4 class="fw-bold mb-3">
+
+                        Sobre a vaga
+
+                    </h4>
+
+                    <div class="bg-light rounded-4 p-4 mb-5">
+
+                        <?= nl2br(
+                            htmlspecialchars(
+                                $this->view->vaga['descricao']
+                            )
+                        ) ?>
+
+                    </div>
+
+                    <!-- RECRUTADOR -->
+
+                    <h4 class="fw-bold mb-4">
+
+                        Recrutador
+
+                    </h4>
+
+                    <div class="d-flex align-items-center">
+
+                        <img src="<?= !empty($this->view->vaga['foto'])
+                            ? '/uploads/fotos/' . $this->view->vaga['foto']
+                            : '/uploads/fotos/default-user.png'
+                            ?>" width="70" height="70" class="rounded-circle me-3" style="object-fit:cover;">
+
+                        <div>
+
+                            <div class="fw-bold fs-5">
+
+                                <?= htmlspecialchars(
+                                    $this->view->vaga['nome']
+                                ) ?>
+
+                            </div>
+
+                            <div class="text-muted">
+
+                                <?= htmlspecialchars(
+                                    $this->view->vaga['empresa']
+                                ) ?>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                    <!-- BOTÃO -->
+
+                    <?php if ($tipo == 'estudante') { ?>
+
+                        <div class="text-center mt-5">
+
+                            <button class="btn btn-success btn-lg rounded-pill px-5" data-bs-toggle="modal"
+                                data-bs-target="#modalCandidatura">
+
+                                <i class="bi bi-send-fill me-2"></i>
+
+                                Candidatar-se
+
+                            </button>
+
+                        </div>
+
+                    <?php } ?>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+<!-- MODAL CANDIDATURA -->
+
+<div class="modal fade" id="modalCandidatura">
+
+    <div class="modal-dialog modal-dialog-centered">
+
+        <div class="modal-content border-0 shadow rounded-4">
+
+            <form action="/applyVacancy" method="POST">
+
+                <input type="hidden" name="vaga_id" value="<?= $this->view->vaga['id'] ?>">
+
+                <div class="modal-header border-0">
+
+                    <h5 class="modal-title fw-bold">
+
+                        Candidatar-se à vaga
+
+                    </h5>
+
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+
+                </div>
+
+                <div class="modal-body">
+
+                    <div class="alert alert-info rounded-4">
+
+                        Seus dados serão enviados ao recrutador responsável.
+
+                    </div>
+
+                    <div class="mb-3">
+
+                        <label class="form-label">
+
+                            E-mail
+
+                        </label>
+
+                        <input type="email" name="email" class="form-control" value="<?= $_SESSION['email'] ?>"
+                            required>
+
+                    </div>
+
+                    <div class="mb-3">
+
+                        <label class="form-label">
+
+                            Celular
+
+                        </label>
+
+                        <input type="text" name="celular" class="form-control" required>
+
+                    </div>
+
+                    <div class="mb-3">
+
+                        <label class="form-label">
+
+                            Currículo
+
+                        </label>
+
+                        <div class="alert alert-success">
+
+                            <i class="bi bi-file-earmark-pdf-fill me-2"></i>
+
+                            Currículo já cadastrado na plataforma.
+
+                            <a href="/uploads/currículos/<?= $this->view->curriculo['curriculo'] ?>" target="_blank"
+                                class="ms-2">
+
+                                Visualizar
+
+                            </a>
+
+                        </div>
+
+                        <input type="hidden" name="curriculo" value="<?= $this->view->curriculo['curriculo'] ?>">
+
+                    </div>
+
+                    <div class="mb-3">
+
+                        <label class="form-label">
+
+                            GitHub
+                            (Opcional)
+
+                        </label>
+
+                        <input type="text" name="github" class="form-control"
+                            placeholder="https://github.com/seuusuario">
+
+                    </div>
+
+                </div>
+
+                <div class="modal-footer border-0">
+
+                    <button type="button" class="btn btn-light rounded-pill" data-bs-dismiss="modal">
+
+                        Cancelar
+
+                    </button>
+
+                    <button type="submit" class="btn btn-success rounded-pill px-4">
+
+                        Enviar candidatura
+
+                    </button>
+
+                </div>
+
+            </form>
+
+        </div>
+
+    </div>
+
+</div>
+
+<!-- MODAL SUCESSO -->
+
+<div class="modal fade" id="modalSuccessApply">
+
+    <div class="modal-dialog modal-dialog-centered">
+
+        <div class="modal-content border-0">
+
+            <div class="modal-body text-center p-5">
+
+                <i class="bi bi-check-circle-fill text-success" style="font-size:70px;"></i>
+
+                <h3 class="mt-3">
+
+                    Candidatura enviada!
+
+                </h3>
+
+                <p class="text-muted">
+
+                    Sua candidatura foi encaminhada ao recrutador responsável pela vaga.
+
+                </p>
+
+                <button class="btn btn-success rounded-pill px-4" data-bs-dismiss="modal">
+
+                    Fechar
+
+                </button>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
