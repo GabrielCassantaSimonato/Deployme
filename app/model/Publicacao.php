@@ -450,4 +450,100 @@ class Publicacao extends Model
 
         return $stmt->fetch(\PDO::FETCH_ASSOC);
     }
+
+    public function listarMinhasVagas(
+        $usuario_id
+    ) {
+
+        $query = "
+
+        SELECT
+
+            v.id,
+
+            v.publicacao_id,
+
+            v.titulo,
+
+            v.localizacao,
+
+            v.modalidade,
+
+            v.salario,
+
+            v.created_at,
+
+            COUNT(c.id) AS total_candidatos
+
+        FROM vagas v
+
+        INNER JOIN publicacoes p
+
+            ON p.id = v.publicacao_id
+
+        LEFT JOIN candidaturas c
+
+            ON c.vaga_id = v.id
+
+        WHERE p.usuario_id = :usuario_id
+
+        GROUP BY v.id
+
+        ORDER BY v.created_at DESC
+
+    ";
+
+        $stmt = $this->db->prepare(
+            $query
+        );
+
+        $stmt->bindValue(
+
+            ':usuario_id',
+
+            $usuario_id
+
+        );
+
+        $stmt->execute();
+
+        return $stmt->fetchAll(
+            \PDO::FETCH_ASSOC
+        );
+    }
+
+    public function buscarVagaPorId(
+        $vaga_id
+    ) {
+
+        $query = "
+
+        SELECT
+
+            v.*
+
+        FROM vagas v
+
+        WHERE v.id = :vaga_id
+
+    ";
+
+        $stmt = $this->db->prepare(
+            $query
+        );
+
+        $stmt->bindValue(
+
+            ':vaga_id',
+
+            $vaga_id
+
+        );
+
+        $stmt->execute();
+
+        return $stmt->fetch(
+            \PDO::FETCH_ASSOC
+        );
+    }
 }

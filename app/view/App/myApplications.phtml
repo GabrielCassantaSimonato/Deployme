@@ -1,0 +1,166 @@
+<?php
+
+$tipo = $_SESSION['tipo'];
+
+require_once(
+    '../app/view/navbar.phtml'
+);
+
+?>
+
+<div class="container py-4">
+
+    <div class="card border-0 shadow-sm rounded-4 mb-4">
+
+        <div class="card-body">
+
+            <h2 class="fw-bold">
+
+                Minhas candidaturas
+
+            </h2>
+
+            <p class="text-muted mb-0">
+
+                Acompanhe o andamento das vagas em que você se candidatou.
+
+            </p>
+
+        </div>
+
+    </div>
+
+    <?php if (
+
+        !empty(
+        $this->view->candidaturas
+    )
+
+    ) { ?>
+
+        <?php foreach (
+
+            $this->view->candidaturas
+
+            as $vaga
+
+        ) { ?>
+
+            <div class="card border-0 shadow-sm rounded-4 mb-3">
+
+                <div class="card-body">
+
+                    <div class="d-flex justify-content-between">
+
+                        <div>
+
+                            <h5 class="fw-bold">
+
+                                <?= htmlspecialchars(
+
+                                    $vaga['titulo']
+
+                                ) ?>
+
+                            </h5>
+
+                            <div class="text-muted">
+
+                                <?= htmlspecialchars(
+
+                                    $vaga['empresa']
+
+                                ) ?>
+
+                            </div>
+
+                            <div class="small text-muted mt-2">
+
+                                📍
+
+                                <?= htmlspecialchars(
+
+                                    $vaga['localizacao']
+
+                                ) ?>
+
+                            </div>
+
+                            <div class="small text-muted">
+
+                                💻
+
+                                <?= htmlspecialchars(
+
+                                    $vaga['modalidade']
+
+                                ) ?>
+
+                            </div>
+
+                            <div class="small text-muted">
+
+                                📅
+
+                                <?= date(
+
+                                    'd/m/Y',
+
+                                    strtotime(
+
+                                        $vaga['created_at']
+
+                                    )
+
+                                ) ?>
+
+                            </div>
+
+                        </div>
+
+                        <div class="text-end">
+
+                            <span class="badge bg-primary mb-3">
+
+                                <?= $vaga['status']
+
+                                    ?? 'Enviada'
+
+                                    ?>
+
+                            </span>
+
+                            <br>
+
+                            <a href="/vacancyDetails?id=<?= $vaga['publicacao_id'] ?>"
+                                class="btn btn-outline-primary rounded-pill">
+
+                                Ver vaga
+
+                            </a>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        <?php } ?>
+
+    <?php } else { ?>
+
+        <div class="card border-0 shadow-sm rounded-4">
+
+            <div class="card-body text-center text-muted">
+
+                Você ainda não realizou nenhuma candidatura.
+
+            </div>
+
+        </div>
+
+    <?php } ?>
+
+</div>

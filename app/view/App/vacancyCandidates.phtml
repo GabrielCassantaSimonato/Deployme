@@ -1,0 +1,265 @@
+<?php
+
+$tipo = $_SESSION['tipo'];
+
+require_once(
+    '../app/view/navbar.phtml'
+);
+
+?>
+
+<div class="container py-4">
+
+    <!-- CABEÇALHO -->
+
+    <div class="card border-0 shadow-sm rounded-4 mb-4">
+
+        <div class="card-body text-center">
+
+            <h2 class="fw-bold">
+
+                <?= htmlspecialchars(
+                    $this->view->vaga['titulo']
+                ) ?>
+
+            </h2>
+
+            <p class="text-muted mb-0">
+
+                Candidatos desta vaga
+
+            </p>
+
+        </div>
+
+    </div>
+
+    <?php if (
+
+        !empty(
+        $this->view->candidatos
+    )
+
+    ) { ?>
+
+        <?php foreach (
+
+            $this->view->candidatos
+
+            as $candidato
+
+        ) { ?>
+
+            <div class="card border-0 shadow-sm rounded-4 mb-4">
+
+                <div class="card-body">
+
+                    <!-- TOPO -->
+
+                    <div class="d-flex align-items-center mb-4">
+
+                        <img src="<?= !empty(
+                            $candidato['foto']
+                        )
+
+                            ? '/uploads/fotos/' .
+
+                            $candidato['foto']
+
+                            : '/uploads/fotos/default-user.png'
+
+                            ?>" width="70" height="70" class="rounded-circle me-3" style="object-fit:cover;">
+
+                        <div>
+
+                            <h4 class="fw-bold mb-1">
+
+                                <a href="/profile?id=<?= $candidato['estudante_id'] ?>"
+                                    class="nome-candidato text-decoration-none" title="Ver perfil">
+
+                                    <?= htmlspecialchars(
+
+                                        $candidato['nome']
+
+                                    ) ?>
+
+                                </a>
+
+                            </h4>
+
+                        </div>
+
+                    </div>
+
+                    <hr>
+
+                    <!-- INFORMAÇÕES -->
+
+                    <div class="row">
+
+                        <div class="col-md-6 mb-3">
+
+                            <strong>
+
+                                📧 E-mail
+
+                            </strong>
+
+                            <br>
+
+                            <?= htmlspecialchars(
+
+                                $candidato['email']
+
+                            ) ?>
+
+                        </div>
+
+                        <div class="col-md-6 mb-3">
+
+                            <strong>
+
+                                📱 Celular
+
+                            </strong>
+
+                            <br>
+
+                            <?= htmlspecialchars(
+
+                                $candidato['celular']
+
+                            ) ?>
+
+                        </div>
+
+                    </div>
+
+                    <div class="row">
+
+                        <div class="col-md-6 mb-3">
+
+                            <strong>
+
+                                🐙 GitHub
+
+                            </strong>
+
+                            <br>
+
+                            <?php if (
+                                !empty($candidato['github'])
+                            ) { ?>
+                                <?php
+                                $github = trim($candidato['github']);
+                                if (
+                                    strpos($github, 'http') === false
+                                ) {
+                                    $github = 'https://github.com/' . ltrim($github, '@/');
+                                }
+                                ?>
+
+                                <a href="<?= $github ?>" target="_blank" class="text-decoration-none">
+
+                                    Abrir GitHub
+
+                                </a>
+
+                            <?php } else { ?>
+
+                                <span class="text-muted">
+
+                                    Não informado
+
+                                </span>
+
+                            <?php } ?>
+
+                        </div>
+
+                        <div class="col-md-6 mb-3">
+
+                            <strong>
+
+                                📄 Currículo
+
+                            </strong>
+
+                            <br>
+
+                            <a href="/uploads/currículos/<?= $candidato['curriculo'] ?>" target="_blank"
+                                class="text-decoration-none">
+
+                                Ver currículo
+
+                            </a>
+
+                        </div>
+
+                    </div>
+
+                    <div class="row align-items-center">
+
+                        <div class="col-md-6">
+
+                            <strong>
+
+                                📅 Data da candidatura
+
+                            </strong>
+
+                            <br>
+
+                            <?= date(
+
+                                'd/m/Y',
+
+                                strtotime(
+
+                                    $candidato['created_at']
+
+                                )
+
+                            ) ?>
+
+                        </div>
+
+                        <div class="col-md-6 text-md-end mt-3 mt-md-0">
+
+                            <span class="badge bg-primary fs-6">
+
+                                <?= htmlspecialchars(
+
+                                    $candidato['status']
+
+                                    ?? 'Enviada'
+
+                                ) ?>
+
+                            </span>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        <?php } ?>
+
+    <?php } else { ?>
+
+        <div class="card border-0 shadow-sm rounded-4">
+
+            <div class="card-body text-center text-muted p-5">
+
+                Ainda não há candidatos para esta vaga.
+
+            </div>
+
+        </div>
+
+    <?php } ?>
+
+</div>

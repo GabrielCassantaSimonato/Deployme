@@ -1,0 +1,17 @@
+.nome-candidato {
+
+    color: #212529;
+
+    transition: all .2s ease;
+
+}
+
+.nome-candidato:hover {
+
+    color: #0d6efd;
+
+    text-decoration: underline !important;
+
+    cursor: pointer;
+
+}

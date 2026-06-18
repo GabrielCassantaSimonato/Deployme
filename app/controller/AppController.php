@@ -514,37 +514,150 @@ class AppController extends Action
 
         $jaExiste =
             $candidatura->jaCandidatou(
+
                 $_POST['vaga_id'],
+
                 $_SESSION['id']
+
             );
+
+        $publicacao =
+
+            $candidatura->buscarPublicacaoDaVaga(
+
+                $_POST['vaga_id']
+
+            );
+
+        $publicacao_id =
+
+            $publicacao['publicacao_id'];
 
         if ($jaExiste) {
 
             header(
+
                 'Location: /vacancyDetails?id=' .
-                $_POST['vaga_id'] .
+
+                $publicacao_id .
+
                 '&alreadyApplied=1'
+
             );
 
             exit;
         }
 
         $candidatura->salvar(
+
             $_POST['vaga_id'],
+
             $_SESSION['id'],
+
             $_POST['email'],
+
             $_POST['celular'],
+
             $_POST['github'] ?? null,
+
             $_POST['curriculo']
+
         );
 
         header(
+
             'Location: /vacancyDetails?id=' .
-            $_POST['vaga_id'] .
+
+            $publicacao_id .
+
             '&successApply=1'
+
         );
 
         exit;
+    }
+
+    public function myApplications()
+    {
+        Auth::validarAutenticacao();
+
+        $candidatura =
+
+            Container::getModel(
+                'Candidatura'
+            );
+
+        $this->view->candidaturas =
+
+            $candidatura->listarMinhasCandidaturas(
+
+                $_SESSION['id']
+
+            );
+
+        $this->render(
+            'myApplications'
+        );
+    }
+
+    public function myVacancies()
+    {
+        Auth::validarAutenticacao();
+
+        $publicacao =
+
+            Container::getModel(
+                'Publicacao'
+            );
+
+        $this->view->vagas =
+
+            $publicacao->listarMinhasVagas(
+
+                $_SESSION['id']
+
+            );
+
+        $this->render(
+            'myVacancies'
+        );
+    }
+
+    public function vacancyCandidates()
+    {
+        Auth::validarAutenticacao();
+
+        $vaga_id =
+
+            $_GET['id'];
+
+        $candidatura =
+
+            Container::getModel(
+                'Candidatura'
+            );
+
+        $publicacao =
+
+            Container::getModel(
+                'Publicacao'
+            );
+
+        $this->view->vaga =
+
+            $publicacao->buscarVagaPorId(
+                $vaga_id
+            );
+
+        $this->view->candidatos =
+
+            $candidatura->listarCandidatos(
+                $vaga_id
+            );
+
+        $this->render(
+            'vacancyCandidates'
+        );
     }
 
 }
