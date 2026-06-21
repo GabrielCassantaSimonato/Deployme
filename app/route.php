@@ -48,6 +48,8 @@ class route extends Bootstrap
         $routes['myApplications'] = array('route' => '/myApplications', 'controller' => 'AppController', 'action' => 'myApplications');
         $routes['myVacancies'] = array('route' => '/myVacancies', 'controller' => 'AppController', 'action' => 'myVacancies');
         $routes['vacancyCandidates'] = array('route' => '/vacancyCandidates', 'controller' => 'AppController', 'action' => 'vacancyCandidates');
+        $routes['updateApplicationStatus'] = array('route' => '/updateApplicationStatus', 'controller' => 'AppController', 'action' => 'updateApplicationStatus');
+        $routes['withdrawApplication'] = array('route' => '/withdrawApplication', 'controller' => 'AppController', 'action' => 'withdrawApplication');
         $this->setRoutes($routes);//seta a rota no objeto
     }
 }

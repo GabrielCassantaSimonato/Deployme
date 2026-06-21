@@ -2,9 +2,7 @@
 
 $tipo = $_SESSION['tipo'];
 
-require_once(
-    '../app/view/navbar.phtml'
-);
+require_once('../app/view/navbar.phtml');
 
 ?>
 
@@ -14,19 +12,27 @@ require_once(
 
     <div class="card border-0 shadow-sm rounded-4 mb-4">
 
-        <div class="card-body text-center">
+        <div class="card-body text-center py-4">
 
             <h2 class="fw-bold">
 
                 <?= htmlspecialchars(
+
                     $this->view->vaga['titulo']
+
                 ) ?>
 
             </h2>
 
             <p class="text-muted mb-0">
 
-                Candidatos desta vaga
+                <?= count(
+
+                    $this->view->candidatos
+
+                ) ?>
+
+                candidato(s) nesta vaga
 
             </p>
 
@@ -37,7 +43,9 @@ require_once(
     <?php if (
 
         !empty(
+
         $this->view->candidatos
+
     )
 
     ) { ?>
@@ -50,29 +58,87 @@ require_once(
 
         ) { ?>
 
+            <?php
+
+            $github = '';
+
+            if (
+
+                !empty(
+
+                $candidato['github']
+
+            )
+
+            ) {
+
+                $github = trim(
+
+                    $candidato['github']
+
+                );
+
+                if (
+
+                    strpos(
+
+                        $github,
+
+                        'http'
+
+                    ) === false
+
+                ) {
+
+                    $github =
+
+                        'https://github.com/' .
+
+                        ltrim(
+
+                            $github,
+
+                            '@/'
+
+                        );
+
+                }
+
+            }
+
+            ?>
+
             <div class="card border-0 shadow-sm rounded-4 mb-4">
 
-                <div class="card-body">
+                <div class="card-body p-4">
 
-                    <!-- TOPO -->
+                    <div class="row align-items-center">
 
-                    <div class="d-flex align-items-center mb-4">
+                        <!-- FOTO -->
 
-                        <img src="<?= !empty(
-                            $candidato['foto']
-                        )
+                        <div class="col-md-2 text-center mb-3 mb-md-0">
 
-                            ? '/uploads/fotos/' .
+                            <img src="<?= !empty(
 
-                            $candidato['foto']
+                                $candidato['foto']
 
-                            : '/uploads/fotos/default-user.png'
+                            )
 
-                            ?>" width="70" height="70" class="rounded-circle me-3" style="object-fit:cover;">
+                                ? '/uploads/fotos/' .
 
-                        <div>
+                                $candidato['foto']
 
-                            <h4 class="fw-bold mb-1">
+                                : '/uploads/fotos/default-user.png'
+
+                                ?>" width="90" height="90" class="rounded-circle" style="object-fit:cover;">
+
+                        </div>
+
+                        <!-- INFORMAÇÕES -->
+
+                        <div class="col-md-7">
+
+                            <h4 class="fw-bold mb-3">
 
                                 <a href="/profile?id=<?= $candidato['estudante_id'] ?>"
                                     class="nome-candidato text-decoration-none" title="Ver perfil">
@@ -87,156 +153,246 @@ require_once(
 
                             </h4>
 
-                        </div>
+                            <div class="mb-2">
 
-                    </div>
-
-                    <hr>
-
-                    <!-- INFORMAÇÕES -->
-
-                    <div class="row">
-
-                        <div class="col-md-6 mb-3">
-
-                            <strong>
-
-                                📧 E-mail
-
-                            </strong>
-
-                            <br>
-
-                            <?= htmlspecialchars(
-
-                                $candidato['email']
-
-                            ) ?>
-
-                        </div>
-
-                        <div class="col-md-6 mb-3">
-
-                            <strong>
-
-                                📱 Celular
-
-                            </strong>
-
-                            <br>
-
-                            <?= htmlspecialchars(
-
-                                $candidato['celular']
-
-                            ) ?>
-
-                        </div>
-
-                    </div>
-
-                    <div class="row">
-
-                        <div class="col-md-6 mb-3">
-
-                            <strong>
-
-                                🐙 GitHub
-
-                            </strong>
-
-                            <br>
-
-                            <?php if (
-                                !empty($candidato['github'])
-                            ) { ?>
-                                <?php
-                                $github = trim($candidato['github']);
-                                if (
-                                    strpos($github, 'http') === false
-                                ) {
-                                    $github = 'https://github.com/' . ltrim($github, '@/');
-                                }
-                                ?>
-
-                                <a href="<?= $github ?>" target="_blank" class="text-decoration-none">
-
-                                    Abrir GitHub
-
-                                </a>
-
-                            <?php } else { ?>
-
-                                <span class="text-muted">
-
-                                    Não informado
-
-                                </span>
-
-                            <?php } ?>
-
-                        </div>
-
-                        <div class="col-md-6 mb-3">
-
-                            <strong>
-
-                                📄 Currículo
-
-                            </strong>
-
-                            <br>
-
-                            <a href="/uploads/currículos/<?= $candidato['curriculo'] ?>" target="_blank"
-                                class="text-decoration-none">
-
-                                Ver currículo
-
-                            </a>
-
-                        </div>
-
-                    </div>
-
-                    <div class="row align-items-center">
-
-                        <div class="col-md-6">
-
-                            <strong>
-
-                                📅 Data da candidatura
-
-                            </strong>
-
-                            <br>
-
-                            <?= date(
-
-                                'd/m/Y',
-
-                                strtotime(
-
-                                    $candidato['created_at']
-
-                                )
-
-                            ) ?>
-
-                        </div>
-
-                        <div class="col-md-6 text-md-end mt-3 mt-md-0">
-
-                            <span class="badge bg-primary fs-6">
+                                📧
 
                                 <?= htmlspecialchars(
 
-                                    $candidato['status']
-
-                                    ?? 'Enviada'
+                                    $candidato['email']
 
                                 ) ?>
 
-                            </span>
+                            </div>
+
+                            <div class="mb-2">
+
+                                📱
+
+                                <?= htmlspecialchars(
+
+                                    $candidato['celular']
+
+                                ) ?>
+
+                            </div>
+
+                            <div class="mb-2">
+
+                                🐙
+
+                                <?php if (
+
+                                    !empty(
+
+                                    $github
+
+                                )
+
+                                ) { ?>
+
+                                    <a href="<?= $github ?>" target="_blank" class="text-decoration-none">
+
+                                        Abrir GitHub
+
+                                    </a>
+
+                                <?php } else { ?>
+
+                                    <span class="text-muted">
+
+                                        Não informado
+
+                                    </span>
+
+                                <?php } ?>
+
+                            </div>
+
+                            <div class="mb-2">
+
+                                📄
+
+                                <a href="/uploads/currículos/<?= $candidato['curriculo'] ?>" target="_blank"
+                                    class="text-decoration-none">
+
+                                    Ver currículo
+
+                                </a>
+
+                            </div>
+
+                            <div>
+
+                                📅
+
+                                <?= date(
+
+                                    'd/m/Y',
+
+                                    strtotime(
+
+                                        $candidato['created_at']
+
+                                    )
+
+                                ) ?>
+
+                            </div>
+
+                        </div>
+
+                        <!-- STATUS -->
+
+                        <div class="col-md-3 mt-4 mt-md-0">
+
+                            <label class="fw-bold mb-2">
+
+                                Status da candidatura
+
+                            </label>
+
+                            <?php
+
+                            $badgeClass = 'bg-primary';
+
+                            switch ($candidato['status']) {
+
+                                case 'Em análise':
+
+                                    $badgeClass = 'bg-warning';
+
+                                    break;
+
+                                case 'Entrevista':
+
+                                    $badgeClass = 'bg-purple';
+
+                                    break;
+
+                                case 'Aprovado':
+
+                                    $badgeClass = 'bg-success';
+
+                                    break;
+
+                                case 'Rejeitado':
+
+                                    $badgeClass = 'bg-danger';
+
+                                    break;
+
+                            }
+
+                            ?>
+
+                            <form action="/updateApplicationStatus" method="POST">
+
+                                <input type="hidden" name="candidatura_id" value="<?= $candidato['id'] ?>">
+
+                                <input type="hidden" name="vaga_id" value="<?= $this->view->vaga['id'] ?>">
+
+                                <div class="mb-3">
+
+                                    <span class="badge <?= $badgeClass ?> px-3 py-2 fs-6">
+
+                                        <?= htmlspecialchars(
+
+                                            $candidato['status']
+
+                                            ?? 'Enviada'
+
+                                        ) ?>
+
+                                    </span>
+
+                                </div>
+
+                                <select name="status" class="form-select rounded-pill" onchange="this.form.submit()">
+
+                                    <option value="Enviada" <?= (
+
+                                        $candidato['status']
+
+                                        == 'Enviada'
+
+                                    )
+
+                                        ? 'selected'
+
+                                        : '' ?>>
+
+                                        Enviada
+
+                                    </option>
+
+                                    <option value="Em análise" <?= (
+
+                                        $candidato['status']
+
+                                        == 'Em análise'
+
+                                    )
+
+                                        ? 'selected'
+
+                                        : '' ?>>
+
+                                        Em análise
+
+                                    </option>
+
+                                    <option value="Entrevista" <?= (
+
+                                        $candidato['status']
+
+                                        == 'Entrevista'
+
+                                    )
+
+                                        ? 'selected'
+
+                                        : '' ?>>
+
+                                        Entrevista
+
+                                    </option>
+
+                                    <option value="Aprovado" <?= (
+
+                                        $candidato['status']
+
+                                        == 'Aprovado'
+
+                                    )
+
+                                        ? 'selected'
+
+                                        : '' ?>>
+
+                                        Aprovado
+
+                                    </option>
+
+                                    <option value="Rejeitado" <?= (
+
+                                        $candidato['status']
+
+                                        == 'Rejeitado'
+
+                                    )
+
+                                        ? 'selected'
+
+                                        : '' ?>>
+
+                                        Rejeitado
+
+                                    </option>
+
+                                </select>
+
+                            </form>
 
                         </div>
 

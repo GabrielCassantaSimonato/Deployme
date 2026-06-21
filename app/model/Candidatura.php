@@ -247,4 +247,52 @@ class Candidatura extends Model
             \PDO::FETCH_ASSOC
         );
     }
+
+    public function alterarStatus($candidatura_id, $status)
+    {
+        $query = "UPDATE candidaturas SET status = :status WHERE id = :candidatura_id";
+
+        $stmt = $this->db->prepare($query);
+        $stmt->bindValue(':status', $status);
+        $stmt->bindValue(':candidatura_id', $candidatura_id);
+        return $stmt->execute();
+    }
+
+    public function desistir(
+        $vaga_id,
+        $estudante_id
+    ) {
+
+        $query = "
+
+        DELETE FROM candidaturas
+
+        WHERE vaga_id = :vaga_id
+
+        AND estudante_id = :estudante_id
+
+    ";
+
+        $stmt = $this->db->prepare(
+            $query
+        );
+
+        $stmt->bindValue(
+
+            ':vaga_id',
+
+            $vaga_id
+
+        );
+
+        $stmt->bindValue(
+
+            ':estudante_id',
+
+            $estudante_id
+
+        );
+
+        return $stmt->execute();
+    }
 }

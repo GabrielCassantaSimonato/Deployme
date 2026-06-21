@@ -660,5 +660,42 @@ class AppController extends Action
         );
     }
 
+    public function updateApplicationStatus()
+    {
+        Auth::validarAutenticacao();
+
+        $candidatura = Container::getModel('Candidatura');
+        $candidatura->alterarStatus($_POST['candidatura_id'], $_POST['status']);
+        header('Location: /vacancyCandidates?id=' . $_POST['vaga_id']);
+        exit;
+    }
+
+    public function withdrawApplication()
+    {
+        Auth::validarAutenticacao();
+
+        $candidatura =
+
+            Container::getModel(
+                'Candidatura'
+            );
+
+        $candidatura->desistir(
+
+            $_POST['vaga_id'],
+
+            $_SESSION['id']
+
+        );
+
+        header(
+
+            'Location: /myApplications'
+
+        );
+
+        exit;
+    }
+
 }
 ?>

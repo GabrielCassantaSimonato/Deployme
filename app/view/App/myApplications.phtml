@@ -120,15 +120,53 @@ require_once(
 
                         <div class="text-end">
 
-                            <span class="badge bg-primary mb-3">
+                            <?php
 
-                                <?= $vaga['status']
+                            $badgeClass = 'bg-primary';
 
-                                    ?? 'Enviada'
+                            switch ($vaga['status']) {
 
-                                    ?>
+                                case 'Em análise':
 
-                            </span>
+                                    $badgeClass = 'bg-warning';
+
+                                    break;
+
+                                case 'Entrevista':
+
+                                    $badgeClass = 'bg-purple';
+
+                                    break;
+
+                                case 'Aprovado':
+
+                                    $badgeClass = 'bg-success';
+
+                                    break;
+
+                                case 'Rejeitado':
+
+                                    $badgeClass = 'bg-danger';
+
+                                    break;
+
+                            }
+
+                            ?>
+
+                            <div class="mb-4">
+
+                                <span class="badge <?= $badgeClass ?> px-3 py-2 fs-6">
+
+                                    <?= htmlspecialchars(
+
+                                        $vaga['status']
+
+                                    ) ?>
+
+                                </span>
+
+                            </div>
 
                             <br>
 
@@ -139,28 +177,46 @@ require_once(
 
                             </a>
 
+                            <?php if (
+                                in_array(
+                                    $vaga['status'],
+                                    [
+                                        'Enviada',
+                                        'Em análise',
+                                        'Entrevista'
+                                    ]
+                                )
+                            ) { ?>
+
+                                <form action="/withdrawApplication" method="POST" onsubmit="return confirm(
+                                'Deseja realmente desistir desta candidatura?'
+                            );">
+                                    <input type="hidden" name="vaga_id" value="<?= $vaga['vaga_id'] ?>">
+                                    <button type="submit" class="btn btn-outline-danger rounded-pill mt-2">
+                                        <i class="bi bi-x-circle"></i>
+                                        Desistir da candidatura
+                                    </button>
+                                </form>
+
+                            <?php } else { ?>
+                                <div>
+                                    <button class="btn btn-outline-secondary rounded-pill mt-2" disabled>
+                                        Processo encerrado
+                                    </button>
+                                </div>
+                            <?php } ?>
                         </div>
-
                     </div>
-
                 </div>
-
             </div>
-
-        <?php } ?>
+        <?php } // Fim do foreach/loop que renderiza as candidaturas ?>
 
     <?php } else { ?>
-
         <div class="card border-0 shadow-sm rounded-4">
-
             <div class="card-body text-center text-muted">
-
                 Você ainda não realizou nenhuma candidatura.
-
             </div>
-
         </div>
-
     <?php } ?>
 
 </div>
