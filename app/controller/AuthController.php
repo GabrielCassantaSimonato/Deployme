@@ -7,10 +7,8 @@ use MF\model\Container;
 
 class AuthController extends Action
 {
-
     public function auth()
     {
-
         if (session_status() !== PHP_SESSION_ACTIVE) {
             session_start();
         }
@@ -19,21 +17,18 @@ class AuthController extends Action
         $senha = $_POST['senha'] ?? null;
 
         $usuario = Container::getModel('Usuario');
-
         $usuario->__set('email', $email);
 
         $dadosUsuario = $usuario->buscarPorEmail();
 
         // usuário existe?
         if (!$dadosUsuario) {
-
             header('Location: /login?erro=1');
             exit;
         }
 
         // valida senha
         if (!password_verify($senha, $dadosUsuario['senha'])) {
-
             header('Location: /login?erro=1');
             exit;
         }
@@ -47,33 +42,23 @@ class AuthController extends Action
 
         // ESTUDANTE
         if ($dadosUsuario['tipo'] == 'estudante') {
-
             $estudante = Container::getModel('Estudante');
+            $dadosEstudante = $estudante->buscarPorUsuario($dadosUsuario['id']);
 
-            $dadosEstudante =
-                $estudante->buscarPorUsuario($dadosUsuario['id']);
-
-            $_SESSION['cidade'] =
-                $dadosEstudante['cidade'];
-
-            $_SESSION['uf'] =
-                $dadosEstudante['uf'];
+            $_SESSION['cidade'] = $dadosEstudante['cidade'];
+            $_SESSION['uf'] = $dadosEstudante['uf'];
         }
 
         // RECRUTADOR
         if ($dadosUsuario['tipo'] == 'recrutador') {
-
             $recrutador = Container::getModel('Recrutador');
+            $dadosRecrutador = $recrutador->buscarPorUsuario($dadosUsuario['id']);
 
-            $dadosRecrutador =
-                $recrutador->buscarPorUsuario($dadosUsuario['id']);
-
-            $_SESSION['empresa'] =
-                $dadosRecrutador['empresa'];
+            $_SESSION['empresa'] = $dadosRecrutador['empresa'];
         }
+
         // ADMIN
         if ($dadosUsuario['tipo'] == 'admin') {
-
             header('Location: /admin');
             exit;
         }
@@ -82,10 +67,10 @@ class AuthController extends Action
         header('Location: /timeline');
         exit;
     }
+
     public function logout()
     {
         session_start();
-
         session_destroy();
 
         header('Location: /');

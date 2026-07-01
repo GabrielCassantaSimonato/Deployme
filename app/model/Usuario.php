@@ -2,11 +2,10 @@
 
 namespace app\model;
 
-use MF\model\Model;
+use MF\Model\Model;
 
 class Usuario extends Model
 {
-
     private $id;
     private $nome;
     private $email;
@@ -29,10 +28,13 @@ class Usuario extends Model
 
     public function salvarUsuario()
     {
-        $query = "INSERT INTO usuarios 
-        (nome, email, senha, tipo, genero_id, foto, criado_em)
-        VALUES 
-        (:nome, :email, :senha, :tipo, :genero_id, :foto, NOW())";
+        $query = "
+            INSERT INTO usuarios (
+                nome, email, senha, tipo, genero_id, foto, criado_em
+            ) VALUES (
+                :nome, :email, :senha, :tipo, :genero_id, :foto, NOW()
+            )
+        ";
 
         $stmt = $this->db->prepare($query);
 
@@ -60,7 +62,6 @@ class Usuario extends Model
 
     public function validarCadastro()
     {
-
         $erros = [];
 
         if (empty($this->__get('nome'))) {
@@ -85,15 +86,13 @@ class Usuario extends Model
     public function buscarPorEmail()
     {
         $query = "
-        SELECT *
-        FROM usuarios
-        WHERE email = :email
-    ";
+            SELECT *
+            FROM usuarios
+            WHERE email = :email
+        ";
 
         $stmt = $this->db->prepare($query);
-
         $stmt->bindValue(':email', $this->__get('email'));
-
         $stmt->execute();
 
         return $stmt->fetch(\PDO::FETCH_ASSOC);
@@ -102,59 +101,38 @@ class Usuario extends Model
     public function buscarUsuarioCompleto($id)
     {
         $query = "
-        SELECT
-
-    u.id,
-    u.nome,
-    u.email,
-    u.tipo,
-    u.foto,
-
-    e.cep,
-    e.rua,
-    e.bairro,
-    e.complemento,
-    e.cidade,
-    e.uf,
-    e.github,
-    e.curriculo,
-
-    e.universidade_id,
-    e.curso_id,
-    e.semestre_id,
-
-    f.nome AS faculdade,
-
-    c.nome AS curso,
-
-    s.semestre AS semestre,
-
-    r.empresa
-
-FROM usuarios u
-
-LEFT JOIN estudantes e
-    ON e.usuario_id = u.id
-
-LEFT JOIN recrutadores r
-    ON r.usuario_id = u.id
-
-LEFT JOIN universidades f
-    ON e.universidade_id = f.id
-
-LEFT JOIN cursos c
-    ON e.curso_id = c.id
-
-LEFT JOIN semestres s
-    ON e.semestre_id = s.id
-
-WHERE u.id = :id
-    ";
+            SELECT
+                u.id,
+                u.nome,
+                u.email,
+                u.tipo,
+                u.foto,
+                e.cep,
+                e.rua,
+                e.bairro,
+                e.complemento,
+                e.cidade,
+                e.uf,
+                e.github,
+                e.curriculo,
+                e.universidade_id,
+                e.curso_id,
+                e.semestre_id,
+                f.nome AS faculdade,
+                c.nome AS curso,
+                s.semestre AS semestre,
+                r.empresa
+            FROM usuarios u
+            LEFT JOIN estudantes e ON e.usuario_id = u.id
+            LEFT JOIN recrutadores r ON r.usuario_id = u.id
+            LEFT JOIN universidades f ON e.universidade_id = f.id
+            LEFT JOIN cursos c ON e.curso_id = c.id
+            LEFT JOIN semestres s ON e.semestre_id = s.id
+            WHERE u.id = :id
+        ";
 
         $stmt = $this->db->prepare($query);
-
         $stmt->bindValue(':id', $id);
-
         $stmt->execute();
 
         return $stmt->fetch(\PDO::FETCH_ASSOC);
@@ -164,30 +142,20 @@ WHERE u.id = :id
     {
         // USUÁRIOS
         $query = "
-
-        UPDATE usuarios SET
-
-            nome = :nome,
-            email = :email
-
-        WHERE id = :id
-
-    ";
-
-        if (isset($dados['foto'])) {
-
-            $query = "
-
-            UPDATE usuarios SET
-
-                nome = :nome,
-                email = :email,
-                foto = :foto
-
+            UPDATE usuarios 
+            SET nome = :nome,
+                email = :email
             WHERE id = :id
-
         ";
 
+        if (isset($dados['foto'])) {
+            $query = "
+                UPDATE usuarios 
+                SET nome = :nome,
+                    email = :email,
+                    foto = :foto
+                WHERE id = :id
+            ";
         }
 
         $stmt = $this->db->prepare($query);
@@ -197,46 +165,32 @@ WHERE u.id = :id
         $stmt->bindValue(':email', $dados['email']);
 
         if (isset($dados['foto'])) {
-
             $stmt->bindValue(':foto', $dados['foto']);
-
         }
 
         $stmt->execute();
 
         // ESTUDANTE
         if ($_SESSION['tipo'] == 'estudante') {
-
             $queryEstudante = "
-
-            UPDATE estudantes SET
-
-                github = :github,
-                cep = :cep,
-                rua = :rua,
-                bairro = :bairro,
-                complemento = :complemento,
-                cidade = :cidade,
-                uf = :uf,
-                universidade_id = :universidade_id,
-                curso_id = :curso_id,
-                semestre_id = :semestre_id
-
-        ";
-
-            if (isset($dados['curriculo'])) {
-
-                $queryEstudante .= ",
-                curriculo = :curriculo
+                UPDATE estudantes 
+                SET github = :github,
+                    cep = :cep,
+                    rua = :rua,
+                    bairro = :bairro,
+                    complemento = :complemento,
+                    cidade = :cidade,
+                    uf = :uf,
+                    universidade_id = :universidade_id,
+                    curso_id = :curso_id,
+                    semestre_id = :semestre_id
             ";
 
+            if (isset($dados['curriculo'])) {
+                $queryEstudante .= ", curriculo = :curriculo";
             }
 
-            $queryEstudante .= "
-
-            WHERE usuario_id = :usuario_id
-
-        ";
+            $queryEstudante .= " WHERE usuario_id = :usuario_id";
 
             $stmt = $this->db->prepare($queryEstudante);
 
@@ -252,29 +206,20 @@ WHERE u.id = :id
             $stmt->bindValue(':semestre_id', $dados['semestre_id']);
 
             if (isset($dados['curriculo'])) {
-
                 $stmt->bindValue(':curriculo', $dados['curriculo']);
-
             }
 
             $stmt->bindValue(':usuario_id', $dados['id']);
-
             $stmt->execute();
-
         }
 
         // RECRUTADOR
         if ($_SESSION['tipo'] == 'recrutador') {
-
             $query = "
-
-            UPDATE recrutadores SET
-
-                empresa = :empresa
-
-            WHERE usuario_id = :usuario_id
-
-        ";
+                UPDATE recrutadores 
+                SET empresa = :empresa
+                WHERE usuario_id = :usuario_id
+            ";
 
             $stmt = $this->db->prepare($query);
 
@@ -282,29 +227,21 @@ WHERE u.id = :id
             $stmt->bindValue(':usuario_id', $dados['id']);
 
             $stmt->execute();
-
         }
     }
 
     public function atualizarSenha()
     {
         $query = "
-        UPDATE usuarios
-        SET senha = :senha
-        WHERE email = :email
-    ";
+            UPDATE usuarios
+            SET senha = :senha
+            WHERE email = :email
+        ";
 
         $stmt = $this->db->prepare($query);
 
-        $stmt->bindValue(
-            ':email',
-            $this->__get('email')
-        );
-
-        $stmt->bindValue(
-            ':senha',
-            $this->__get('senha')
-        );
+        $stmt->bindValue(':email', $this->__get('email'));
+        $stmt->bindValue(':senha', $this->__get('senha'));
 
         return $stmt->execute();
     }
@@ -312,67 +249,218 @@ WHERE u.id = :id
     public function listarUsuarios()
     {
         $query = "
-        SELECT
-            u.id,
-            u.nome,
-            u.foto,
-            u.tipo,
+            SELECT
+                u.id,
+                u.nome,
+                u.foto,
+                u.tipo,
+                e.cidade,
+                e.uf,
+                c.nome AS curso,
+                uni.nome AS universidade,
+                r.empresa,
+                CASE
+                    WHEN s.id IS NULL THEN 0
+                    ELSE 1
+                END AS seguindo
+            FROM usuarios u
+            LEFT JOIN estudantes e ON e.usuario_id = u.id
+            LEFT JOIN cursos c ON c.id = e.curso_id
+            LEFT JOIN universidades uni ON uni.id = e.universidade_id
+            LEFT JOIN recrutadores r ON r.usuario_id = u.id
+            LEFT JOIN seguidores s ON s.seguindo_id = u.id AND s.usuario_id = :usuario_logado
+            WHERE u.id <> :usuario_logado
+              AND u.tipo <> 'admin'
+            ORDER BY u.nome ASC
+        ";
 
-            e.cidade,
-            e.uf,
+        $stmt = $this->db->prepare($query);
+        $stmt->bindValue(':usuario_logado', $_SESSION['id']);
+        $stmt->execute();
 
-            c.nome AS curso,
-            uni.nome AS universidade,
+        return $stmt->fetchAll(\PDO::FETCH_ASSOC);
+    }
 
-            r.empresa,
+    public function listarUsuariosChat()
+    {
+        $query = "
 
-            CASE
-                WHEN s.id IS NULL THEN 0
-                ELSE 1
-            END AS seguindo
+    SELECT
 
-        FROM usuarios u
+        u.id,
+        u.nome,
+        u.foto,
 
-        LEFT JOIN estudantes e
-            ON e.usuario_id = u.id
+        c.id AS conversa_id,
 
-        LEFT JOIN cursos c
-            ON c.id = e.curso_id
+        (
+            SELECT m.mensagem
+            FROM mensagens m
+            WHERE m.conversa_id = c.id
+            ORDER BY m.created_at DESC
+            LIMIT 1
+        ) AS ultima_mensagem,
 
-        LEFT JOIN universidades uni
-            ON uni.id = e.universidade_id
+        (
+            SELECT m.created_at
+            FROM mensagens m
+            WHERE m.conversa_id = c.id
+            ORDER BY m.created_at DESC
+            LIMIT 1
+        ) AS ultima_data,
 
-        LEFT JOIN recrutadores r
-            ON r.usuario_id = u.id
+        (
+            SELECT COUNT(*)
+            FROM mensagens m
+            WHERE
+                m.conversa_id = c.id
+            AND
+                m.remetente_id <> :usuario_logado
+            AND
+                m.lida = 0
+        ) AS nao_lidas,
 
-        LEFT JOIN seguidores s
-            ON s.seguindo_id = u.id
-            AND s.usuario_id = :usuario_logado
+        (
+            SELECT
+                CASE
+                    WHEN m.remetente_id = :usuario_logado
+                    THEN 1
+                    ELSE 0
+                END
+            FROM mensagens m
+            WHERE m.conversa_id = c.id
+            ORDER BY m.created_at DESC
+            LIMIT 1
+        ) AS foi_enviada_por_mim
 
-        WHERE
-            u.id <> :usuario_logado
+    FROM usuarios u
 
-        AND
-            u.tipo <> 'admin'
+    INNER JOIN conversas c
 
-        ORDER BY u.nome ASC
+        ON
+
+        (
+            (c.usuario1_id = :usuario_logado AND c.usuario2_id = u.id)
+
+            OR
+
+            (c.usuario2_id = :usuario_logado AND c.usuario1_id = u.id)
+        )
+
+    INNER JOIN seguidores s
+
+        ON
+
+        s.seguindo_id = u.id
+
+    WHERE
+
+        s.usuario_id = :usuario_logado
+
+    ORDER BY
+
+        ultima_data DESC,
+
+        u.nome ASC
+
     ";
 
         $stmt = $this->db->prepare($query);
 
         $stmt->bindValue(
+
             ':usuario_logado',
+
             $_SESSION['id']
+
         );
 
         $stmt->execute();
 
-        return $stmt->fetchAll(
-            \PDO::FETCH_ASSOC
-        );
+        return $stmt->fetchAll(\PDO::FETCH_ASSOC);
     }
 
+    public function buscarUltimaMensagem(
+        $usuario_id
+    ) {
+
+        $query = "
+
+        SELECT
+
+            m.mensagem,
+
+            m.created_at,
+
+            m.remetente_id
+
+        FROM conversas c
+
+        INNER JOIN mensagens m
+
+        ON m.conversa_id = c.id
+
+        WHERE
+
+        (
+
+            c.usuario1_id = :usuario_logado
+
+            AND
+
+            c.usuario2_id = :usuario
+
+        )
+
+        OR
+
+        (
+
+            c.usuario2_id = :usuario_logado
+
+            AND
+
+            c.usuario1_id = :usuario
+
+        )
+
+        ORDER BY
+
+        m.created_at DESC
+
+        LIMIT 1
+
+    ";
+
+        $stmt = $this->db->prepare(
+
+            $query
+
+        );
+
+        $stmt->bindValue(
+
+            ':usuario_logado',
+
+            $_SESSION['id']
+
+        );
+
+        $stmt->bindValue(
+
+            ':usuario',
+
+            $usuario_id
+
+        );
+
+        $stmt->execute();
+
+        return $stmt->fetch(
+
+            \PDO::FETCH_ASSOC
+
+        );
+
+    }
 }
-
-
-?>

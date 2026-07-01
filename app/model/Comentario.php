@@ -6,20 +6,14 @@ use MF\Model\Model;
 
 class Comentario extends Model
 {
-    public function comentar(
-        $usuario_id,
-        $publicacao_id,
-        $comentario
-    ) {
+    public function comentar($usuario_id, $publicacao_id, $comentario)
+    {
         $query = "
-            INSERT INTO comentarios
-            (
+            INSERT INTO comentarios (
                 usuario_id,
                 publicacao_id,
                 comentario
-            )
-            VALUES
-            (
+            ) VALUES (
                 :usuario_id,
                 :publicacao_id,
                 :comentario
@@ -43,16 +37,13 @@ class Comentario extends Model
                 u.nome,
                 u.foto
             FROM comentarios c
-            INNER JOIN usuarios u
-                ON u.id = c.usuario_id
+            INNER JOIN usuarios u ON u.id = c.usuario_id
             WHERE c.publicacao_id = :publicacao_id
             ORDER BY c.created_at ASC
         ";
 
         $stmt = $this->db->prepare($query);
-
         $stmt->bindValue(':publicacao_id', $publicacao_id);
-
         $stmt->execute();
 
         return $stmt->fetchAll(\PDO::FETCH_ASSOC);
@@ -67,23 +58,19 @@ class Comentario extends Model
         ";
 
         $stmt = $this->db->prepare($query);
-
         $stmt->bindValue(':publicacao_id', $publicacao_id);
-
         $stmt->execute();
 
         return $stmt->fetch(\PDO::FETCH_ASSOC);
     }
 
-    public function delete(
-        $id,
-        $usuario_id
-    ) {
+    public function delete($id, $usuario_id)
+    {
         $query = "
-        DELETE FROM comentarios
-        WHERE id = :id
-        AND usuario_id = :usuario_id
-    ";
+            DELETE FROM comentarios
+            WHERE id = :id
+            AND usuario_id = :usuario_id
+        ";
 
         $stmt = $this->db->prepare($query);
 
@@ -93,18 +80,14 @@ class Comentario extends Model
         return $stmt->execute();
     }
 
-    public function editar(
-        $id,
-        $usuario_id,
-        $comentario
-    ) {
-
+    public function editar($id, $usuario_id, $comentario)
+    {
         $query = "
-        UPDATE comentarios
-        SET comentario = :comentario
-        WHERE id = :id
-        AND usuario_id = :usuario_id
-    ";
+            UPDATE comentarios
+            SET comentario = :comentario
+            WHERE id = :id
+            AND usuario_id = :usuario_id
+        ";
 
         $stmt = $this->db->prepare($query);
 

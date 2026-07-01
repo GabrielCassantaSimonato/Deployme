@@ -1,12 +1,13 @@
 <?php
+
 namespace app\controller;
+
 use MF\controller\Action;
 use MF\model\Container;
 use app\middleware\Auth;
 
 class AppController extends Action
 {
-
     public function timeline()
     {
         Auth::validarAutenticacao();
@@ -18,7 +19,6 @@ class AppController extends Action
 
         // PUBLICAÇÕES
         $publicacao = Container::getModel('Publicacao');
-
         $publicacoes = $publicacao->listarPublicacoes($_SESSION['id']);
 
         // CURTIDAS, COMENTÁRIOS
@@ -26,19 +26,16 @@ class AppController extends Action
         $comentario = Container::getModel('Comentario');
 
         foreach ($publicacoes as &$pub) {
-
             $pub['curtidas'] = $curtida->totalCurtidas($pub['id'])['total'];
-
             $pub['curtido'] = $curtida->usuarioCurtiu($_SESSION['id'], $pub['id']) ? true : false;
-
             $pub['comentarios'] = $comentario->listarComentarios($pub['id']);
-
             $pub['total_comentarios'] = $comentario->totalComentarios($pub['id'])['total'];
         }
 
         $this->view->publicacoes = $publicacoes;
         $this->render('timeline');
     }
+
     public function post()
     {
         Auth::validarAutenticacao();
@@ -46,7 +43,6 @@ class AppController extends Action
 
         // UPLOAD IMAGEM
         if (!empty($_FILES['imagem']['name'])) {
-
             $extensao = pathinfo(
                 $_FILES['imagem']['name'],
                 PATHINFO_EXTENSION
@@ -60,22 +56,18 @@ class AppController extends Action
             );
 
             $imagem = $nomeImagem;
-
         }
 
         $publicacao = Container::getModel('Publicacao');
         $moderacao = Container::getModel('ModeracaoAI');
 
-        $analise = $moderacao->analisar(
-            $_POST['conteudo']
-        );
-        if (!$analise['aprovado']) {
+        $analise = $moderacao->analisar($_POST['conteudo']);
 
+        if (!$analise['aprovado']) {
             header(
                 'Location: /timeline?moderacao=bloqueado&motivo=' .
                 urlencode($analise['motivo'])
             );
-
             exit;
         }
 
@@ -88,6 +80,7 @@ class AppController extends Action
 
         header('Location: /timeline?post=sucesso');
     }
+
     public function vacancy()
     {
         Auth::validarAutenticacao();
@@ -95,7 +88,6 @@ class AppController extends Action
 
         // UPLOAD
         if (!empty($_FILES['imagem']['name'])) {
-
             $extensao = pathinfo(
                 $_FILES['imagem']['name'],
                 PATHINFO_EXTENSION
@@ -109,7 +101,6 @@ class AppController extends Action
             );
 
             $imagem = $nomeImagem;
-
         }
 
         // SALVA PUBLICAÇÃO
@@ -123,7 +114,6 @@ class AppController extends Action
 
         // SALVA VAGA
         $publicacao->salvarVaga([
-
             'publicacao_id' => $publicacaoId,
             'titulo' => $_POST['titulo_vaga'],
             'empresa' => $_POST['empresa'],
@@ -131,11 +121,9 @@ class AppController extends Action
             'modalidade' => $_POST['modalidade'],
             'salario' => $_POST['salario'],
             'descricao' => $_POST['conteudo']
-
         ]);
 
         header('Location: /timeline?post=sucesso');
-
     }
 
     public function updatePost()
@@ -148,12 +136,10 @@ class AppController extends Action
         $resultado = $moderacao->analisar($_POST['conteudo']);
 
         if (!$resultado['aprovado']) {
-
             header(
                 'Location: /timeline?moderacao=bloqueado&motivo=' .
                 urlencode($resultado['motivo'])
             );
-
             exit;
         }
 
@@ -164,7 +150,6 @@ class AppController extends Action
         $imagem = '';
 
         if (!empty($_FILES['imagem']['name'])) {
-
             $imagem = md5(time()) . '.jpg';
 
             move_uploaded_file(
@@ -174,7 +159,6 @@ class AppController extends Action
         }
 
         $publicacao->__set('imagem', $imagem);
-
         $publicacao->updatePost();
 
         header('Location: /timeline?edit=post_sucesso');
@@ -188,7 +172,6 @@ class AppController extends Action
 
         // UPLOAD (Alinhado com o padrão usado na criação)
         if (!empty($_FILES['imagem']['name'])) {
-
             $extensao = pathinfo(
                 $_FILES['imagem']['name'],
                 PATHINFO_EXTENSION
@@ -207,7 +190,6 @@ class AppController extends Action
         $publicacao = Container::getModel('Publicacao');
 
         // 1. ATUALIZA A PUBLICAÇÃO BASE (Tabela publicacoes)
-        // Aproveitamos o mesmo método que você já usa para editar posts comuns
         $publicacao->__set('id', $_POST['id']);
         $publicacao->__set('usuario_id', $_SESSION['id']);
         $publicacao->__set('conteudo', $_POST['conteudo']);
@@ -216,19 +198,14 @@ class AppController extends Action
         $publicacao->updatePost();
 
         // 2. ATUALIZA OS DETALHES DA VAGA (Tabela vagas)
-        // Passamos o array $dados exatamente como fazemos no salvarVaga()
         $publicacao->updateVacancy([
-
             'publicacao_id' => $_POST['id'],
-            // Atenção: na criação você usou 'titulo_vaga', mas no HTML do modal de 
-            // edição o input se chama apenas 'titulo'. Mantive 'titulo' aqui.
             'titulo' => $_POST['titulo'],
             'empresa' => $_POST['empresa'],
             'localizacao' => $_POST['localizacao'],
             'modalidade' => $_POST['modalidade'],
             'salario' => $_POST['salario'],
             'descricao' => $_POST['conteudo']
-
         ]);
 
         header('Location: /timeline?edit=vaga_sucesso');
@@ -239,7 +216,6 @@ class AppController extends Action
         Auth::validarAutenticacao();
 
         $publicacao = Container::getModel('Publicacao');
-
         $publicacao->__set('id', $_GET['id']);
         $publicacao->__set('usuario_id', $_SESSION['id']);
 
@@ -253,7 +229,6 @@ class AppController extends Action
         Auth::validarAutenticacao();
 
         $vaga = Container::getModel('Publicacao');
-
         $vaga->__set('id', $_GET['id']);
         $vaga->__set('usuario_id', $_SESSION['id']);
 
@@ -261,20 +236,15 @@ class AppController extends Action
 
         header('Location: /timeline?delete=success');
     }
+
     public function like()
     {
         Auth::validarAutenticacao();
 
         $curtida = Container::getModel('Curtida');
+        $curtida->curtir($_SESSION['id'], $_POST['publicacao']);
 
-        $curtida->curtir(
-            $_SESSION['id'],
-            $_POST['publicacao']
-        );
-
-        $total = $curtida->totalCurtidas(
-            $_POST['publicacao']
-        );
+        $total = $curtida->totalCurtidas($_POST['publicacao']);
 
         echo json_encode([
             'status' => 'ok',
@@ -289,15 +259,9 @@ class AppController extends Action
         Auth::validarAutenticacao();
 
         $curtida = Container::getModel('Curtida');
+        $curtida->descurtir($_SESSION['id'], $_POST['publicacao']);
 
-        $curtida->descurtir(
-            $_SESSION['id'],
-            $_POST['publicacao']
-        );
-
-        $total = $curtida->totalCurtidas(
-            $_POST['publicacao']
-        );
+        $total = $curtida->totalCurtidas($_POST['publicacao']);
 
         echo json_encode([
             'status' => 'ok',
@@ -312,7 +276,6 @@ class AppController extends Action
         Auth::validarAutenticacao();
 
         $comentario = Container::getModel('Comentario');
-
         $comentario->comentar(
             $_SESSION['id'],
             $_POST['publicacao_id'],
@@ -324,7 +287,6 @@ class AppController extends Action
             isset($_SERVER['HTTP_X_REQUESTED_WITH']) &&
             strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) == 'xmlhttprequest'
         ) {
-
             $comentarioModel = Container::getModel('Comentario');
 
             echo json_encode([
@@ -335,10 +297,7 @@ class AppController extends Action
                     : '/uploads/fotos/default-user.png',
                 'comentario' => $_POST['comentario'],
                 'data' => date('d/m/Y H:i'),
-                'total_comentarios' =>
-                    $comentarioModel->totalComentarios(
-                        $_POST['publicacao_id']
-                    )['total']
+                'total_comentarios' => $comentarioModel->totalComentarios($_POST['publicacao_id'])['total']
             ]);
 
             exit;
@@ -353,28 +312,18 @@ class AppController extends Action
         Auth::validarAutenticacao();
 
         $comentario = Container::getModel('Comentario');
-
-        $comentario->delete(
-            $_GET['id'],
-            $_SESSION['id']
-        );
+        $comentario->delete($_GET['id'], $_SESSION['id']);
 
         if (
             isset($_SERVER['HTTP_X_REQUESTED_WITH']) &&
             strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) == 'xmlhttprequest'
         ) {
-
-            $comentarioModel =
-                Container::getModel('Comentario');
+            $comentarioModel = Container::getModel('Comentario');
 
             echo json_encode([
                 'success' => true,
                 'publicacao_id' => $_GET['publicacao_id'],
-                'total_comentarios' =>
-                    $comentarioModel
-                        ->totalComentarios(
-                            $_GET['publicacao_id']
-                        )['total']
+                'total_comentarios' => $comentarioModel->totalComentarios($_GET['publicacao_id'])['total']
             ]);
 
             exit;
@@ -388,14 +337,12 @@ class AppController extends Action
         Auth::validarAutenticacao();
 
         $comentario = Container::getModel('Comentario');
-
         $comentario->editar(
             $_POST['id'],
             $_SESSION['id'],
             $_POST['comentario']
         );
 
-        // Retorna um JSON de sucesso para o nosso JavaScript ler
         header('Content-Type: application/json');
         echo json_encode(['sucesso' => true]);
         exit;
@@ -407,7 +354,7 @@ class AppController extends Action
 
         $publicacao = Container::getModel('Publicacao');
         $publicacao->compartilhar($_SESSION['id'], $_GET['id']);
-        header('Location:/timeline?share=sucesso');
+        header('Location: /timeline?share=sucesso');
     }
 
     public function people()
@@ -415,9 +362,7 @@ class AppController extends Action
         Auth::validarAutenticacao();
 
         $usuario = Container::getModel('Usuario');
-
-        $this->view->usuarios =
-            $usuario->listarUsuarios();
+        $this->view->usuarios = $usuario->listarUsuarios();
 
         $this->render('people');
     }
@@ -436,24 +381,11 @@ class AppController extends Action
     {
         Auth::validarAutenticacao();
 
-        $seguidor =
-            Container::getModel(
-                'Seguidores'
-            );
+        $seguidor = Container::getModel('Seguidores');
+        $seguidor->deixarDeSeguir($_SESSION['id'], $_POST['usuario_id']);
 
-        $seguidor->deixarDeSeguir(
-            $_SESSION['id'],
-            $_POST['usuario_id']
-        );
-
-        header(
-            'Content-Type: application/json'
-        );
-
-        echo json_encode([
-            'success' => true
-        ]);
-
+        header('Content-Type: application/json');
+        echo json_encode(['success' => true]);
         exit;
     }
 
@@ -461,24 +393,11 @@ class AppController extends Action
     {
         Auth::validarAutenticacao();
 
-        $seguidor =
-            Container::getModel(
-                'Seguidores'
-            );
+        $seguidor = Container::getModel('Seguidores');
+        $this->view->seguidores = $seguidor->listarSeguidores($_SESSION['id']);
+        $this->view->seguindo = $seguidor->listarSeguindo($_SESSION['id']);
 
-        $this->view->seguidores =
-            $seguidor->listarSeguidores(
-                $_SESSION['id']
-            );
-
-        $this->view->seguindo =
-            $seguidor->listarSeguindo(
-                $_SESSION['id']
-            );
-
-        $this->render(
-            'followers'
-        );
+        $this->render('followers');
     }
 
     public function viewVacancies()
@@ -486,7 +405,6 @@ class AppController extends Action
         Auth::validarAutenticacao();
 
         $vaga = Container::getModel('Publicacao');
-
         $this->view->vagas = $vaga->listarTodasVagas();
 
         $this->render('viewVacancies');
@@ -498,8 +416,10 @@ class AppController extends Action
 
         $vaga = Container::getModel('Publicacao');
         $this->view->vaga = $vaga->buscarVagaPorPublicacao($_GET['id']);
+
         $estudante = Container::getModel('Estudante');
         $this->view->curriculo = $estudante->buscarCurriculo($_SESSION['id']);
+
         $this->render('vacancyDetails');
     }
 
@@ -507,73 +427,39 @@ class AppController extends Action
     {
         Auth::validarAutenticacao();
 
-        $candidatura =
-            Container::getModel(
-                'Candidatura'
-            );
+        $candidatura = Container::getModel('Candidatura');
 
-        $jaExiste =
-            $candidatura->jaCandidatou(
+        $jaExiste = $candidatura->jaCandidatou(
+            $_POST['vaga_id'],
+            $_SESSION['id']
+        );
 
-                $_POST['vaga_id'],
-
-                $_SESSION['id']
-
-            );
-
-        $publicacao =
-
-            $candidatura->buscarPublicacaoDaVaga(
-
-                $_POST['vaga_id']
-
-            );
-
-        $publicacao_id =
-
-            $publicacao['publicacao_id'];
+        $publicacao = $candidatura->buscarPublicacaoDaVaga($_POST['vaga_id']);
+        $publicacao_id = $publicacao['publicacao_id'];
 
         if ($jaExiste) {
-
             header(
-
                 'Location: /vacancyDetails?id=' .
-
                 $publicacao_id .
-
                 '&alreadyApplied=1'
-
             );
-
             exit;
         }
 
         $candidatura->salvar(
-
             $_POST['vaga_id'],
-
             $_SESSION['id'],
-
             $_POST['email'],
-
             $_POST['celular'],
-
             $_POST['github'] ?? null,
-
             $_POST['curriculo']
-
         );
 
         header(
-
             'Location: /vacancyDetails?id=' .
-
             $publicacao_id .
-
             '&successApply=1'
-
         );
-
         exit;
     }
 
@@ -581,83 +467,34 @@ class AppController extends Action
     {
         Auth::validarAutenticacao();
 
-        $candidatura =
+        $candidatura = Container::getModel('Candidatura');
+        $this->view->candidaturas = $candidatura->listarMinhasCandidaturas($_SESSION['id']);
 
-            Container::getModel(
-                'Candidatura'
-            );
-
-        $this->view->candidaturas =
-
-            $candidatura->listarMinhasCandidaturas(
-
-                $_SESSION['id']
-
-            );
-
-        $this->render(
-            'myApplications'
-        );
+        $this->render('myApplications');
     }
 
     public function myVacancies()
     {
         Auth::validarAutenticacao();
 
-        $publicacao =
+        $publicacao = Container::getModel('Publicacao');
+        $this->view->vagas = $publicacao->listarMinhasVagas($_SESSION['id']);
 
-            Container::getModel(
-                'Publicacao'
-            );
-
-        $this->view->vagas =
-
-            $publicacao->listarMinhasVagas(
-
-                $_SESSION['id']
-
-            );
-
-        $this->render(
-            'myVacancies'
-        );
+        $this->render('myVacancies');
     }
 
     public function vacancyCandidates()
     {
         Auth::validarAutenticacao();
 
-        $vaga_id =
+        $vaga_id = $_GET['id'];
+        $candidatura = Container::getModel('Candidatura');
+        $publicacao = Container::getModel('Publicacao');
 
-            $_GET['id'];
+        $this->view->vaga = $publicacao->buscarVagaPorId($vaga_id);
+        $this->view->candidatos = $candidatura->listarCandidatos($vaga_id);
 
-        $candidatura =
-
-            Container::getModel(
-                'Candidatura'
-            );
-
-        $publicacao =
-
-            Container::getModel(
-                'Publicacao'
-            );
-
-        $this->view->vaga =
-
-            $publicacao->buscarVagaPorId(
-                $vaga_id
-            );
-
-        $this->view->candidatos =
-
-            $candidatura->listarCandidatos(
-                $vaga_id
-            );
-
-        $this->render(
-            'vacancyCandidates'
-        );
+        $this->render('vacancyCandidates');
     }
 
     public function updateApplicationStatus()
@@ -666,6 +503,7 @@ class AppController extends Action
 
         $candidatura = Container::getModel('Candidatura');
         $candidatura->alterarStatus($_POST['candidatura_id'], $_POST['status']);
+
         header('Location: /vacancyCandidates?id=' . $_POST['vaga_id']);
         exit;
     }
@@ -674,28 +512,296 @@ class AppController extends Action
     {
         Auth::validarAutenticacao();
 
-        $candidatura =
+        $candidatura = Container::getModel('Candidatura');
+        $candidatura->desistir($_POST['vaga_id'], $_SESSION['id']);
 
-            Container::getModel(
-                'Candidatura'
+        header('Location: /myApplications');
+        exit;
+    }
+
+    public function chat()
+    {
+        Auth::validarAutenticacao();
+
+        $usuario = Container::getModel('Usuario');
+        $this->view->usuarios = $usuario->listarUsuariosChat();
+
+        // MAPEIA E ATRIBUI DADOS DA ÚLTIMA MENSAGEM DE CADA USUÁRIO
+        foreach ($this->view->usuarios as &$u) {
+            $ultima = $usuario->buscarUltimaMensagem($u['id']);
+
+            $u['ultima_mensagem'] = $ultima['mensagem'] ?? null;
+            $u['ultima_data'] = $ultima['created_at'] ?? null;
+            $u['foi_enviada_por_mim'] = ($ultima['remetente_id'] ?? null) == $_SESSION['id'];
+            $mensagem = Container::getModel('Mensagem');
+            $u['nao_lidas'] = $mensagem->contarMensagensNaoLidas(
+                $_SESSION['id'],
+                $u['id']
             );
+        }
 
-        $candidatura->desistir(
+        // ORDENA A LISTA DE USUÁRIOS COM BASE NA DATA DA ÚLTIMA MENSAGEM (MAIS RECENTE PRIMEIRO)
+        usort($this->view->usuarios, function ($a, $b) {
+            $dataA = $a['ultima_data'] ?? '0000-00-00 00:00:00';
+            $dataB = $b['ultima_data'] ?? '0000-00-00 00:00:00';
 
-            $_POST['vaga_id'],
+            return strtotime($dataB) - strtotime($dataA);
+        });
+
+        $this->view->mensagens = [];
+        $this->view->conversaAtual = null;
+        $this->view->usuarioSelecionado = null;
+
+        if (isset($_GET['conversa'])) {
+            $mensagem = Container::getModel('Mensagem');
+            $this->view->conversaAtual = $_GET['conversa'];
+            $this->view->mensagens = $mensagem->buscarMensagens($_GET['conversa']);
+            $mensagem->marcarComoLida($_GET['conversa'], $_SESSION['id']);
+
+            $conversaModel = Container::getModel('Conversa');
+            $dadosConversa = $conversaModel->buscarPorId($_GET['conversa']);
+
+            if ($dadosConversa) {
+                $this->view->usuarioSelecionado = ($dadosConversa['usuario1_id'] == $_SESSION['id'])
+                    ? $dadosConversa['usuario2_id']
+                    : $dadosConversa['usuario1_id'];
+            }
+        }
+
+        $this->render('chat');
+    }
+
+    public function openConversation()
+    {
+        Auth::validarAutenticacao();
+
+        $conversa = Container::getModel('Conversa');
+        $conversa_id = $conversa->buscarOuCriarConversa(
+            $_SESSION['id'],
+            $_GET['usuario']
+        );
+
+        header('Location: /chat?conversa=' . $conversa_id);
+        exit;
+    }
+
+    public function sendMessage()
+    {
+        Auth::validarAutenticacao();
+
+        $nomeImagem = null;
+
+        if (
+            isset($_FILES['imagem']) &&
+            $_FILES['imagem']['error'] === UPLOAD_ERR_OK
+        ) {
+
+            $permitidos = [
+                'image/jpeg',
+                'image/png',
+                'image/webp',
+                'image/gif'
+            ];
+
+            if (
+                in_array(
+                    $_FILES['imagem']['type'],
+                    $permitidos
+                )
+            ) {
+
+                $extensao = pathinfo(
+                    $_FILES['imagem']['name'],
+                    PATHINFO_EXTENSION
+                );
+
+                $nomeImagem =
+                    uniqid('chat_') .
+                    '.' .
+                    $extensao;
+
+                move_uploaded_file(
+                    $_FILES['imagem']['tmp_name'],
+                    __DIR__ . '/../../public/uploads/chat/' . $nomeImagem
+                );
+
+            }
+
+        }
+
+        $mensagem = Container::getModel(
+            'Mensagem'
+        );
+
+        $mensagem->salvarMensagem(
+
+            $_POST['conversa_id'],
+
+            $_SESSION['id'],
+
+            $_POST['mensagem'],
+
+            $nomeImagem
+
+        );
+
+        header(
+            'Location: /chat?conversa=' .
+            $_POST['conversa_id']
+        );
+
+        exit;
+    }
+    public function loadMessages()
+    {
+        Auth::validarAutenticacao();
+
+        if (!isset($_GET['conversa'])) {
+            http_response_code(400);
+            echo json_encode([
+                'erro' => 'Conversa não informada.'
+            ]);
+            exit;
+        }
+
+        $mensagem = Container::getModel('Mensagem');
+
+        $mensagens = $mensagem->buscarMensagens($_GET['conversa']);
+
+        header('Content-Type: application/json');
+
+        echo json_encode($mensagens);
+
+        exit;
+    }
+
+    public function loadConversations()
+    {
+
+        Auth::validarAutenticacao();
+
+        $usuario = Container::getModel(
+
+            'Usuario'
+
+        );
+
+        echo json_encode(
+
+            $usuario->listarUsuariosChat()
+
+        );
+
+        exit;
+
+    }
+    public function deleteMessage()
+    {
+
+        Auth::validarAutenticacao();
+
+        if (!isset($_POST['id'])) {
+
+            http_response_code(400);
+
+            echo json_encode([
+
+                'status' => 'erro',
+
+                'mensagem' => 'Mensagem inválida.'
+
+            ]);
+
+            exit;
+
+        }
+
+        $mensagem = Container::getModel(
+
+            'Mensagem'
+
+        );
+
+        $resultado = $mensagem->deleteMessage(
+
+            $_POST['id'],
 
             $_SESSION['id']
 
         );
 
-        header(
+        echo json_encode([
 
-            'Location: /myApplications'
+            'status' => $resultado ? 'ok' : 'erro'
 
-        );
+        ]);
 
         exit;
+
+    }
+    public function editMessage()
+    {
+        Auth::validarAutenticacao();
+
+        $id = $_POST['id'] ?? null;
+        $mensagem = trim($_POST['mensagem'] ?? '');
+        $excluirImagem = ($_POST['excluir_imagem'] ?? '0') == '1';
+
+        $novaImagem = null;
+
+        if (
+            isset($_FILES['nova_imagem']) &&
+            $_FILES['nova_imagem']['error'] === UPLOAD_ERR_OK
+        ) {
+
+            $permitidos = [
+                'image/jpeg',
+                'image/png',
+                'image/webp',
+                'image/gif'
+            ];
+
+            if (in_array($_FILES['nova_imagem']['type'], $permitidos)) {
+
+                $extensao = pathinfo(
+                    $_FILES['nova_imagem']['name'],
+                    PATHINFO_EXTENSION
+                );
+
+                $novaImagem =
+                    uniqid('chat_') .
+                    '.' .
+                    $extensao;
+
+                move_uploaded_file(
+
+                    $_FILES['nova_imagem']['tmp_name'],
+
+                    __DIR__ .
+                    '/../../public/uploads/chat/' .
+                    $novaImagem
+
+                );
+
+            }
+
+        }
+
+        $mensagemModel = Container::getModel('Mensagem');
+
+        $imagemFinal = $mensagemModel->editarMensagem(
+            $id,
+            $_SESSION['id'],
+            $mensagem,
+            $novaImagem,
+            $excluirImagem
+        );
+
+        echo json_encode([
+            "status" => "ok",
+            "mensagem" => $mensagem,
+            "imagem" => $imagemFinal
+        ]);
     }
 
 }
-?>

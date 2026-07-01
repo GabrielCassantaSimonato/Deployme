@@ -1,4 +1,5 @@
 <?php
+
 namespace app\controller;
 
 use MF\controller\Action;
@@ -11,6 +12,7 @@ class IndexController extends Action
     {
         $this->render('index');
     }
+
     public function signUpStudent()
     {
         $this->carregarDadosFormulario();
@@ -23,7 +25,6 @@ class IndexController extends Action
     public function signUpRecruiter()
     {
         $this->carregarDadosFormulario();
-
         $this->render('signUpRecruiter');
     }
 
@@ -32,9 +33,9 @@ class IndexController extends Action
     // =========================
     public function studentRegister()
     {
-
         $usuario = Container::getModel('Usuario');
         $estudante = Container::getModel('Estudante');
+
         // =========================
         // DADOS USUÁRIO
         // =========================
@@ -51,7 +52,6 @@ class IndexController extends Action
         $fotoNome = null;
 
         if (isset($_FILES['foto_perfil']) && $_FILES['foto_perfil']['error'] == 0) {
-
             $ext = pathinfo($_FILES['foto_perfil']['name'], PATHINFO_EXTENSION);
             $fotoNome = uniqid() . '.' . $ext;
             $destino = $_SERVER['DOCUMENT_ROOT'] . '/uploads/fotos/' . $fotoNome;
@@ -66,11 +66,7 @@ class IndexController extends Action
         $curriculoNome = null;
 
         if (isset($_FILES['curriculo']) && $_FILES['curriculo']['error'] == 0) {
-
             $ext = pathinfo($_FILES['curriculo']['name'], PATHINFO_EXTENSION);
-
-            if ($ext !== 'pdf') {
-            }
 
             $curriculoNome = uniqid() . '.pdf';
             $destino = $_SERVER['DOCUMENT_ROOT'] . '/uploads/currículos/' . $curriculoNome;
@@ -82,7 +78,6 @@ class IndexController extends Action
         }
 
         if (!empty($erros)) {
-
             // Recarrega selects
             $this->carregarDadosFormulario();
 
@@ -125,6 +120,7 @@ class IndexController extends Action
         // =========================
         $estudante->salvarEstudante();
         EmailService::enviarBoasVindas($_POST['email'], $_POST['nome']);
+
         // =========================
         // REDIRECT FINAL
         // =========================
@@ -136,8 +132,6 @@ class IndexController extends Action
     {
         $usuario = Container::getModel('Usuario');
         $recrutador = Container::getModel('Recrutador');
-        $genero = Container::getModel('Genero');
-
 
         // =========================
         // USUÁRIO
@@ -152,7 +146,6 @@ class IndexController extends Action
         $fotoNome = null;
 
         if (isset($_FILES['foto_perfil']) && $_FILES['foto_perfil']['error'] == 0) {
-
             $ext = pathinfo($_FILES['foto_perfil']['name'], PATHINFO_EXTENSION);
             $fotoNome = uniqid() . '.' . $ext;
             $destino = $_SERVER['DOCUMENT_ROOT'] . '/uploads/fotos/' . $fotoNome;
@@ -175,7 +168,6 @@ class IndexController extends Action
 
         // senha segura
         $usuario->__set('senha', password_hash($_POST['senha'], PASSWORD_DEFAULT));
-
         $usuario_id = $usuario->salvarUsuario();
 
         // =========================
@@ -212,6 +204,7 @@ class IndexController extends Action
     {
         $this->render('login');
     }
+
     public function loginAdmin()
     {
         $this->render('loginAdmin');
@@ -247,56 +240,41 @@ class IndexController extends Action
 
         // Validação tamanho mínimo
         if (strlen($senha) < 8) {
-
             header(
                 'Location: /forgotPassword?erro=' .
                 urlencode('A senha deve ter no mínimo 8 caracteres.')
             );
-
             exit;
         }
 
         // Confirmação de senha
         if ($senha !== $confirmarSenha) {
-
             header(
                 'Location: /forgotPassword?erro=' .
                 urlencode('As senhas não coincidem.')
             );
-
             exit;
         }
 
         // Verifica se o email existe
         $usuario->__set('email', $email);
-
         $usuarioEncontrado = $usuario->buscarPorEmail();
 
         if (!$usuarioEncontrado) {
-
             header(
                 'Location: /forgotPassword?erro=' .
                 urlencode('E-mail não encontrado.')
             );
-
             exit;
         }
 
         // Atualiza senha
         $usuario->__set('email', $email);
-
-        $usuario->__set(
-            'senha',
-            password_hash(
-                $senha,
-                PASSWORD_DEFAULT
-            )
-        );
+        $usuario->__set('senha', password_hash($senha, PASSWORD_DEFAULT));
 
         $usuario->atualizarSenha();
 
         header('Location: /login?password=updated');
-
         exit;
     }
 }

@@ -1,0 +1,208 @@
+.usuario-chat{
+
+    cursor:pointer;
+
+    transition:.2s;
+
+}
+
+.usuario-chat:hover{
+
+    background:#f8f9fa;
+
+}
+#mensagens{
+
+    min-height:0;
+
+}
+
+.chat-bubble{
+
+    max-width:400px;
+
+    padding:12px 18px;
+
+    border-radius:20px;
+
+    word-break:break-word;
+
+}
+
+.chat-me{
+
+    background:#214E8A;
+    color:white;
+    position:relative;
+
+}
+
+.chat-other{
+
+    background:#f1f3f5;
+
+}
+
+.usuario-chat{
+
+    transition:.2s;
+
+}
+
+.usuario-chat:hover{
+
+    background:#f8f9fa;
+
+}
+.col-md-8{
+
+    height:100%;
+
+}
+
+#areaChat{
+
+    height:100%;
+
+}
+.usuario-ativo {
+    /* Um fundo azul-marinho bem suave/claro */
+    background: #e1f5fe; 
+    
+    /* Uma borda lateral com um azul-marinho mais vivo para dar destaque */
+    border-left: 5px solid #0277bd; 
+}
+
+.usuario-ativo .fw-bold {
+    /* Cor do nome do usuário em azul-marinho escuro quando ativo */
+    color: #01579b; 
+}
+
+.preview-container{
+
+    position:relative;
+
+    display:inline-block;
+
+}
+
+.btn-remover{
+
+    position:absolute;
+
+    top:8px;
+
+    right:8px;
+
+    width:30px;
+
+    height:30px;
+
+    border:none;
+
+    border-radius:50%;
+
+    background:rgba(0,0,0,.65);
+
+    color:#fff;
+
+    display:flex;
+
+    justify-content:center;
+
+    align-items:center;
+
+    cursor:pointer;
+
+    transition:.2s;
+
+}
+
+.btn-remover:hover{
+
+    background:#dc3545;
+
+}
+
+#previewImagemChat{
+
+    border-radius:12px;
+
+    box-shadow:0 2px 10px rgba(0,0,0,.15);
+
+}
+#badgeImagem{
+
+    top:-8px !important;
+
+    left:-4px !important;
+
+    font-size:.55rem;
+
+    min-width:16px;
+
+    height:16px;
+
+    display:flex;
+
+    justify-content:center;
+
+    align-items:center;
+
+    font-weight:600;
+
+    border:2px solid #fff;
+
+    box-shadow:0 1px 4px rgba(0,0,0,.15);
+
+}
+
+#btnImagem{
+
+    width:48px;
+
+    display:flex;
+
+    justify-content:center;
+
+    align-items:center;
+
+    padding:0;
+
+}
+.btnMensagem{
+
+    width:30px;
+
+    height:30px;
+
+    padding:0;
+
+    display:flex;
+
+    justify-content:center;
+
+    align-items:center;
+
+    border-radius:50%;
+
+    opacity:0;
+
+    transition:.2s;
+
+}
+
+.d-flex:hover .btnMensagem{
+
+    opacity:1;
+
+}
+#menuMensagem{
+
+    position:absolute;
+
+    display:none;
+
+    z-index:9999;
+
+}

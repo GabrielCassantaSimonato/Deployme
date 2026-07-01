@@ -50,6 +50,13 @@ class route extends Bootstrap
         $routes['vacancyCandidates'] = array('route' => '/vacancyCandidates', 'controller' => 'AppController', 'action' => 'vacancyCandidates');
         $routes['updateApplicationStatus'] = array('route' => '/updateApplicationStatus', 'controller' => 'AppController', 'action' => 'updateApplicationStatus');
         $routes['withdrawApplication'] = array('route' => '/withdrawApplication', 'controller' => 'AppController', 'action' => 'withdrawApplication');
+        $routes['chat'] = array('route' => '/chat', 'controller' => 'AppController', 'action' => 'chat');
+        $routes['openConversation'] = array('route' => '/openConversation', 'controller' => 'AppController', 'action' => 'openConversation');
+        $routes['sendMessage'] = array('route' => '/sendMessage', 'controller' => 'AppController', 'action' => 'sendMessage');
+        $routes['loadMessages'] = array('route' => '/loadMessages', 'controller' => 'AppController', 'action' => 'loadMessages');
+        $routes['loadConversations'] = array('route' => '/loadConversations', 'controller' => 'AppController', 'action' => 'loadConversations');
+        $routes['deleteMessage'] = array('route' => '/deleteMessage', 'controller' => 'AppController', 'action' => 'deleteMessage');
+        $routes['editMessage'] = array('route' => '/editMessage', 'controller' => 'AppController', 'action' => 'editMessage');
         $this->setRoutes($routes);//seta a rota no objeto
     }
 }

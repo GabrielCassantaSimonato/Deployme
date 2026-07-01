@@ -5,10 +5,12 @@
 !/public/uploads/fotos/
 !/public/uploads/currículos/
 !/public/uploads/publicacoes/
+!/public/uploads/chat/
 
 # Permitir apenas os .gitkeep
 !/public/uploads/fotos/.gitkeep
 !/public/uploads/currículos/.gitkeep
 !/public/uploads/publicacoes/.gitkeep
+!/public/uploads/chat/.gitkeep
 
 .env
