@@ -1,113 +1,76 @@
 <nav class="navbar-custom">
 
-    <!-- ESQUERDA -->
     <div class="nav-left">
-
         <a href="/timeline">
-
             <img src="/img/logo_deployme.png" alt="Deployme" class="logo-navbar">
-
         </a>
-
     </div>
 
-    <!-- CENTRO -->
     <div class="nav-center">
 
         <a href="/people" class="nav-icon text-decoration-none">
-
             <i class="bi bi-people"></i>
-
             <span>Pessoas</span>
-
         </a>
 
         <?php if ($tipo == 'estudante') { ?>
-
             <a href="/myApplications" class="nav-icon text-decoration-none">
-
                 <i class="bi bi-briefcase"></i>
-
-                <span>
-
-                    Minhas candidaturas
-
-                </span>
-
+                <span>Minhas candidaturas</span>
             </a>
 
             <a href="/viewVacancies" class="nav-icon text-decoration-none">
-
                 <i class="bi bi-globe"></i>
-
                 <span>Ver vagas</span>
-
             </a>
-
         <?php } ?>
 
         <?php if ($tipo == 'recrutador') { ?>
             <a href="/myVacancies" class="nav-icon text-decoration-none">
-
                 <i class="bi bi-file-earmark-text"></i>
-
-                <span>
-
-                    Minhas vagas
-
-                </span>
-
+                <span>Minhas vagas</span>
             </a>
-
-            <div class="nav-icon">
-
-                <i class="bi bi-people-fill"></i>
-
-                <span>Candidaturas</span>
-
-            </div>
-
         <?php } ?>
 
         <a href="/chat" class="nav-icon text-decoration-none">
-
             <i class="bi bi-chat-dots"></i>
-
-            <span>
-
-                Chat
-
-            </span>
-
+            <span>Chat</span>
         </a>
 
-        <div class="nav-icon position-relative">
+        <div class="position-relative d-inline-block">
 
-            <i class="bi bi-bell"></i>
+            <div id="btnNotificacoes" class="nav-icon" style="cursor:pointer; user-select: none;">
+                <i class="bi bi-bell"></i>
+                <span>Notificações</span>
+                <span id="notificationBadge" class="notification-badge" style="display:none;">
+                    0
+                </span>
+            </div>
 
-            <span>Notificações</span>
+            <div id="dropdownNotificacoes" class="dropdown-menu shadow"
+                style="display: none; position: absolute; top: 100%; right: 0; width: 360px; max-height: 400px; overflow-y: auto; z-index: 1000; white-space: normal;">
 
-            <span class="notification-badge">
+                <div class="dropdown-header fw-bold border-bottom p-3">
+                    Notificações
+                </div>
 
-                3
+                <div id="listaNotificacoes">
+                    <div class="text-center p-3 text-muted">
+                        Nenhuma notificação.
+                    </div>
+                </div>
 
-            </span>
+            </div>
 
         </div>
 
     </div>
 
-    <!-- DIREITA -->
     <div class="nav-right">
-
         <a href="/logout" class="nav-icon logout text-decoration-none">
-
             <i class="bi bi-box-arrow-right"></i>
-
             <span>Sair</span>
-
         </a>
-
     </div>
 
 </nav>

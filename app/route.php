@@ -57,6 +57,11 @@ class route extends Bootstrap
         $routes['loadConversations'] = array('route' => '/loadConversations', 'controller' => 'AppController', 'action' => 'loadConversations');
         $routes['deleteMessage'] = array('route' => '/deleteMessage', 'controller' => 'AppController', 'action' => 'deleteMessage');
         $routes['editMessage'] = array('route' => '/editMessage', 'controller' => 'AppController', 'action' => 'editMessage');
+        $routes['notifications'] = array('route' => '/notifications', 'controller' => 'AppController', 'action' => 'notifications');
+        $routes['loadNotifications'] = array('route' => '/loadNotifications', 'controller' => 'AppController', 'action' => 'loadNotifications');
+        $routes['readNotification'] = array('route' => '/readNotification', 'controller' => 'AppController', 'action' => 'readNotification');
+        $routes['deleteNotification'] = array('route' => '/deleteNotification', 'controller' => 'AppController', 'action' => 'deleteNotification');
+        $routes['countNotifications'] = array('route' => '/countNotifications', 'controller' => 'AppController', 'action' => 'countNotifications');
         $this->setRoutes($routes);//seta a rota no objeto
     }
 }

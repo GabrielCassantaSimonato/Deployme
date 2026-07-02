@@ -387,4 +387,12 @@ class Publicacao extends Model
 
         return $stmt->fetch(\PDO::FETCH_ASSOC);
     }
+    public function getById($id)
+    {
+        $query = "SELECT usuario_id FROM publicacoes WHERE id = :id";
+        $stmt = $this->db->prepare($query);
+        $stmt->bindValue(':id', $id);
+        $stmt->execute();
+        return $stmt->fetch(\PDO::FETCH_ASSOC);
+    }
 }

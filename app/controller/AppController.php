@@ -5,6 +5,7 @@ namespace app\controller;
 use MF\controller\Action;
 use MF\model\Container;
 use app\middleware\Auth;
+use app\services\NotificationService;
 
 class AppController extends Action
 {
@@ -241,10 +242,28 @@ class AppController extends Action
     {
         Auth::validarAutenticacao();
 
-        $curtida = Container::getModel('Curtida');
-        $curtida->curtir($_SESSION['id'], $_POST['publicacao']);
+        $publicacaoId = (int) $_POST['publicacao'];
+        $usuarioOrigem = $_SESSION['id'];
 
-        $total = $curtida->totalCurtidas($_POST['publicacao']);
+        $curtida = Container::getModel('Curtida');
+        $curtida->curtir($usuarioOrigem, $publicacaoId);
+
+        $total = $curtida->totalCurtidas($publicacaoId);
+
+        // --- LOGICA DE NOTIFICAÇÃO ---
+        $publicacaoModel = Container::getModel('Publicacao');
+        $post = $publicacaoModel->getById($publicacaoId); // Pega dados do post original
+
+        // Notifica apenas se o dono do post existir e não for o próprio usuário curtindo seu post
+        if ($post && isset($post['usuario_id']) && $post['usuario_id'] != $usuarioOrigem) {
+            \app\model\Notificacao::salvar(
+                $post['usuario_id'], // Destino: dono do post
+                $usuarioOrigem,      // Origem: quem curtiu
+                'like',
+                $publicacaoId
+            );
+        }
+        // -----------------------------
 
         echo json_encode([
             'status' => 'ok',
@@ -275,12 +294,30 @@ class AppController extends Action
     {
         Auth::validarAutenticacao();
 
+        $publicacaoId = (int) $_POST['publicacao_id'];
+        $usuarioOrigem = $_SESSION['id'];
+        $textoComentario = $_POST['comentario'];
+
         $comentario = Container::getModel('Comentario');
         $comentario->comentar(
-            $_SESSION['id'],
-            $_POST['publicacao_id'],
-            $_POST['comentario']
+            $usuarioOrigem,
+            $publicacaoId,
+            $textoComentario
         );
+
+        // --- LOGICA DE NOTIFICAÇÃO ---
+        $publicacaoModel = Container::getModel('Publicacao');
+        $post = $publicacaoModel->getById($publicacaoId);
+
+        if ($post && isset($post['usuario_id']) && $post['usuario_id'] != $usuarioOrigem) {
+            \app\model\Notificacao::salvar(
+                $post['usuario_id'], // Destino: dono do post
+                $usuarioOrigem,      // Origem: quem comentou
+                'comment',
+                $publicacaoId
+            );
+        }
+        // -----------------------------
 
         // SE FOR AJAX
         if (
@@ -295,9 +332,9 @@ class AppController extends Action
                 'foto' => !empty($_SESSION['foto_perfil'])
                     ? '/uploads/fotos/' . $_SESSION['foto_perfil']
                     : '/uploads/fotos/default-user.png',
-                'comentario' => $_POST['comentario'],
+                'comentario' => $textoComentario,
                 'data' => date('d/m/Y H:i'),
-                'total_comentarios' => $comentarioModel->totalComentarios($_POST['publicacao_id'])['total']
+                'total_comentarios' => $comentarioModel->totalComentarios($publicacaoId)['total']
             ]);
 
             exit;
@@ -306,7 +343,6 @@ class AppController extends Action
         // FUNCIONAMENTO NORMAL
         header('Location: /timeline');
     }
-
     public function deleteComment()
     {
         Auth::validarAutenticacao();
@@ -352,8 +388,25 @@ class AppController extends Action
     {
         Auth::validarAutenticacao();
 
+        $publicacaoId = (int) $_GET['id'];
+        $usuarioOrigem = $_SESSION['id'];
+
         $publicacao = Container::getModel('Publicacao');
-        $publicacao->compartilhar($_SESSION['id'], $_GET['id']);
+        $publicacao->compartilhar($usuarioOrigem, $publicacaoId);
+
+        // --- LOGICA DE NOTIFICAÇÃO ---
+        $post = $publicacao->getById($publicacaoId);
+
+        if ($post && isset($post['usuario_id']) && $post['usuario_id'] != $usuarioOrigem) {
+            \app\model\Notificacao::salvar(
+                $post['usuario_id'], // Destino: dono do post original
+                $usuarioOrigem,      // Origem: quem compartilhou
+                'share',
+                $publicacaoId
+            );
+        }
+        // -----------------------------
+
         header('Location: /timeline?share=sucesso');
     }
 
@@ -371,9 +424,28 @@ class AppController extends Action
     {
         Auth::validarAutenticacao();
 
+        $usuarioDestino = (int) $_POST['usuario_id'];
+        $usuarioOrigem = (int) $_SESSION['id'];
+
         $seguidor = Container::getModel('Seguidores');
-        $seguidor->seguir($_SESSION['id'], $_POST['usuario_id']);
-        echo json_encode(['success' => true]);
+
+        $seguiu = $seguidor->seguir(
+            $usuarioOrigem,
+            $usuarioDestino
+        );
+
+        if ($seguiu) {
+            \app\model\Notificacao::salvar(
+                $usuarioDestino,
+                $usuarioOrigem,
+                'follow'
+            );
+        }
+
+        header('Content-Type: application/json');
+        echo json_encode([
+            'success' => true
+        ]);
         exit;
     }
 
@@ -802,6 +874,34 @@ class AppController extends Action
             "mensagem" => $mensagem,
             "imagem" => $imagemFinal
         ]);
+    }
+    public function loadNotifications()
+    {
+        Auth::validarAutenticacao();
+
+
+        $notificacaoModel = Container::getModel('Notificacao');
+        $notificacoes = $notificacaoModel->listar($_SESSION['id']);
+
+        header('Content-Type: application/json');
+        echo json_encode($notificacoes);
+        exit;
+    }
+    public function readNotification()
+    {
+        Auth::validarAutenticacao();
+        $notificacaoId = isset($_POST['id']) ? (int) $_POST['id'] : null;
+
+        if ($notificacaoId) {
+            $notificacao = Container::getModel('Notificacao');
+
+
+            $notificacao->marcarComoLida($notificacaoId);
+        }
+
+        header('Content-Type: application/json');
+        echo json_encode(['success' => true]);
+        exit;
     }
 
 }

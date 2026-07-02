@@ -1,0 +1,10 @@
+#dropdownNotificacoes{
+    display:none;
+    position:absolute;
+    top:65px;
+    right:0;
+    width:380px;
+    max-height:450px;
+    overflow-y:auto;
+    z-index:9999;
+}

@@ -9,14 +9,14 @@ class Seguidores extends Model
     public function seguir($usuario_id, $seguindo_id)
     {
         $query = "
-            INSERT IGNORE INTO seguidores (
-                usuario_id,
-                seguindo_id
-            ) VALUES (
-                :usuario_id,
-                :seguindo_id
-            )
-        ";
+        INSERT IGNORE INTO seguidores (
+            usuario_id,
+            seguindo_id
+        ) VALUES (
+            :usuario_id,
+            :seguindo_id
+        )
+    ";
 
         $stmt = $this->db->prepare($query);
 

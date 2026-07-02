@@ -171,7 +171,7 @@ require_once('../app/view/navbar.phtml');
 
                 <?php if (isset($publicacao['post_original_tipo']) && $publicacao['post_original_tipo'] == 'vaga') { ?>
                   <!-- LAYOUT ORIGINAL DE VAGA EMBUTIDO -->
-                  <div class="p-3 border-start border-success border-4 h-100">
+                  <div class="p-3 border-start border-primary border-4 h-100">
                     <div class="d-flex align-items-center mb-3">
                       <img
                         src="<?= !empty($publicacao['autor_original_foto']) ? '/uploads/fotos/' . $publicacao['autor_original_foto'] : '/uploads/fotos/default-user.png' ?>"
@@ -550,7 +550,7 @@ require_once('../app/view/navbar.phtml');
 
             <!-- POST VAGA -->
             <?php if (isset($publicacao['tipo']) && $publicacao['tipo'] == 'vaga') { ?>
-              <div class="card-custom p-3 mb-3 border-start border-success border-4">
+              <div class="card-custom p-3 mb-3 border-start border-primary border-4">
                 <!-- HEADER -->
                 <div class="d-flex align-items-center mb-3">
                   <a href="<?= $linkPerfil ?>" class="text-decoration-none">
@@ -605,7 +605,7 @@ require_once('../app/view/navbar.phtml');
                 </div>
 
                 <!-- TAGS DA VAGA -->
-                <span class="badge bg-success mb-3 px-3 py-2"><i class="bi bi-briefcase-fill"></i> Vaga publicada</span>
+                <span class="badge bg-primary mb-3 px-3 py-2"><i class="bi bi-briefcase-fill"></i> Vaga publicada</span>
                 <h5 class="fw-bold mb-3">
                   <?= $publicacao['titulo'] ?>
                 </h5>
@@ -638,7 +638,7 @@ require_once('../app/view/navbar.phtml');
                     style="max-height:500px; object-fit:cover;">
                 <?php } ?>
 
-                <a href="/vacancyDetails?id=<?= $publicacao['id'] ?>" class="btn btn-success rounded-pill px-4 mb-3">
+                <a href="/vacancyDetails?id=<?= $publicacao['id'] ?>" class="btn btn-primary rounded-pill px-4 mb-3">
                   <i class="bi bi-arrow-right-circle"></i>
                   Ver vaga
                 </a>
