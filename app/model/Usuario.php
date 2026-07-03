@@ -463,4 +463,35 @@ class Usuario extends Model
         );
 
     }
+
+    public function desativarConta($id)
+    {
+        $query = "
+        UPDATE usuarios
+        SET
+            status = 'bloqueado',
+            data_desativacao = NOW()
+        WHERE id = :id
+    ";
+
+        $stmt = $this->db->prepare($query);
+        $stmt->bindValue(':id', $id);
+
+        return $stmt->execute();
+    }
+
+    // Ativa o usuário usando o ID localizado
+    public function reativarConta($usuario_id)
+    {
+        $query = "
+        UPDATE usuarios
+        SET status = 'ativo'
+        WHERE id = :usuario_id
+    ";
+
+        $stmt = $this->db->prepare($query);
+        $stmt->bindValue(':usuario_id', $usuario_id);
+
+        return $stmt->execute();
+    }
 }

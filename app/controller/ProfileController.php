@@ -201,4 +201,23 @@ class ProfileController extends Action
         header('Location: /editProfile');
         exit;
     }
+    public function deactivateAccount()
+    {
+        Auth::validarAutenticacao();
+
+        $usuario = Container::getModel('Usuario');
+
+        $usuario->desativarConta($_SESSION['id']);
+
+        session_destroy();
+
+        header('Content-Type: application/json');
+
+        echo json_encode([
+            'success' => true
+        ]);
+
+        exit;
+    }
+
 }

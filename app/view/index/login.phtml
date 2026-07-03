@@ -1,44 +1,50 @@
-<!-- FORMULÁRIO DE LOGIN -->
 <div id="login-form-view" class="view-transition">
+
     <div id="login-form-page">
+
         <div class="login-premium-container">
 
             <a href="/" class="back-link mb-4 text-decoration-none">
-                <i class="bi bi-arrow-left me-2"></i> Voltar à Home
+                <i class="bi bi-arrow-left me-2"></i>
+                Voltar à Home
             </a>
 
             <div class="login-avatar-ring">
                 <i class="bi bi-shield-lock"></i>
             </div>
 
-            <h3 class="fw-800 mb-5 text-dark" id="login-heading">Login</h3>
+            <h3 class="fw-800 mb-5 text-dark" id="login-heading">
+                Login
+            </h3>
+
+            <?php if (isset($_GET['reactivated']) && $_GET['reactivated'] == 'success') { ?>
+                <div class="alert alert-success rounded-4 border-0 shadow-sm mb-4 text-center">
+                    <i class="bi bi-check-circle-fill me-2"></i>
+                    Conta reativada com sucesso! Você já pode entrar.
+                </div>
+            <?php } ?>
 
             <?php if (isset($_GET['erro']) && $_GET['erro'] == 1) { ?>
-
                 <div class="alert alert-danger rounded-4 border-0 shadow-sm mb-4">
                     <i class="bi bi-exclamation-triangle-fill me-2"></i>
                     Email ou senha inválidos.
                 </div>
-
             <?php } ?>
 
             <?php if (isset($_GET['auth']) && $_GET['auth'] == 'required') { ?>
-
                 <div class="alert alert-warning d-flex align-items-center mb-4">
-
                     <i class="bi bi-lock-fill me-2"></i>
-
                     Você precisa estar logado para acessar esta página.
-
                 </div>
-
             <?php } ?>
 
             <form action="/auth" method="POST">
+
                 <div class="form-floating mb-3">
                     <input type="email" class="form-control" id="loginEmail" name="email" placeholder="E-mail" required>
                     <label for="loginEmail">E-mail</label>
                 </div>
+
                 <div class="form-floating mb-3">
                     <input type="password" class="form-control" id="loginPass" name="senha" placeholder="Senha"
                         required>
@@ -46,97 +52,88 @@
                 </div>
 
                 <div class="d-flex justify-content-between align-items-center mb-4 px-1">
-                    <a href="/forgotPassword" class="small text-primary text-decoration-none fw-600">Esqueci a senha</a>
+                    <a href="/forgotPassword" class="small text-primary text-decoration-none fw-600">
+                        Esqueci a senha
+                    </a>
+                    <a href="/reactivateAccount" class="small text-success text-decoration-none fw-600">
+                        Reativar conta
+                    </a>
                 </div>
 
                 <button type="submit" class="btn btn-primary btn-lg w-100 py-3 shadow-lg mb-4">
                     Entrar
                 </button>
-                <hr class="my-4 opacity-50">
+
             </form>
+
+            <hr class="my-4 opacity-50">
+
             <div class="login-option-card admin-card">
-
                 <i class="bi bi-shield-lock-fill"></i>
-
                 <h4>Administrador</h4>
-
-                <p>
-                    Painel administrativo da plataforma
-                </p>
-
-                <a href="/loginAdmin" class="btn btn-dark">
-                    Entrar
-                </a>
-
+                <p>Painel administrativo da plataforma</p>
+                <a href="/loginAdmin" class="btn btn-dark">Entrar</a>
             </div>
+
         </div>
+
     </div>
+
 </div>
 
-<?php if (
-    isset($_GET['password']) &&
-    $_GET['password'] == 'updated'
-) { ?>
-
+<?php if (isset($_GET['password']) && $_GET['password'] == 'updated') { ?>
     <div class="modal fade" id="modalSenhaAtualizada" tabindex="-1">
-
         <div class="modal-dialog modal-dialog-centered">
-
             <div class="modal-content border-0 shadow-lg rounded-4">
-
                 <div class="modal-body text-center p-5">
-
                     <div class="mb-3 text-success">
-
                         <i class="bi bi-check-circle-fill display-3"></i>
-
                     </div>
-
-                    <h3 class="fw-bold text-success">
-
-                        Senha atualizada
-
-                    </h3>
-
-                    <p class="text-muted">
-
-                        Sua senha foi alterada com sucesso.
-
-                    </p>
-
-                    <button class="btn btn-success" data-bs-dismiss="modal">
-
-                        Entendi
-
-                    </button>
-
+                    <h3 class="fw-bold text-success">Senha atualizada</h3>
+                    <p class="text-muted">Sua senha foi alterada com sucesso.</p>
+                    <button class="btn btn-success" data-bs-dismiss="modal">Entendi</button>
                 </div>
-
             </div>
-
         </div>
-
     </div>
-
 <?php } ?>
 
+
+<?php if (isset($_GET['erro']) && $_GET['erro'] == 'bloqueado') { ?>
+    <div class="modal fade" id="modalContaBloqueada" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content border-0 shadow-lg rounded-4">
+                <div class="modal-body text-center p-5">
+                    <div class="mb-3 text-warning">
+                        <i class="bi bi-lock-fill display-2"></i>
+                    </div>
+                    <h3 class="fw-bold">Conta desativada</h3>
+                    <p class="text-muted mb-4">
+                        Sua conta encontra-se desativada. Caso deseje voltar a utilizar a plataforma, você pode reativá-la.
+                    </p>
+                    <a href="/reactivateAccount" class="btn btn-success rounded-pill px-4">
+                        Reativar conta
+                    </a>
+                    <button class="btn btn-outline-secondary rounded-pill px-4 ms-2" data-bs-dismiss="modal">
+                        Fechar
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+<?php } ?>
+
+
 <script>
-
-    document.addEventListener('DOMContentLoaded', () => {
-
-        <?php if (
-            isset($_GET['password']) &&
-            $_GET['password'] == 'updated'
-        ) { ?>
-
-                new bootstrap.Modal(
-                    document.getElementById(
-                        'modalSenhaAtualizada'
-                    )
-                ).show();
-
+    document.addEventListener("DOMContentLoaded", () => {
+        // Senha atualizada
+        <?php if (isset($_GET['password']) && $_GET['password'] == 'updated') { ?>
+            new bootstrap.Modal(document.getElementById("modalSenhaAtualizada")).show();
         <?php } ?>
 
+        // Conta bloqueada
+        <?php if (isset($_GET['erro']) && $_GET['erro'] == 'bloqueado') { ?>
+            new bootstrap.Modal(document.getElementById("modalContaBloqueada")).show();
+        <?php } ?>
     });
-
 </script>

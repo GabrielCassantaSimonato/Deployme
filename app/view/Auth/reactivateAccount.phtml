@@ -1,0 +1,66 @@
+<div class="container d-flex justify-content-center align-items-center" style="min-height:80vh;">
+
+    <div class="card border-0 shadow-lg rounded-4 p-5" style="max-width:500px; width:100%;">
+
+        <div class="text-center mb-3 text-warning">
+            <i class="bi bi-lock-fill display-1"></i>
+        </div>
+
+        <h3 class="fw-bold text-center mb-3">
+            Reativar conta
+        </h3>
+
+        <p class="text-muted text-center mb-4">
+            Informe seu e-mail para reativar a sua conta.
+        </p>
+
+        <?php if (isset($_GET['info']) && $_GET['info'] == 'ja_ativo'): ?>
+            <div class="alert alert-info text-center p-2 rounded-3 small mb-3" role="alert">
+                <i class="bi bi-info-circle-fill me-1"></i>
+                Esta conta já está ativa. Você já pode fazer login normalmente.
+            </div>
+        <?php endif; ?>
+
+        <?php if (isset($_GET['error']) && $_GET['error'] == 'usuario_nao_encontrado'): ?>
+            <div class="alert alert-danger text-center p-2 rounded-3 small mb-3" role="alert">
+                O e-mail informado não está cadastrado no sistema.
+            </div>
+        <?php endif; ?>
+
+        <?php if (isset($_GET['error']) && $_GET['error'] == 'dados_invalidos'): ?>
+            <div class="alert alert-warning text-center p-2 rounded-3 small mb-3" role="alert">
+                Por favor, preencha o e-mail e aceite os termos da LGPD.
+            </div>
+        <?php endif; ?>
+
+        <form action="/reactivateAccountAction" method="POST">
+
+            <div class="form-floating mb-3">
+                <input type="email" class="form-control" name="email" id="email" placeholder="name@example.com"
+                    required>
+                <label for="email">E-mail</label>
+            </div>
+
+            <div class="form-check mb-3">
+                <input class="form-check-input" type="checkbox" name="lgpd" id="lgpd" required>
+                <label class="form-check-label small text-muted" for="lgpd">
+                    Concordo com a <a href="/lgpd" target="_blank" class="text-decoration-none">Política de Privacidade
+                        (LGPD)</a>
+                </label>
+            </div>
+
+            <button type="submit" class="btn btn-success w-100 btn-lg rounded-pill">
+                Reativar conta
+            </button>
+
+        </form>
+
+        <div class="text-center mt-4">
+            <a href="/login" class="text-decoration-none text-muted small">
+                Voltar para login
+            </a>
+        </div>
+
+    </div>
+
+</div>

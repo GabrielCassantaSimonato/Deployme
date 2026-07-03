@@ -26,6 +26,13 @@ class AuthController extends Action
             header('Location: /login?erro=1');
             exit;
         }
+        // Conta bloqueada
+        if ($dadosUsuario['status'] === 'bloqueado') {
+
+            header('Location: /login?erro=bloqueado');
+            exit;
+
+        }
 
         // valida senha
         if (!password_verify($senha, $dadosUsuario['senha'])) {
@@ -74,6 +81,56 @@ class AuthController extends Action
         session_destroy();
 
         header('Location: /');
+        exit;
+    }
+    public function reactivateAccount()
+    {
+        $this->render('reactivateAccount');
+    }
+    public function reactivateAccountAction()
+    {
+        // 1. Captura os dados do formulário HTML
+        $email = isset($_POST['email']) ? trim($_POST['email']) : '';
+        $lgpd = isset($_POST['lgpd']) ? true : false;
+
+        // 2. Validação básica de preenchimento e LGPD
+        if (empty($email) || !$lgpd) {
+            header('Location: /reactivateAccount?error=dados_invalidos');
+            exit;
+        }
+
+        $usuario = Container::getModel('Usuario');
+
+        // --- AJUSTE AQUI ---
+        // Atribui o e-mail ao objeto antes de buscar (padrão do seu modelo)
+        $usuario->__set('email', $email);
+        // Se o seu framework não usar __set, tente: $usuario->email = $email;
+
+        // 3. Usa o seu método existente que não recebe parâmetros
+        $dadosUsuario = $usuario->buscarPorEmail();
+
+        // Se o seu método buscarPorEmail retornar o próprio objeto preenchido em vez de um array,
+        // nós pegamos o ID direto dele. Vamos garantir os dois cenários:
+        $usuario_id = is_array($dadosUsuario) ? ($dadosUsuario['id'] ?? null) : $usuario->__get('id');
+        $usuario_status = is_array($dadosUsuario) ? ($dadosUsuario['status'] ?? null) : $usuario->__get('status');
+
+        if (!$usuario_id) {
+            // Usuário não encontrado
+            header('Location: /reactivateAccount?error=usuario_nao_encontrado');
+            exit;
+        }
+
+        // 4. Verifica se a conta já está ativa
+        if ($usuario_status == 'ativo') {
+            header('Location: /reactivateAccount?info=ja_ativo');
+            exit;
+        }
+
+        // 5. Se passou pelas validações, reativa a conta usando o ID encontrado
+        $usuario->reativarConta($usuario_id);
+
+        // 6. Redireciona para o login informando o sucesso
+        header('Location: /login?reactivated=success');
         exit;
     }
 }

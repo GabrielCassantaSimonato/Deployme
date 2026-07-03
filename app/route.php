@@ -62,6 +62,9 @@ class route extends Bootstrap
         $routes['readNotification'] = array('route' => '/readNotification', 'controller' => 'AppController', 'action' => 'readNotification');
         $routes['deleteNotification'] = array('route' => '/deleteNotification', 'controller' => 'AppController', 'action' => 'deleteNotification');
         $routes['countNotifications'] = array('route' => '/countNotifications', 'controller' => 'AppController', 'action' => 'countNotifications');
+        $routes['deactivateAccount'] = array('route' => '/deactivateAccount', 'controller' => 'ProfileController', 'action' => 'deactivateAccount');
+        $routes['reactivateAccount'] = array('route' => '/reactivateAccount', 'controller' => 'AuthController', 'action' => 'reactivateAccount');
+        $routes['reactivateAccountAction'] = array('route' => '/reactivateAccountAction', 'controller' => 'AuthController', 'action' => 'reactivateAccountAction');
         $this->setRoutes($routes);//seta a rota no objeto
     }
 }
