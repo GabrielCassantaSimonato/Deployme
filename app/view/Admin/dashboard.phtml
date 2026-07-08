@@ -1,10 +1,194 @@
-<h1>Painel Administrativo</h1>
+<?php
+$tipo = $_SESSION['tipo'];
+$dashboard = $this->view->dashboard;
+require_once('../app/view/navbar.phtml');
+?>
 
-<hr>
+<div class="container py-4">
 
-<h3>Deployme Admin</h3>
+    <div class="card border-0 shadow-sm rounded-4 mb-4">
 
-<p>
-    Bem-vindo,
-    <?= $_SESSION['nome'] ?>
-</p>
+        <div class="card-body">
+
+            <h2 class="fw-bold mb-2">
+
+                Painel Administrativo
+
+            </h2>
+
+            <p class="text-muted mb-0">
+
+                Bem-vindo,
+                <strong>
+                    <?= $_SESSION['nome'] ?>
+                </strong>.
+
+                Gerencie usuários, publicações, vagas e acompanhe as estatísticas da plataforma.
+
+            </p>
+
+        </div>
+
+    </div>
+
+    <div class="row g-4">
+
+        <div class="col-md-4">
+
+            <div class="card border-0 shadow-sm rounded-4">
+
+                <div class="card-body text-center">
+
+                    <i class="bi bi-people-fill display-5 text-primary"></i>
+
+                    <h6 class="mt-3 text-muted">
+
+                        Usuários
+
+                    </h6>
+
+                    <h2 class="fw-bold">
+
+                        <?= $dashboard['usuarios'] ?? 0 ?>
+
+                    </h2>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <div class="col-md-4">
+
+            <div class="card border-0 shadow-sm rounded-4">
+
+                <div class="card-body text-center">
+
+                    <i class="bi bi-mortarboard-fill display-5 text-success"></i>
+
+                    <h6 class="mt-3 text-muted">
+
+                        Estudantes
+
+                    </h6>
+
+                    <h2 class="fw-bold">
+
+                        <?= $dashboard['estudantes'] ?? 0 ?>
+
+                    </h2>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <div class="col-md-4">
+
+            <div class="card border-0 shadow-sm rounded-4">
+
+                <div class="card-body text-center">
+
+                    <i class="bi bi-building display-5 text-info"></i>
+
+                    <h6 class="mt-3 text-muted">
+
+                        Recrutadores
+
+                    </h6>
+
+                    <h2 class="fw-bold">
+
+                        <?= $dashboard['recrutadores'] ?? 0 ?>
+
+                    </h2>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <div class="col-md-4">
+
+            <div class="card border-0 shadow-sm rounded-4">
+
+                <div class="card-body text-center">
+
+                    <i class="bi bi-file-earmark-text-fill display-5 text-warning"></i>
+
+                    <h6 class="mt-3 text-muted">
+
+                        Publicações
+
+                    </h6>
+
+                    <h2 class="fw-bold">
+
+                        <?= $dashboard['publicacoes'] ?? 0 ?>
+
+                    </h2>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <div class="col-md-4">
+
+            <div class="card border-0 shadow-sm rounded-4">
+
+                <div class="card-body text-center">
+
+                    <i class="bi bi-briefcase-fill display-5 text-secondary"></i>
+
+                    <h6 class="mt-3 text-muted">
+
+                        Vagas
+
+                    </h6>
+
+                    <h2 class="fw-bold">
+
+                        <?= $dashboard['vagas'] ?? 0 ?>
+
+                    </h2>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <div class="col-md-4">
+
+            <div class="card border-0 shadow-sm rounded-4">
+
+                <div class="card-body text-center">
+
+                    <i class="bi bi-slash-circle-fill display-5 text-danger"></i>
+
+                    <h6 class="mt-3 text-muted">
+
+                        Contas bloqueadas
+
+                    </h6>
+
+                    <h2 class="fw-bold">
+
+                        <?= $dashboard['bloqueados'] ?? 0 ?>
+
+                    </h2>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>

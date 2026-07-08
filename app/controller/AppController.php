@@ -5,7 +5,6 @@ namespace app\controller;
 use MF\controller\Action;
 use MF\model\Container;
 use app\middleware\Auth;
-use app\services\NotificationService;
 
 class AppController extends Action
 {

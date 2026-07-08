@@ -20,7 +20,7 @@ class route extends Bootstrap
         $routes['auth'] = array('route' => '/auth', 'controller' => 'AuthController', 'action' => 'auth');
         $routes['logout'] = array('route' => '/logout', 'controller' => 'AuthController', 'action' => 'logout');
         $routes['loginAdmin'] = array('route' => '/loginAdmin', 'controller' => 'IndexController', 'action' => 'loginAdmin');
-        $routes['admin'] = array('route' => '/admin', 'controller' => 'AdminController', 'action' => 'dashboard');
+        $routes['admin'] = array('route' => '/admin', 'controller' => 'AdminController', 'action' => 'admin');
         $routes['profile'] = array('route' => '/profile', 'controller' => 'ProfileController', 'action' => 'profile');
         $routes['editProfile'] = array('route' => '/editProfile', 'controller' => 'ProfileController', 'action' => 'editProfile');
         $routes['updateProfile'] = array('route' => '/updateProfile', 'controller' => 'ProfileController', 'action' => 'updateProfile');
@@ -65,6 +65,9 @@ class route extends Bootstrap
         $routes['deactivateAccount'] = array('route' => '/deactivateAccount', 'controller' => 'ProfileController', 'action' => 'deactivateAccount');
         $routes['reactivateAccount'] = array('route' => '/reactivateAccount', 'controller' => 'AuthController', 'action' => 'reactivateAccount');
         $routes['reactivateAccountAction'] = array('route' => '/reactivateAccountAction', 'controller' => 'AuthController', 'action' => 'reactivateAccountAction');
+        $routes['timelineAdmin'] = array('route' => '/timelineAdmin', 'controller' => 'AdminController', 'action' => 'timelineAdmin');
+        $routes['deletePostAdmin'] = array('route' => '/deletePostAdmin', 'controller' => 'AdminController', 'action' => 'deletePostAdmin');
+        $routes['blockUser'] = array('route' => '/blockUser', 'controller' => 'AdminController', 'action' => 'blockUser');
         $this->setRoutes($routes);//seta a rota no objeto
     }
 }

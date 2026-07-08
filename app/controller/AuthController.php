@@ -66,7 +66,7 @@ class AuthController extends Action
 
         // ADMIN
         if ($dadosUsuario['tipo'] == 'admin') {
-            header('Location: /admin');
+            header('Location: /timelineAdmin');
             exit;
         }
 

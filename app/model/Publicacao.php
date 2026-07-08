@@ -137,6 +137,70 @@ class Publicacao extends Model
 
         return $stmt->fetchAll(\PDO::FETCH_ASSOC);
     }
+    public function listarPublicacoesAdmin()
+    {
+        $query = "
+        SELECT
+            p.*,
+            u.nome,
+            u.foto,
+            e.cidade,
+            e.uf,
+            COALESCE(v.empresa, r.empresa) AS empresa,
+            v.titulo,
+            v.localizacao,
+            v.modalidade,
+            v.salario,
+
+            /* Dados do Post Original */
+            po.id AS post_original_id,
+            po.tipo AS post_original_tipo,
+            po.conteudo AS post_original_conteudo,
+            po.imagem AS post_original_imagem,
+
+            /* Autor Original */
+            uo.nome AS autor_original_nome,
+            uo.foto AS autor_original_foto,
+
+            /* Dados da Vaga Original */
+            vo.titulo AS post_original_titulo,
+            vo.empresa AS post_original_empresa,
+            vo.localizacao AS post_original_localizacao,
+            vo.modalidade AS post_original_modalidade,
+            vo.salario AS post_original_salario
+
+        FROM publicacoes p
+
+        INNER JOIN usuarios u
+            ON u.id = p.usuario_id
+
+        LEFT JOIN estudantes e
+            ON e.usuario_id = u.id
+
+        LEFT JOIN recrutadores r
+            ON r.usuario_id = u.id
+
+        LEFT JOIN vagas v
+            ON v.publicacao_id = p.id
+
+        /* Compartilhamentos */
+        LEFT JOIN publicacoes po
+            ON po.id = p.publicacao_original_id
+
+        LEFT JOIN usuarios uo
+            ON uo.id = po.usuario_id
+
+        LEFT JOIN vagas vo
+            ON vo.publicacao_id = po.id
+
+        ORDER BY p.created_at DESC
+    ";
+
+        $stmt = $this->db->prepare($query);
+        $stmt->execute();
+
+        return $stmt->fetchAll(\PDO::FETCH_ASSOC);
+    }
 
     public function getPublicacoesUsuario()
     {
@@ -240,47 +304,171 @@ class Publicacao extends Model
 
     public function excluirPost()
     {
-        $query = "
+        try {
+
+            $this->db->beginTransaction();
+
+            // Compartilhamentos
+            $this->excluirCompartilhamentos();
+
+            // Curtidas
+            $query = "
+            DELETE FROM curtidas
+            WHERE publicacao_id = :id
+        ";
+
+            $stmt = $this->db->prepare($query);
+            $stmt->bindValue(':id', $this->__get('id'));
+            $stmt->execute();
+
+            // Comentários
+            $query = "
+            DELETE FROM comentarios
+            WHERE publicacao_id = :id
+        ";
+
+            $stmt = $this->db->prepare($query);
+            $stmt->bindValue(':id', $this->__get('id'));
+            $stmt->execute();
+
+            // Notificações
+            $query = "
+            DELETE FROM notificacoes
+            WHERE referencia_id = :id
+        ";
+
+            $stmt = $this->db->prepare($query);
+            $stmt->bindValue(':id', $this->__get('id'));
+            $stmt->execute();
+
+            // Publicação
+            $query = "
             DELETE FROM publicacoes
             WHERE id = :id
               AND usuario_id = :usuario_id
         ";
 
-        $stmt = $this->db->prepare($query);
+            $stmt = $this->db->prepare($query);
 
-        $stmt->bindValue(':id', $this->__get('id'));
-        $stmt->bindValue(':usuario_id', $this->__get('usuario_id'));
+            $stmt->bindValue(':id', $this->__get('id'));
+            $stmt->bindValue(':usuario_id', $this->__get('usuario_id'));
 
-        return $stmt->execute();
+            $stmt->execute();
+
+            $this->db->commit();
+
+            return true;
+
+        } catch (\Exception $e) {
+
+            $this->db->rollBack();
+
+            throw $e;
+
+        }
     }
 
     public function excluirVaga()
     {
-        // PRIMEIRO EXCLUI A VAGA
-        $query = "
-            DELETE FROM vagas
-            WHERE publicacao_id = :publicacao_id
+        try {
+
+            $this->db->beginTransaction();
+
+            // Compartilhamentos
+            $this->excluirCompartilhamentos();
+
+            // Descobre a vaga
+            $query = "
+            SELECT id
+            FROM vagas
+            WHERE publicacao_id = :id
         ";
 
-        $stmt = $this->db->prepare($query);
-        $stmt->bindValue(':publicacao_id', $this->__get('id'));
-        $stmt->execute();
+            $stmt = $this->db->prepare($query);
+            $stmt->bindValue(':id', $this->__get('id'));
+            $stmt->execute();
 
-        // DEPOIS EXCLUI A PUBLICAÇÃO
-        $query2 = "
+            $vaga = $stmt->fetch(\PDO::FETCH_ASSOC);
+
+            if ($vaga) {
+
+                // Candidaturas
+                $query = "
+                DELETE FROM candidaturas
+                WHERE vaga_id = :vaga_id
+            ";
+
+                $stmt = $this->db->prepare($query);
+                $stmt->bindValue(':vaga_id', $vaga['id']);
+                $stmt->execute();
+
+                // Vaga
+                $query = "
+                DELETE FROM vagas
+                WHERE id = :vaga_id
+            ";
+
+                $stmt = $this->db->prepare($query);
+                $stmt->bindValue(':vaga_id', $vaga['id']);
+                $stmt->execute();
+            }
+
+            // Curtidas
+            $query = "
+            DELETE FROM curtidas
+            WHERE publicacao_id = :id
+        ";
+
+            $stmt = $this->db->prepare($query);
+            $stmt->bindValue(':id', $this->__get('id'));
+            $stmt->execute();
+
+            // Comentários
+            $query = "
+            DELETE FROM comentarios
+            WHERE publicacao_id = :id
+        ";
+
+            $stmt = $this->db->prepare($query);
+            $stmt->bindValue(':id', $this->__get('id'));
+            $stmt->execute();
+
+            // Notificações
+            $query = "
+            DELETE FROM notificacoes
+            WHERE referencia_id = :id
+        ";
+
+            $stmt = $this->db->prepare($query);
+            $stmt->bindValue(':id', $this->__get('id'));
+            $stmt->execute();
+
+            // Publicação
+            $query = "
             DELETE FROM publicacoes
             WHERE id = :id
               AND usuario_id = :usuario_id
         ";
 
-        $stmt2 = $this->db->prepare($query2);
+            $stmt = $this->db->prepare($query);
 
-        $stmt2->bindValue(':id', $this->__get('id'));
-        $stmt2->bindValue(':usuario_id', $this->__get('usuario_id'));
+            $stmt->bindValue(':id', $this->__get('id'));
+            $stmt->bindValue(':usuario_id', $this->__get('usuario_id'));
 
-        return $stmt2->execute();
+            $stmt->execute();
+
+            $this->db->commit();
+
+            return true;
+
+        } catch (\Exception $e) {
+
+            $this->db->rollBack();
+
+            throw $e;
+
+        }
     }
-
     public function compartilhar($usuario_id, $publicacao_original_id)
     {
         $query = "
@@ -299,6 +487,19 @@ class Publicacao extends Model
 
         $stmt->bindValue(':usuario_id', $usuario_id);
         $stmt->bindValue(':publicacao_original_id', $publicacao_original_id);
+
+        return $stmt->execute();
+    }
+    public function excluirCompartilhamentos()
+    {
+        $query = "
+        DELETE FROM publicacoes
+        WHERE publicacao_original_id = :id
+    ";
+
+        $stmt = $this->db->prepare($query);
+
+        $stmt->bindValue(':id', $this->__get('id'));
 
         return $stmt->execute();
     }
@@ -394,5 +595,132 @@ class Publicacao extends Model
         $stmt->bindValue(':id', $id);
         $stmt->execute();
         return $stmt->fetch(\PDO::FETCH_ASSOC);
+    }
+    public function excluirPostAdmin()
+    {
+        try {
+
+            $this->db->beginTransaction();
+
+            // ===========================================
+            // EXCLUI COMPARTILHAMENTOS DA PUBLICAÇÃO
+            // ===========================================
+
+            $query = "
+            DELETE FROM publicacoes
+            WHERE publicacao_original_id = :id
+        ";
+
+            $stmt = $this->db->prepare($query);
+            $stmt->bindValue(':id', $this->__get('id'));
+            $stmt->execute();
+
+            // ===========================================
+            // VERIFICA SE É UMA VAGA
+            // ===========================================
+
+            $query = "
+            SELECT id
+            FROM vagas
+            WHERE publicacao_id = :id
+        ";
+
+            $stmt = $this->db->prepare($query);
+            $stmt->bindValue(':id', $this->__get('id'));
+            $stmt->execute();
+
+            $vaga = $stmt->fetch(\PDO::FETCH_ASSOC);
+
+            if ($vaga) {
+
+                // =======================================
+                // EXCLUI CANDIDATURAS
+                // =======================================
+
+                $query = "
+                DELETE FROM candidaturas
+                WHERE vaga_id = :vaga_id
+            ";
+
+                $stmt = $this->db->prepare($query);
+                $stmt->bindValue(':vaga_id', $vaga['id']);
+                $stmt->execute();
+
+                // =======================================
+                // EXCLUI VAGA
+                // =======================================
+
+                $query = "
+                DELETE FROM vagas
+                WHERE id = :vaga_id
+            ";
+
+                $stmt = $this->db->prepare($query);
+                $stmt->bindValue(':vaga_id', $vaga['id']);
+                $stmt->execute();
+            }
+
+            // ===========================================
+            // CURTIDAS
+            // ===========================================
+
+            $query = "
+            DELETE FROM curtidas
+            WHERE publicacao_id = :id
+        ";
+
+            $stmt = $this->db->prepare($query);
+            $stmt->bindValue(':id', $this->__get('id'));
+            $stmt->execute();
+
+            // ===========================================
+            // COMENTÁRIOS
+            // ===========================================
+
+            $query = "
+            DELETE FROM comentarios
+            WHERE publicacao_id = :id
+        ";
+
+            $stmt = $this->db->prepare($query);
+            $stmt->bindValue(':id', $this->__get('id'));
+            $stmt->execute();
+
+            // ===========================================
+            // NOTIFICAÇÕES
+            // ===========================================
+
+            $query = "
+            DELETE FROM notificacoes
+            WHERE referencia_id = :id
+        ";
+
+            $stmt = $this->db->prepare($query);
+            $stmt->bindValue(':id', $this->__get('id'));
+            $stmt->execute();
+
+            // ===========================================
+            // PUBLICAÇÃO
+            // ===========================================
+
+            $query = "
+            DELETE FROM publicacoes
+            WHERE id = :id
+        ";
+
+            $stmt = $this->db->prepare($query);
+            $stmt->bindValue(':id', $this->__get('id'));
+            $stmt->execute();
+
+            $this->db->commit();
+
+            return true;
+
+        } catch (\Exception $e) {
+
+            $this->db->rollBack();
+
+            throw $e;
+        }
     }
 }
