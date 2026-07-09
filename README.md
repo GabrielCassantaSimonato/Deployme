@@ -160,8 +160,6 @@ CHARACTER SET utf8mb4
 COLLATE utf8mb4_unicode_ci;
 ```
 
-Importe posteriormente o script SQL disponibilizado no projeto.
-
 Configure a conexão com o banco de dados.
 
 Exemplo:
