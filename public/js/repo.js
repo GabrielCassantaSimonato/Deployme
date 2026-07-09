@@ -29,7 +29,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             return;
         }
 
-        repos.slice(0, 6).forEach(repo => {
+        repos.slice(0, 50).forEach(repo => {
 
             reposContainer.innerHTML += `
 
