@@ -430,6 +430,7 @@ Como continuidade do projeto, pretende-se implementar:
 - métricas de desempenho dos agentes de IA;
 - notificações administrativas;
 - controle refinado de permissões.
+- Análise de construção de agentes com outros modelos LLM.
 
 ---
 
