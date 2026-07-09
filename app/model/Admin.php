@@ -101,5 +101,24 @@ class Admin extends Model
 
         return $stmt->fetch(\PDO::FETCH_ASSOC)['total'];
     }
+    public function listarUsuarios()
+    {
+        $query = "
+        SELECT
+            id,
+            nome,
+            email,
+            foto,
+            tipo,
+            status,
+            criado_em
+        FROM usuarios";
+
+        $stmt = $this->db->prepare($query);
+
+        $stmt->execute();
+
+        return $stmt->fetchAll(\PDO::FETCH_ASSOC);
+    }
 
 }

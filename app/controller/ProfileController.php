@@ -18,8 +18,8 @@ class ProfileController extends Action
         if (isset($_GET['id']) && !empty($_GET['id'])) {
             $id = $_GET['id'];
 
-            // SE FOR O PRÓPRIO PERFIL
-            if ($id == $_SESSION['id']) {
+            // O modo leitura será FALSE se for o próprio perfil OU se quem está logado for Admin
+            if ($id == $_SESSION['id'] || (isset($_SESSION['tipo']) && $_SESSION['tipo'] == 'admin')) {
                 $modoLeitura = false;
             } else {
                 $modoLeitura = true;
@@ -201,23 +201,36 @@ class ProfileController extends Action
         header('Location: /editProfile');
         exit;
     }
+
     public function deactivateAccount()
     {
         Auth::validarAutenticacao();
 
-        $usuario = Container::getModel('Usuario');
+        $usuarioModel = Container::getModel('Usuario');
 
-        $usuario->desativarConta($_SESSION['id']);
+        // Define qual ID será alterado (Se for admin altera o passado por query string, se não, altera o próprio)
+        $idParaAlterar = isset($_REQUEST['id']) && $_SESSION['tipo'] == 'admin' ? $_REQUEST['id'] : $_SESSION['id'];
+        $acao = isset($_GET['acao']) ? $_GET['acao'] : 'bloquear';
 
-        session_destroy();
+        // Traduz o parâmetro recebido via JS para a string correta do Banco de Dados
+        $novoStatus = ($acao === 'ativar') ? 'ativo' : 'bloqueado';
+
+        // Certifique-se de que seu método desativarConta trate o segundo parâmetro string ('ativo' / 'bloqueado')
+        $usuarioModel->desativarConta($idParaAlterar, $novoStatus);
+
+        // Só destrói a sessão se a conta bloqueada for a do próprio usuário logado
+        if ($idParaAlterar == $_SESSION['id'] && $novoStatus === 'bloqueado') {
+            session_destroy();
+            $logout = true;
+        } else {
+            $logout = false;
+        }
 
         header('Content-Type: application/json');
-
         echo json_encode([
-            'success' => true
+            'success' => true,
+            'logout' => $logout
         ]);
-
         exit;
     }
-
 }

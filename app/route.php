@@ -67,7 +67,10 @@ class route extends Bootstrap
         $routes['reactivateAccountAction'] = array('route' => '/reactivateAccountAction', 'controller' => 'AuthController', 'action' => 'reactivateAccountAction');
         $routes['timelineAdmin'] = array('route' => '/timelineAdmin', 'controller' => 'AdminController', 'action' => 'timelineAdmin');
         $routes['deletePostAdmin'] = array('route' => '/deletePostAdmin', 'controller' => 'AdminController', 'action' => 'deletePostAdmin');
+        $routes['blockUserTimeline'] = array('route' => '/blockUserTimeline', 'controller' => 'AdminController', 'action' => 'blockUserTimeline');
+        $routes['adminUsers'] = array('route' => '/adminUsers', 'controller' => 'AdminController', 'action' => 'adminUsers');
         $routes['blockUser'] = array('route' => '/blockUser', 'controller' => 'AdminController', 'action' => 'blockUser');
+        $routes['unblockUser'] = array('route' => '/unblockUser', 'controller' => 'AdminController', 'action' => 'unblockUser');
         $this->setRoutes($routes);//seta a rota no objeto
     }
 }

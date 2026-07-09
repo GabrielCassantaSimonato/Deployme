@@ -107,6 +107,7 @@ class Usuario extends Model
                 u.email,
                 u.tipo,
                 u.foto,
+                u.status,
                 e.cep,
                 e.rua,
                 e.bairro,
@@ -464,18 +465,19 @@ class Usuario extends Model
 
     }
 
-    public function desativarConta($id)
+    public function desativarConta($id, $novoStatus = 'bloqueado')
     {
         $query = "
-        UPDATE usuarios
-        SET
-            status = 'bloqueado',
-            data_desativacao = NOW()
-        WHERE id = :id
-    ";
+    UPDATE usuarios
+    SET
+        status = :status,
+        data_desativacao = " . ($novoStatus === 'bloqueado' ? "NOW()" : "NULL") . "
+    WHERE id = :id
+";
 
         $stmt = $this->db->prepare($query);
         $stmt->bindValue(':id', $id);
+        $stmt->bindValue(':status', $novoStatus);
 
         return $stmt->execute();
     }

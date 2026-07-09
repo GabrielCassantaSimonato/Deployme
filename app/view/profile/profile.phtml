@@ -2,6 +2,9 @@
 $usuario = $this->view->dadosUsuario;
 $tipo = $usuario['tipo'];
 $modoLeitura = $this->view->modo_leitura ?? false;
+
+// Se vier exatamente 'ativo', ele fica ativo. Qualquer outra coisa (bloqueado, nulo, vazio) vira 'bloqueado'.
+$statusFormatado = (isset($usuario['status']) && strtolower(trim($usuario['status'])) === 'ativo') ? 'ativo' : 'bloqueado';
 require_once('../app/view/navbar.phtml');
 ?>
 <div class="linkedin-profile-container">
@@ -29,20 +32,25 @@ require_once('../app/view/navbar.phtml');
                 <?php if (!$modoLeitura) { ?>
                     <div class="linkedin-profile-actions">
                         <div class="d-flex gap-2">
+                            <?php if ($usuario['id'] == $_SESSION['id']) { ?>
+                                <a href="/editProfile" class="btn btn-primary">
+                                    Editar Perfil
+                                </a>
 
-                            <a href="/editProfile" class="btn btn-primary">
-                                Editar Perfil
-                            </a>
+                                <a href="/followers" class="btn btn-primary">
+                                    Seguidores
+                                </a>
+                            <?php } ?>
 
-                            <a href="/followers" class="btn btn-primary">
-                                Seguidores
-                            </a>
-
-                            <button class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#modalDesativarConta">
-
-                                Desativar minha conta
-
-                            </button>
+                            <?php if ($statusFormatado === 'ativo') { ?>
+    <button class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#modalStatusConta">
+        <?= $usuario['id'] == $_SESSION['id'] ? 'Desativar minha conta' : 'Bloquear usuário' ?>
+    </button>
+<?php } else { ?>
+    <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#modalStatusConta">
+        Ativar usuário
+    </button>
+<?php } ?>
                         </div>
                     </div>
                 <?php } ?>
@@ -105,8 +113,6 @@ require_once('../app/view/navbar.phtml');
             </div>
         <?php } ?>
     </div>
-
-
 
     <div class="linkedin-section">
         <h4><i class="bi bi-person-lines-fill"></i> Informações pessoais</h4>
@@ -212,21 +218,14 @@ require_once('../app/view/navbar.phtml');
         </div>
     <?php } ?>
 
-
-
     <div class="linkedin-section">
         <h4><i class="bi bi-postcard"></i> Publicações</h4>
 
         <?php if (!empty($this->view->publicacoes)) { ?>
             <?php foreach ($this->view->publicacoes as $publicacao) { ?>
 
-                <!-- ============================================== -->
-                <!-- CARD DE COMPARTILHAMENTO -->
-                <!-- ============================================== -->
                 <?php if (!empty($publicacao['publicacao_original_id'])) { ?>
                     <div class="post-card mb-3">
-
-                        <!-- QUEM COMPARTILHOU -->
                         <div class="post-header d-flex align-items-center mb-3">
                             <div class="post-user-info d-flex align-items-center">
                                 <img src="<?= !empty($publicacao['foto']) ? '/uploads/fotos/' . $publicacao['foto'] : '/uploads/fotos/default-user.png' ?>"
@@ -247,8 +246,7 @@ require_once('../app/view/navbar.phtml');
                                 </div>
                             </div>
 
-                            <!-- 3 PONTINHOS DO COMPARTILHAMENTO -->
-                            <?php if ($publicacao['usuario_id'] == $_SESSION['id']) { ?>
+                            <?php if ($publicacao['usuario_id'] == $_SESSION['id'] || (isset($_SESSION['tipo']) && $_SESSION['tipo'] == 'admin')) { ?>
                                 <div class="dropdown ms-auto">
                                     <button class="btn btn-link text-muted p-0 text-decoration-none" type="button"
                                         data-bs-toggle="dropdown" aria-expanded="false">
@@ -266,18 +264,14 @@ require_once('../app/view/navbar.phtml');
                             <?php } ?>
                         </div>
 
-                        <!-- TEXTO DE QUEM COMPARTILHOU (OPCIONAL) -->
                         <?php if (!empty($publicacao['conteudo'])) { ?>
                             <div class="post-content mb-3">
                                 <?= nl2br(htmlspecialchars($publicacao['conteudo'])) ?>
                             </div>
                         <?php } ?>
 
-                        <!-- POST ORIGINAL EMBUTIDO -->
                         <div class="border rounded-4 overflow-hidden mb-3 bg-white" style="border-color: #dee2e6;">
-
                             <?php if (isset($publicacao['post_original_tipo']) && $publicacao['post_original_tipo'] == 'vaga') { ?>
-                                <!-- LAYOUT ORIGINAL DE VAGA EMBUTIDO -->
                                 <div class="p-3 border-start border-success border-4 h-100">
                                     <div class="d-flex align-items-center mb-3">
                                         <img src="<?= !empty($publicacao['autor_original_foto']) ? '/uploads/fotos/' . $publicacao['autor_original_foto'] : '/uploads/fotos/default-user.png' ?>"
@@ -292,8 +286,7 @@ require_once('../app/view/navbar.phtml');
                                         </div>
                                     </div>
 
-                                    <span class="badge bg-success mb-3 px-3 py-2"><i class="bi bi-briefcase-fill"></i> Vaga
-                                        publicada</span>
+                                    <span class="badge bg-success mb-3 px-3 py-2"><i class="bi bi-briefcase-fill"></i> Vaga publicada</span>
                                     <h5 class="fw-bold mb-3 text-dark">
                                         <?= htmlspecialchars($publicacao['post_original_titulo'] ?? '') ?>
                                     </h5>
@@ -329,9 +322,7 @@ require_once('../app/view/navbar.phtml');
                                         <i class="bi bi-arrow-right-circle"></i> Ver vaga
                                     </button>
                                 </div>
-
                             <?php } else { ?>
-                                <!-- LAYOUT ORIGINAL DE POST NORMAL EMBUTIDO -->
                                 <div class="p-3 h-100">
                                     <div class="d-flex align-items-center mb-3">
                                         <img src="<?= !empty($publicacao['autor_original_foto']) ? '/uploads/fotos/' . $publicacao['autor_original_foto'] : '/uploads/fotos/default-user.png' ?>"
@@ -358,255 +349,149 @@ require_once('../app/view/navbar.phtml');
 
                         <hr>
 
-                        <!-- AÇÕES -->
                         <div class="d-flex justify-content-around align-items-center post-actions py-2">
-                            <a href="#"
-                                class="post-action-btn btn btn-light text-muted d-flex align-items-center gap-2 btn-curtir border-0 bg-transparent"
+                            <a href="#" class="post-action-btn btn btn-light text-muted d-flex align-items-center gap-2 btn-curtir border-0 bg-transparent"
                                 data-id="<?= $publicacao['id'] ?>" data-curtido="<?= $publicacao['curtido'] ? 1 : 0 ?>">
-                                <span class="icone">
-                                    <?= $publicacao['curtido'] ? '❤️' : '🤍' ?>
-                                </span>
-                                <span class="total">
-                                    <?= $publicacao['curtidas'] ?>
-                                </span>
+                                <span class="icone"><?= $publicacao['curtido'] ? '❤️' : '🤍' ?></span>
+                                <span class="total"><?= $publicacao['curtidas'] ?></span>
                             </a>
-
-                            <button type="button"
-                                class="post-action-btn btn btn-light text-muted d-flex align-items-center gap-2 btn-comentario border-0 bg-transparent"
+                            <button type="button" class="post-action-btn btn btn-light text-muted d-flex align-items-center gap-2 btn-comentario border-0 bg-transparent"
                                 data-id="<?= $publicacao['id'] ?>">
-                                💬
-                                <span>
-                                    <?= $publicacao['total_comentarios'] ?>
-                                </span>
+                                💬 <span><?= $publicacao['total_comentarios'] ?></span>
                             </button>
-
-                            <a href="/share?id=<?= $publicacao['publicacao_original_id'] ?>"
-                                class="post-action-btn btn btn-light text-muted d-flex align-items-center gap-2 border-0 bg-transparent text-decoration-none">
+                            <a href="/share?id=<?= $publicacao['publicacao_original_id'] ?>" class="post-action-btn btn btn-light text-muted d-flex align-items-center gap-2 border-0 bg-transparent text-decoration-none">
                                 🔁 Compartilhar
                             </a>
                         </div>
 
-                        <!-- COMENTÁRIOS DO COMPARTILHAMENTO -->
                         <div class="comentarios-container d-none mt-3" id="comentarios-<?= $publicacao['id'] ?>">
                             <hr>
                             <?php if (!empty($publicacao['comentarios'])) { ?>
                                 <?php foreach ($publicacao['comentarios'] as $comentario) { ?>
                                     <div id="comentario-<?= $comentario['id'] ?>" class="d-flex mb-3 comentario-item">
-                                        <img src="<?= !empty($comentario['foto']) ? '/uploads/fotos/' . $comentario['foto'] : '/uploads/fotos/default-user.png' ?>"
-                                            class="rounded-circle me-2" style="width:40px; height:40px; object-fit:cover;">
-
+                                        <img src="<?= !empty($comentario['foto']) ? '/uploads/fotos/' . $comentario['foto'] : '/uploads/fotos/default-user.png' ?>" class="rounded-circle me-2" style="width:40px; height:40px; object-fit:cover;">
                                         <div class="flex-grow-1">
                                             <div class="bg-light rounded-4 p-3 position-relative">
-                                                <strong>
-                                                    <?= htmlspecialchars($comentario['nome']) ?>
-                                                </strong>
-
-                                                <?php if ($comentario['usuario_id'] == $_SESSION['id']) { ?>
+                                                <strong><?= htmlspecialchars($comentario['nome']) ?></strong>
+                                                <?php if ($comentario['usuario_id'] == $_SESSION['id'] || (isset($_SESSION['tipo']) && $_SESSION['tipo'] == 'admin')) { ?>
                                                     <div class="dropdown position-absolute top-0 end-0 mt-2 me-2">
-                                                        <button class="btn btn-sm border-0 bg-transparent text-muted p-0"
-                                                            data-bs-toggle="dropdown">
+                                                        <button class="btn btn-sm border-0 bg-transparent text-muted p-0" data-bs-toggle="dropdown">
                                                             <i class="bi bi-three-dots-vertical"></i>
                                                         </button>
                                                         <ul class="dropdown-menu dropdown-menu-end shadow border-0">
+                                                            <?php if ($comentario['usuario_id'] == $_SESSION['id']) { ?>
+                                                                <li>
+                                                                    <button class="dropdown-item editar-comentario-btn" data-id="<?= $comentario['id'] ?>" data-publicacao="<?= $publicacao['id'] ?>" data-comentario="<?= htmlspecialchars($comentario['comentario']) ?>">
+                                                                        <i class="bi bi-pencil me-2"></i> Editar
+                                                                    </button>
+                                                                </li>
+                                                            <?php } ?>
                                                             <li>
-                                                                <button class="dropdown-item editar-comentario-btn"
-                                                                    data-id="<?= $comentario['id'] ?>"
-                                                                    data-publicacao="<?= $publicacao['id'] ?>"
-                                                                    data-comentario="<?= htmlspecialchars($comentario['comentario']) ?>">
-                                                                    <i class="bi bi-pencil me-2"></i> Editar
-                                                                </button>
-                                                            </li>
-                                                            <li>
-                                                                <a class="dropdown-item text-danger btn-excluir-comentario" href="#"
-                                                                    data-id="<?= $comentario['id'] ?>"
-                                                                    data-publicacao="<?= $publicacao['id'] ?>">
+                                                                <a class="dropdown-item text-danger btn-excluir-comentario" href="#" data-id="<?= $comentario['id'] ?>" data-publicacao="<?= $publicacao['id'] ?>">
                                                                     <i class="bi bi-trash me-2"></i> Excluir
                                                                 </a>
                                                             </li>
                                                         </ul>
                                                     </div>
                                                 <?php } ?>
-
                                                 <div class="mt-1" id="texto-comentario-<?= $comentario['id'] ?>">
                                                     <?= nl2br(htmlspecialchars($comentario['comentario'])) ?>
                                                 </div>
                                             </div>
-                                            <small class="text-muted">
-                                                <?= date('d/m/Y H:i', strtotime($comentario['created_at'])) ?>
-                                            </small>
+                                            <small class="text-muted"><?= date('d/m/Y H:i', strtotime($comentario['created_at'])) ?></small>
                                         </div>
                                     </div>
                                 <?php } ?>
                             <?php } ?>
-
                             <form class="form-comentario" action="/comment" method="POST">
                                 <input type="hidden" name="publicacao_id" value="<?= $publicacao['id'] ?>">
-                                <textarea class="form-control mb-2" name="comentario" rows="2"
-                                    placeholder="Escreva um comentário..." required></textarea>
+                                <textarea class="form-control mb-2" name="comentario" rows="2" placeholder="Escreva um comentário..." required></textarea>
                                 <button type="submit" class="btn btn-primary btn-sm">Comentar</button>
                             </form>
                         </div>
-
                     </div>
-                    <!-- FIM DO CARD DE COMPARTILHAMENTO -->
 
-                    <!-- ============================================== -->
-                    <!-- SE NÃO FOR COMPARTILHAMENTO, É POST OU VAGA -->
-                    <!-- ============================================== -->
                 <?php } else { ?>
-
                     <?php if (!isset($publicacao['tipo']) || $publicacao['tipo'] == 'post') { ?>
                         <div class="post-card mb-3">
                             <div class="post-header d-flex align-items-center mb-3">
                                 <div class="post-user-info d-flex align-items-center">
-                                    <img src="<?= !empty($publicacao['foto']) ? '/uploads/fotos/' . $publicacao['foto'] : '/uploads/fotos/default-user.png' ?>"
-                                        class="post-avatar me-2" style="width:50px; height:50px; border-radius:50%; object-fit:cover;">
+                                    <img src="<?= !empty($publicacao['foto']) ? '/uploads/fotos/' . $publicacao['foto'] : '/uploads/fotos/default-user.png' ?>" class="post-avatar me-2" style="width:50px; height:50px; border-radius:50%; object-fit:cover;">
                                     <div>
-                                        <strong class="d-block">
-                                            <?= $publicacao['nome'] ?>
-                                        </strong>
-                                        <div class="post-date text-muted small">
-                                            <?= date('d/m/Y H:i', strtotime($publicacao['created_at'])) ?>
-                                        </div>
+                                        <strong><?= $publicacao['nome'] ?></strong>
+                                        <div class="post-date text-muted small"><?= date('d/m/Y H:i', strtotime($publicacao['created_at'])) ?></div>
                                     </div>
                                 </div>
-
-                                <?php if ($publicacao['usuario_id'] == $_SESSION['id']) { ?>
+                                <?php if ($publicacao['usuario_id'] == $_SESSION['id'] || (isset($_SESSION['tipo']) && $_SESSION['tipo'] == 'admin')) { ?>
                                     <div class="dropdown ms-auto">
-                                        <button class="btn btn-link text-muted p-0 text-decoration-none" type="button"
-                                            data-bs-toggle="dropdown" aria-expanded="false">
-                                            <i class="bi bi-three-dots-vertical fs-5"></i>
-                                        </button>
+                                        <button class="btn btn-link text-muted p-0 text-decoration-none" type="button" data-bs-toggle="dropdown"><i class="bi bi-three-dots-vertical fs-5"></i></button>
                                         <ul class="dropdown-menu dropdown-menu-end shadow border-0">
+                                            <?php if ($publicacao['usuario_id'] == $_SESSION['id']) { ?>
+                                                <li>
+                                                    <button class="dropdown-item editar-post-btn" data-id="<?= $publicacao['id'] ?>" data-texto="<?= htmlspecialchars($publicacao['conteudo'] ?? $publicacao['publicacao']) ?>" data-imagem="<?= $publicacao['imagem'] ?>">
+                                                        <i class="bi bi-pencil me-2"></i> Editar
+                                                    </button>
+                                                </li>
+                                                <li><hr class="dropdown-divider"></li>
+                                            <?php } ?>
                                             <li>
-                                                <button class="dropdown-item editar-post-btn" data-id="<?= $publicacao['id'] ?>"
-                                                    data-texto="<?= htmlspecialchars($publicacao['conteudo'] ?? $publicacao['publicacao']) ?>"
-                                                    data-imagem="<?= $publicacao['imagem'] ?>">
-                                                    <i class="bi bi-pencil me-2"></i>
-                                                    Editar
-                                                </button>
-                                            </li>
-                                            <li>
-                                                <hr class="dropdown-divider">
-                                            </li>
-                                            <li>
-                                                <a class="dropdown-item text-danger" href="/deletePost?id=<?= $publicacao['id'] ?>"
-                                                    onclick="return confirm('Deseja excluir esta publicação?')">
-                                                    <i class="bi bi-trash me-2"></i>
-                                                    Excluir
+                                                <a class="dropdown-item text-danger" href="/deletePost?id=<?= $publicacao['id'] ?>" onclick="return confirm('Deseja excluir esta publicação?')">
+                                                    <i class="bi bi-trash me-2"></i> Excluir
                                                 </a>
                                             </li>
                                         </ul>
                                     </div>
                                 <?php } ?>
                             </div>
-
                             <div class="post-body">
                                 <?php if (!empty($publicacao['conteudo'])) { ?>
-                                    <div class="post-content mb-3">
-                                        <?= nl2br(htmlspecialchars($publicacao['conteudo'])) ?>
-                                    </div>
+                                    <div class="post-content mb-3"><?= nl2br(htmlspecialchars($publicacao['conteudo'])) ?></div>
                                 <?php } ?>
-
                                 <?php if (!empty($publicacao['imagem'])) { ?>
-                                    <div class="post-image-container mb-3">
-                                        <img src="/uploads/publicacoes/<?= $publicacao['imagem'] ?>"
-                                            class="post-image img-fluid rounded w-100" style="max-height: 500px; object-fit: cover;">
-                                    </div>
+                                    <div class="post-image-container mb-3"><img src="/uploads/publicacoes/<?= $publicacao['imagem'] ?>" class="post-image img-fluid rounded w-100" style="max-height: 500px; object-fit: cover;"></div>
                                 <?php } ?>
                             </div>
-
                             <hr>
-
                             <div class="d-flex justify-content-around align-items-center post-actions py-2">
-                                <a href="#"
-                                    class="post-action-btn btn btn-light text-muted d-flex align-items-center gap-2 btn-curtir border-0 bg-transparent"
-                                    data-id="<?= $publicacao['id'] ?>" data-curtido="<?= $publicacao['curtido'] ? 1 : 0 ?>">
-                                    <span class="icone">
-                                        <?= $publicacao['curtido'] ? '❤️' : '🤍' ?>
-                                    </span>
-                                    <span class="total">
-                                        <?= $publicacao['curtidas'] ?>
-                                    </span>
+                                <a href="#" class="post-action-btn btn btn-light text-muted d-flex align-items-center gap-2 btn-curtir border-0 bg-transparent" data-id="<?= $publicacao['id'] ?>" data-curtido="<?= $publicacao['curtido'] ? 1 : 0 ?>">
+                                    <span class="icone"><?= $publicacao['curtido'] ? '❤️' : '🤍' ?></span> <span class="total"><?= $publicacao['curtidas'] ?></span>
                                 </a>
-
-                                <button type="button"
-                                    class="post-action-btn btn btn-light text-muted d-flex align-items-center gap-2 btn-comentario border-0 bg-transparent"
-                                    data-id="<?= $publicacao['id'] ?>">
-                                    💬
-                                    <span>
-                                        <?= $publicacao['total_comentarios'] ?>
-                                    </span>
-                                </button>
-
-                                <a href="/share?id=<?= $publicacao['id'] ?>"
-                                    class="post-action-btn btn btn-light text-muted d-flex align-items-center gap-2 border-0 bg-transparent">
-                                    🔁 Compartilhar
-                                </a>
+                                <button type="button" class="post-action-btn btn btn-light text-muted d-flex align-items-center gap-2 btn-comentario border-0 bg-transparent" data-id="<?= $publicacao['id'] ?>">💬 <span><?= $publicacao['total_comentarios'] ?></span></button>
+                                <a href="/share?id=<?= $publicacao['id'] ?>" class="post-action-btn btn btn-light text-muted d-flex align-items-center gap-2 border-0 bg-transparent text-decoration-none">🔁 Compartilhar</a>
                             </div>
-
                             <div class="comentarios-container d-none mt-3" id="comentarios-<?= $publicacao['id'] ?>">
                                 <hr>
                                 <?php if (!empty($publicacao['comentarios'])) { ?>
                                     <?php foreach ($publicacao['comentarios'] as $comentario) { ?>
                                         <div id="comentario-<?= $comentario['id'] ?>" class="d-flex mb-3 comentario-item">
-                                            <img src="<?= !empty($comentario['foto']) ? '/uploads/fotos/' . $comentario['foto'] : '/uploads/fotos/default-user.png' ?>"
-                                                class="rounded-circle me-2" style="width:40px; height:40px; object-fit:cover;">
-
+                                            <img src="<?= !empty($comentario['foto']) ? '/uploads/fotos/' . $comentario['foto'] : '/uploads/fotos/default-user.png' ?>" class="rounded-circle me-2" style="width:40px; height:40px; object-fit:cover;">
                                             <div class="flex-grow-1">
                                                 <div class="bg-light rounded-4 p-3 position-relative">
-                                                    <strong>
-                                                        <?= htmlspecialchars($comentario['nome']) ?>
-                                                    </strong>
-
-                                                    <?php if ($comentario['usuario_id'] == $_SESSION['id']) { ?>
+                                                    <strong><?= htmlspecialchars($comentario['nome']) ?></strong>
+                                                    <?php if ($comentario['usuario_id'] == $_SESSION['id'] || (isset($_SESSION['tipo']) && $_SESSION['tipo'] == 'admin')) { ?>
                                                         <div class="dropdown position-absolute top-0 end-0 mt-2 me-2">
-                                                            <button class="btn btn-sm border-0 bg-transparent text-muted p-0"
-                                                                data-bs-toggle="dropdown">
-                                                                <i class="bi bi-three-dots-vertical"></i>
-                                                            </button>
+                                                            <button class="btn btn-sm border-0 bg-transparent text-muted p-0" data-bs-toggle="dropdown"><i class="bi bi-three-dots-vertical"></i></button>
                                                             <ul class="dropdown-menu dropdown-menu-end shadow border-0">
-                                                                <li>
-                                                                    <button class="dropdown-item editar-comentario-btn"
-                                                                        data-id="<?= $comentario['id'] ?>"
-                                                                        data-publicacao="<?= $publicacao['id'] ?>"
-                                                                        data-comentario="<?= htmlspecialchars($comentario['comentario']) ?>">
-                                                                        <i class="bi bi-pencil me-2"></i> Editar
-                                                                    </button>
-                                                                </li>
-                                                                <li>
-                                                                    <a class="dropdown-item text-danger btn-excluir-comentario" href="#"
-                                                                        data-id="<?= $comentario['id'] ?>"
-                                                                        data-publicacao="<?= $publicacao['id'] ?>">
-                                                                        <i class="bi bi-trash me-2"></i> Excluir
-                                                                    </a>
-                                                                </li>
+                                                                <?php if ($comentario['usuario_id'] == $_SESSION['id']) { ?>
+                                                                    <li><button class="dropdown-item editar-comentario-btn" data-id="<?= $comentario['id'] ?>" data-publicacao="<?= $publicacao['id'] ?>" data-comentario="<?= htmlspecialchars($comentario['comentario']) ?>"><i class="bi bi-pencil me-2"></i> Editar</button></li>
+                                                                <?php } ?>
+                                                                <li><a class="dropdown-item text-danger btn-excluir-comentario" href="#" data-id="<?= $comentario['id'] ?>" data-publicacao="<?= $publicacao['id'] ?>"><i class="bi bi-trash me-2"></i> Excluir</a></li>
                                                             </ul>
                                                         </div>
                                                     <?php } ?>
-
-                                                    <div class="mt-1" id="texto-comentario-<?= $comentario['id'] ?>">
-                                                        <?= nl2br(htmlspecialchars($comentario['comentario'])) ?>
-                                                    </div>
+                                                    <div class="mt-1" id="texto-comentario-<?= $comentario['id'] ?>"><?= nl2br(htmlspecialchars($comentario['comentario'])) ?></div>
                                                 </div>
-                                                <small class="text-muted">
-                                                    <?= date('d/m/Y H:i', strtotime($comentario['created_at'])) ?>
-                                                </small>
+                                                <small class="text-muted"><?= date('d/m/Y H:i', strtotime($comentario['created_at'])) ?></small>
                                             </div>
                                         </div>
                                     <?php } ?>
                                 <?php } ?>
-
                                 <form class="form-comentario" action="/comment" method="POST">
                                     <input type="hidden" name="publicacao_id" value="<?= $publicacao['id'] ?>">
-                                    <textarea class="form-control mb-2" name="comentario" rows="2"
-                                        placeholder="Escreva um comentário..." required></textarea>
-                                    <button type="submit" class="btn btn-primary btn-sm">
-                                        Comentar
-                                    </button>
+                                    <textarea class="form-control mb-2" name="comentario" rows="2" placeholder="Escreva um comentário..." required></textarea>
+                                    <button type="submit" class="btn btn-primary btn-sm">Comentar</button>
                                 </form>
                             </div>
-
                         </div>
                     <?php } ?>
 
@@ -614,441 +499,143 @@ require_once('../app/view/navbar.phtml');
                         <div class="post-card mb-3 border-start border-success border-4 p-3 shadow-sm bg-white rounded">
                             <div class="post-header d-flex align-items-center mb-3">
                                 <div class="post-user-info d-flex align-items-center">
-                                    <img src="<?= !empty($publicacao['foto']) ? '/uploads/fotos/' . $publicacao['foto'] : '/uploads/fotos/default-user.png' ?>"
-                                        class="post-avatar me-2" style="width:50px; height:50px; border-radius:50%; object-fit:cover;">
+                                    <img src="<?= !empty($publicacao['foto']) ? '/uploads/fotos/' . $publicacao['foto'] : '/uploads/fotos/default-user.png' ?>" class="post-avatar me-2" style="width:50px; height:50px; border-radius:50%; object-fit:cover;">
                                     <div>
-                                        <strong class="d-block">
-                                            <?= $publicacao['nome'] ?>
-                                        </strong>
-                                        <div class="text-muted small">
-                                            <?= $publicacao['empresa'] ?? 'Empresa Confidencial' ?>
-                                        </div>
-                                        <div class="post-date text-muted small">
-                                            <?= date('d/m/Y H:i', strtotime($publicacao['created_at'])) ?>
-                                        </div>
+                                        <strong><?= $publicacao['nome'] ?></strong>
+                                        <div class="text-muted small"><?= $publicacao['empresa'] ?? 'Empresa Confidencial' ?></div>
+                                        <div class="post-date text-muted small"><?= date('d/m/Y H:i', strtotime($publicacao['created_at'])) ?></div>
                                     </div>
                                 </div>
-
-                                <?php if ($publicacao['usuario_id'] == $_SESSION['id']) { ?>
+                                <?php if ($publicacao['usuario_id'] == $_SESSION['id'] || (isset($_SESSION['tipo']) && $_SESSION['tipo'] == 'admin')) { ?>
                                     <div class="dropdown ms-auto">
-                                        <button class="btn btn-link text-muted p-0 text-decoration-none" type="button"
-                                            data-bs-toggle="dropdown" aria-expanded="false">
-                                            <i class="bi bi-three-dots-vertical fs-5"></i>
-                                        </button>
+                                        <button class="btn btn-link text-muted p-0 text-decoration-none" type="button" data-bs-toggle="dropdown"><i class="bi bi-three-dots-vertical fs-5"></i></button>
                                         <ul class="dropdown-menu dropdown-menu-end shadow border-0">
-                                            <li>
-                                                <button type="button" class="dropdown-item editar-vaga-btn"
-                                                    data-id="<?= $publicacao['id'] ?>"
-                                                    data-titulo="<?= htmlspecialchars($publicacao['titulo'] ?? '') ?>"
-                                                    data-empresa="<?= htmlspecialchars($publicacao['empresa'] ?? '') ?>"
-                                                    data-texto="<?= htmlspecialchars($publicacao['conteudo'] ?? '') ?>"
-                                                    data-salario="<?= htmlspecialchars($publicacao['salario'] ?? '') ?>"
-                                                    data-localizacao="<?= htmlspecialchars($publicacao['localizacao'] ?? '') ?>"
-                                                    data-modalidade="<?= htmlspecialchars($publicacao['modalidade'] ?? '') ?>"
-                                                    data-imagem="<?= htmlspecialchars($publicacao['imagem'] ?? '') ?>"
-                                                    data-bs-toggle="modal" data-bs-target="#editarVagaModal">
-                                                    <i class="bi bi-pencil me-2"></i>
-                                                    Editar vaga
-                                                </button>
-                                            </li>
-                                            <li>
-                                                <hr class="dropdown-divider">
-                                            </li>
-                                            <li>
-                                                <a class="dropdown-item text-danger" href="/deleteVacancy?id=<?= $publicacao['id'] ?>"
-                                                    onclick="return confirm('Deseja excluir esta vaga?')">
-                                                    <i class="bi bi-trash me-2"></i>
-                                                    Excluir vaga
-                                                </a>
-                                            </li>
+                                            <?php if ($publicacao['usuario_id'] == $_SESSION['id']) { ?>
+                                                <li><button type="button" class="dropdown-item editar-vaga-btn" data-id="<?= $publicacao['id'] ?>" data-titulo="<?= htmlspecialchars($publicacao['titulo'] ?? '') ?>" data-empresa="<?= htmlspecialchars($publicacao['empresa'] ?? '') ?>" data-texto="<?= htmlspecialchars($publicacao['conteudo'] ?? '') ?>" data-salario="<?= htmlspecialchars($publicacao['salario'] ?? '') ?>" data-localizacao="<?= htmlspecialchars($publicacao['localizacao'] ?? '') ?>" data-modalidade="<?= htmlspecialchars($publicacao['modalidade'] ?? '') ?>" data-imagem="<?= htmlspecialchars($publicacao['imagem'] ?? '') ?>" data-bs-toggle="modal" data-bs-target="#editarVagaModal"><i class="bi bi-pencil me-2"></i> Editar vaga</button></li>
+                                                <li><hr class="dropdown-divider"></li>
+                                            <?php } ?>
+                                            <li><a class="dropdown-item text-danger" href="/deleteVacancy?id=<?= $publicacao['id'] ?>" onclick="return confirm('Deseja excluir esta vaga?')"><i class="bi bi-trash me-2"></i> Excluir vaga</a></li>
                                         </ul>
                                     </div>
                                 <?php } ?>
                             </div>
-
                             <div class="post-body">
-                                <span class="badge bg-success mb-3 px-3 py-2">
-                                    <i class="bi bi-briefcase-fill"></i> Vaga publicada
-                                </span>
-
-                                <h5 class="fw-bold mb-3">
-                                    <?= $publicacao['titulo'] ?? 'Título da Vaga' ?>
-                                </h5>
-
+                                <span class="badge bg-success mb-3 px-3 py-2"><i class="bi bi-briefcase-fill"></i> Vaga publicada</span>
+                                <h5 class="fw-bold mb-3"><?= $publicacao['titulo'] ?? 'Título da Vaga' ?></h5>
                                 <div class="d-flex flex-wrap gap-2 mb-3">
-                                    <?php if (!empty($publicacao['localizacao'])) { ?>
-                                        <span class="badge bg-light text-dark border"><i class="bi bi-geo-alt-fill"></i>
-                                            <?= $publicacao['localizacao'] ?>
-                                        </span>
-                                    <?php } ?>
-                                    <?php if (!empty($publicacao['modalidade'])) { ?>
-                                        <span class="badge bg-light text-dark border"><i class="bi bi-building"></i>
-                                            <?= ucfirst($publicacao['modalidade']) ?>
-                                        </span>
-                                    <?php } ?>
-                                    <?php if (!empty($publicacao['salario'])) { ?>
-                                        <span class="badge bg-light text-success border"><i class="bi bi-cash"></i> R$
-                                            <?= $publicacao['salario'] ?>
-                                        </span>
-                                    <?php } ?>
+                                    <?php if (!empty($publicacao['localizacao'])) { ?><span class="badge bg-light text-dark border"><i class="bi bi-geo-alt-fill"></i> <?= $publicacao['localizacao'] ?></span><?php } ?>
+                                    <?php if (!empty($publicacao['modalidade'])) { ?><span class="badge bg-light text-dark border"><i class="bi bi-building"></i> <?= ucfirst($publicacao['modalidade']) ?></span><?php } ?>
+                                    <?php if (!empty($publicacao['salario'])) { ?><span class="badge bg-light text-success border"><i class="bi bi-cash"></i> R$ <?= $publicacao['salario'] ?></span><?php } ?>
                                 </div>
-
-                                <?php if (!empty($publicacao['conteudo'])) { ?>
-                                    <div class="post-content mb-3">
-                                        <?= nl2br(htmlspecialchars($publicacao['conteudo'])) ?>
-                                    </div>
-                                <?php } ?>
-
-                                <?php if (!empty($publicacao['imagem'])) { ?>
-                                    <div class="post-image-container mb-3">
-                                        <img src="/uploads/publicacoes/<?= $publicacao['imagem'] ?>"
-                                            class="post-image img-fluid rounded w-100" style="max-height: 500px; object-fit: cover;">
-                                    </div>
-                                <?php } ?>
-
-                                <a href="/vacancyDetails?id=<?= $publicacao['id'] ?>" class="btn btn-success rounded-pill px-4 mb-3">
-                                    <i class="bi bi-arrow-right-circle"></i>
-                                    Ver vaga
-                                </a>
+                                <?php if (!empty($publicacao['conteudo'])) { ?><div class="post-content mb-3"><?= nl2br(htmlspecialchars($publicacao['conteudo'])) ?></div><?php } ?>
+                                <?php if (!empty($publicacao['imagem'])) { ?><div class="post-image-container mb-3"><img src="/uploads/publicacoes/<?= $publicacao['imagem'] ?>" class="post-image img-fluid rounded w-100" style="max-height: 500px; object-fit: cover;"></div><?php } ?>
+                                <a href="/vacancyDetails?id=<?= $publicacao['id'] ?>" class="btn btn-success rounded-pill px-4 mb-3"><i class="bi bi-arrow-right-circle"></i> Ver vaga</a>
                             </div>
-
                             <hr>
-
                             <div class="d-flex justify-content-around align-items-center post-actions py-2">
-                                <a href="#"
-                                    class="post-action-btn btn btn-light text-muted d-flex align-items-center gap-2 btn-curtir border-0 bg-transparent"
-                                    data-id="<?= $publicacao['id'] ?>" data-curtido="<?= $publicacao['curtido'] ? 1 : 0 ?>">
-                                    <span class="icone">
-                                        <?= $publicacao['curtido'] ? '❤️' : '🤍' ?>
-                                    </span>
-                                    <span class="total">
-                                        <?= $publicacao['curtidas'] ?>
-                                    </span>
-                                </a>
-
-                                <button type="button"
-                                    class="post-action-btn btn btn-light text-muted d-flex align-items-center gap-2 btn-comentario border-0 bg-transparent"
-                                    data-id="<?= $publicacao['id'] ?>">
-                                    💬
-                                    <span>
-                                        <?= $publicacao['total_comentarios'] ?>
-                                    </span>
-                                </button>
-
-                                <a href="/share?id=<?= $publicacao['id'] ?>"
-                                    class="post-action-btn btn btn-light text-muted d-flex align-items-center gap-2 border-0 bg-transparent">
-                                    🔁 Compartilhar
-                                </a>
+                                <a href="#" class="post-action-btn btn btn-light text-muted d-flex align-items-center gap-2 btn-curtir border-0 bg-transparent" data-id="<?= $publicacao['id'] ?>" data-curtido="<?= $publicacao['curtido'] ? 1 : 0 ?>"><span class="icone"><?= $publicacao['curtido'] ? '❤️' : '🤍' ?></span> <span class="total"><?= $publicacao['curtidas'] ?></span></a>
+                                <button type="button" class="post-action-btn btn btn-light text-muted d-flex align-items-center gap-2 btn-comentario border-0 bg-transparent" data-id="<?= $publicacao['id'] ?>">💬 <span><?= $publicacao['total_comentarios'] ?></span></button>
+                                <a href="/share?id=<?= $publicacao['id'] ?>" class="post-action-btn btn btn-light text-muted d-flex align-items-center gap-2 border-0 bg-transparent">🔁 Compartilhar</a>
                             </div>
-
                             <div class="comentarios-container d-none mt-3" id="comentarios-<?= $publicacao['id'] ?>">
                                 <hr>
                                 <?php if (!empty($publicacao['comentarios'])) { ?>
                                     <?php foreach ($publicacao['comentarios'] as $comentario) { ?>
                                         <div id="comentario-<?= $comentario['id'] ?>" class="d-flex mb-3 comentario-item">
-                                            <img src="<?= !empty($comentario['foto']) ? '/uploads/fotos/' . $comentario['foto'] : '/uploads/fotos/default-user.png' ?>"
-                                                class="rounded-circle me-2" style="width:40px; height:40px; object-fit:cover;">
-
+                                            <img src="<?= !empty($comentario['foto']) ? '/uploads/fotos/' . $comentario['foto'] : '/uploads/fotos/default-user.png' ?>" class="rounded-circle me-2" style="width:40px; height:40px; object-fit:cover;">
                                             <div class="flex-grow-1">
                                                 <div class="bg-light rounded-4 p-3 position-relative">
-                                                    <strong>
-                                                        <?= htmlspecialchars($comentario['nome']) ?>
-                                                    </strong>
-
-                                                    <?php if ($comentario['usuario_id'] == $_SESSION['id']) { ?>
+                                                    <strong><?= htmlspecialchars($comentario['nome']) ?></strong>
+                                                    <?php if ($comentario['usuario_id'] == $_SESSION['id'] || (isset($_SESSION['tipo']) && $_SESSION['tipo'] == 'admin')) { ?>
                                                         <div class="dropdown position-absolute top-0 end-0 mt-2 me-2">
-                                                            <button class="btn btn-sm border-0 bg-transparent text-muted p-0"
-                                                                data-bs-toggle="dropdown">
-                                                                <i class="bi bi-three-dots-vertical"></i>
-                                                            </button>
+                                                            <button class="btn btn-sm border-0 bg-transparent text-muted p-0" data-bs-toggle="dropdown"><i class="bi bi-three-dots-vertical"></i></button>
                                                             <ul class="dropdown-menu dropdown-menu-end shadow border-0">
-                                                                <li>
-                                                                    <button class="dropdown-item editar-comentario-btn"
-                                                                        data-id="<?= $comentario['id'] ?>"
-                                                                        data-publicacao="<?= $publicacao['id'] ?>"
-                                                                        data-comentario="<?= htmlspecialchars($comentario['comentario']) ?>">
-                                                                        <i class="bi bi-pencil me-2"></i> Editar
-                                                                    </button>
-                                                                </li>
-                                                                <li>
-                                                                    <a class="dropdown-item text-danger btn-excluir-comentario" href="#"
-                                                                        data-id="<?= $comentario['id'] ?>"
-                                                                        data-publicacao="<?= $publicacao['id'] ?>">
-                                                                        <i class="bi bi-trash me-2"></i> Excluir
-                                                                    </a>
-                                                                </li>
+                                                                <?php if ($comentario['usuario_id'] == $_SESSION['id']) { ?>
+                                                                    <li><button class="dropdown-item editar-comentario-btn" data-id="<?= $comentario['id'] ?>" data-publicacao="<?= $publicacao['id'] ?>" data-comentario="<?= htmlspecialchars($comentario['comentario']) ?>"><i class="bi bi-pencil me-2"></i> Editar</button></li>
+                                                                <?php } ?>
+                                                                <li><a class="dropdown-item text-danger btn-excluir-comentario" href="#" data-id="<?= $comentario['id'] ?>" data-publicacao="<?= $publicacao['id'] ?>"><i class="bi bi-trash me-2"></i> Excluir</a></li>
                                                             </ul>
                                                         </div>
                                                     <?php } ?>
-
-                                                    <div class="mt-1" id="texto-comentario-<?= $comentario['id'] ?>">
-                                                        <?= nl2br(htmlspecialchars($comentario['comentario'])) ?>
-                                                    </div>
+                                                    <div class="mt-1" id="texto-comentario-<?= $comentario['id'] ?>"><?= nl2br(htmlspecialchars($comentario['comentario'])) ?></div>
                                                 </div>
-                                                <small class="text-muted">
-                                                    <?= date('d/m/Y H:i', strtotime($comentario['created_at'])) ?>
-                                                </small>
+                                                <small class="text-muted"><?= date('d/m/Y H:i', strtotime($comentario['created_at'])) ?></small>
                                             </div>
                                         </div>
                                     <?php } ?>
                                 <?php } ?>
-
                                 <form class="form-comentario" action="/comment" method="POST">
                                     <input type="hidden" name="publicacao_id" value="<?= $publicacao['id'] ?>">
-                                    <textarea class="form-control mb-2" name="comentario" rows="2"
-                                        placeholder="Escreva um comentário..." required></textarea>
-                                    <button type="submit" class="btn btn-primary btn-sm">
-                                        Comentar
-                                    </button>
+                                    <textarea class="form-control mb-2" name="comentario" rows="2" placeholder="Escreva um comentário..." required></textarea>
+                                    <button type="submit" class="btn btn-primary btn-sm">Comentar</button>
                                 </form>
                             </div>
-
                         </div>
                     <?php } ?>
-
-                <?php } ?> <!-- FIM DA CONDICIONAL (COMPARTILHAMENTO VS NORMAL/VAGA) -->
-            <?php } ?> <!-- FIM DO FOREACH -->
-
+                <?php } ?>
+            <?php } ?>
         <?php } else { ?>
             <div class="text-muted text-center p-4 card-custom">Nenhuma publicação encontrada.</div>
         <?php } ?>
     </div>
+
     <?php if (isset($_GET['edit']) && $_GET['edit'] == 'post_sucesso') { ?>
-        <div class="modal fade" id="modalEditPostSucesso" tabindex="-1">
-            <div class="modal-dialog modal-dialog-centered">
-                <div class="modal-content border-0 shadow-lg rounded-4">
-                    <div class="modal-body text-center p-5">
-                        <div class="success-icon mb-3">
-                            <i class="bi bi-check-circle-fill text-primary"></i>
-                        </div>
-                        <h3 class="fw-bold">
-                            Publicação atualizada!
-                        </h3>
-                        <p class="text-muted">
-                            Sua publicação foi editada com sucesso 🚀
-                        </p>
-                        <button class="btn btn-primary px-4" data-bs-dismiss="modal">
-                            Fechar
-                        </button>
-                    </div>
-                </div>
-            </div>
-        </div>
+        <div class="modal fade" id="modalEditPostSucesso" tabindex="-1"><div class="modal-dialog modal-dialog-centered"><div class="modal-content border-0 shadow-lg rounded-4"><div class="modal-body text-center p-5"><div class="success-icon mb-3"><i class="bi bi-check-circle-fill text-primary"></i></div><h3 class="fw-bold">Publicação updated!</h3><p class="text-muted">Sua publicação foi editada com sucesso 🚀</p><button class="btn btn-primary px-4" data-bs-dismiss="modal">Fechar</button></div></div></div></div>
     <?php } ?>
 
     <?php if (isset($_GET['edit']) && $_GET['edit'] == 'vaga_sucesso') { ?>
-        <div class="modal fade" id="modalEditVagaSucesso" tabindex="-1">
-            <div class="modal-dialog modal-dialog-centered">
-                <div class="modal-content border-0 shadow-lg rounded-4">
-                    <div class="modal-body text-center p-5">
-                        <div class="success-icon mb-3">
-                            <i class="bi bi-briefcase-fill text-success"></i>
-                        </div>
-                        <h3 class="fw-bold">
-                            Vaga atualizada!
-                        </h3>
-                        <p class="text-muted">
-                            Sua vaga foi editada com sucesso 🎯
-                        </p>
-                        <button class="btn btn-success px-4" data-bs-dismiss="modal">
-                            Fechar
-                        </button>
-                    </div>
-                </div>
-            </div>
-        </div>
+        <div class="modal fade" id="modalEditVagaSucesso" tabindex="-1"><div class="modal-dialog modal-dialog-centered"><div class="modal-content border-0 shadow-lg rounded-4"><div class="modal-body text-center p-5"><div class="success-icon mb-3"><i class="bi bi-briefcase-fill text-success"></i></div><h3 class="fw-bold">Vaga updated!</h3><p class="text-muted">Sua vaga foi editada com sucesso 🎯</p><button class="btn btn-success px-4" data-bs-dismiss="modal">Fechar</button></div></div></div></div>
     <?php } ?>
 
     <div class="modal fade" id="editarPostModal" tabindex="-1">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <form method="POST" action="/updatePost" enctype="multipart/form-data">
-                    <div class="modal-header">
-                        <h5 class="modal-title">
-                            Editar publicação
-                        </h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal">
-                        </button>
-                    </div>
-                    <div class="modal-body">
-                        <input type="hidden" name="id" id="editPostId">
-                        <textarea name="conteudo" id="editPostTexto" class="form-control mb-3" rows="5"></textarea>
-                        <div id="editPreviewContainer" class="mb-3 d-none">
-                            <img id="editPreviewImagem" class="img-fluid rounded">
-                        </div>
-                        <label class="btn btn-light border w-100">
-                            <i class="bi bi-image"></i>
-                            Alterar imagem
-                            <input type="file" name="imagem" id="editPostFileInput" hidden accept="image/*">
-                        </label>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="submit" class="btn btn-primary">
-                            Salvar alterações
-                        </button>
-                    </div>
-                </form>
-            </div>
-        </div>
+        <div class="modal-dialog"><div class="modal-content"><form method="POST" action="/updatePost" enctype="multipart/form-data"><div class="modal-header"><h5 class="modal-title">Editar publicação</h5><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div><div class="modal-body"><input type="hidden" name="id" id="editPostId"><textarea name="conteudo" id="editPostTexto" class="form-control mb-3" rows="5"></textarea><div id="editPreviewContainer" class="mb-3 d-none"><img id="editPreviewImagem" class="img-fluid rounded"></div><label class="btn btn-light border w-100"><i class="bi bi-image"></i> Alterar imagem<input type="file" name="imagem" id="editPostFileInput" hidden accept="image/*"></label></div><div class="modal-footer"><button type="submit" class="btn btn-primary">Salvar alterações</button></div></form></div></div>
     </div>
 
     <div class="modal fade" id="editarVagaModal" tabindex="-1">
-        <div class="modal-dialog modal-lg">
-            <div class="modal-content">
-                <form method="POST" action="/updateVacancy" enctype="multipart/form-data">
-                    <div class="modal-header">
-                        <h5 class="modal-title">
-                            Editar vaga
-                        </h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal">
-                        </button>
-                    </div>
-                    <div class="modal-body">
-                        <input type="hidden" name="id" id="editVagaId">
-                        <div class="mb-3">
-                            <label class="form-label">
-                                Título da vaga
-                            </label>
-                            <input type="text" name="titulo" id="editVagaTitulo" class="form-control">
-                        </div>
-                        <div class="mb-3">
-                            <label class="form-label">
-                                Empresa
-                            </label>
-                            <input type="text" name="empresa" id="editVagaEmpresa" class="form-control">
-                        </div>
-                        <div class="mb-3">
-                            <label class="form-label">
-                                Descrição
-                            </label>
-                            <textarea name="conteudo" id="editVagaTexto" class="form-control" rows="5"></textarea>
-                        </div>
-                        <div class="mb-3">
-                            <label class="form-label">
-                                Salário
-                            </label>
-                            <input type="text" name="salario" id="editVagaSalario" class="form-control">
-                        </div>
-                        <div class="mb-3">
-                            <label class="form-label">
-                                Localização
-                            </label>
-                            <input type="text" name="localizacao" id="editVagaLocalizacao" class="form-control">
-                        </div>
-                        <div class="mb-3">
-                            <label class="form-label">
-                                Modalidade
-                            </label>
-                            <select name="modalidade" id="editVagaModalidade" class="form-select">
-                                <option value="Presencial">
-                                    Presencial
-                                </option>
-                                <option value="Híbrido">
-                                    Híbrido
-                                </option>
-                                <option value="Remoto">
-                                    Remoto
-                                </option>
-                            </select>
-                        </div>
-                        <div id="editVagaPreviewContainer" class="mb-3 d-none">
-                            <img id="editVagaPreviewImagem" class="img-fluid rounded w-100">
-                        </div>
-                        <div class="mb-3">
-                            <label class="btn btn-light border w-100">
-                                <i class="bi bi-image"></i>
-                                Alterar imagem
-                                <input type="file" name="imagem" id="editVagaFileInput" hidden accept="image/*">
-                            </label>
-                        </div>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="submit" class="btn btn-success">
-                            Salvar alterações
-                        </button>
-                    </div>
-                </form>
-            </div>
-        </div>
+        <div class="modal-dialog modal-lg"><div class="modal-content"><form method="POST" action="/updateVacancy" enctype="multipart/form-data"><div class="modal-header"><h5 class="modal-title">Editar vaga</h5><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div><div class="modal-body"><input type="hidden" name="id" id="editVagaId"><div class="mb-3"><label class="form-label">Título da vaga</label><input type="text" name="titulo" id="editVagaTitulo" class="form-control"></div><div class="mb-3"><label class="form-label">Empresa</label><input type="text" name="empresa" id="editVagaCompany" class="form-control"></div><div class="mb-3"><label class="form-label">Descrição</label><textarea name="conteudo" id="editVagaTexto" class="form-control" rows="5"></textarea></div><div class="mb-3"><label class="form-label">Salário</label><input type="text" name="salario" id="editVagaSalario" class="form-control"></div><div class="mb-3"><label class="form-label">Localização</label><input type="text" name="localizacao" id="editVagaLocalizacao" class="form-control"></div><div class="mb-3"><label class="form-label">Modalidade</label><select name="modalidade" id="editVagaModalidade" class="form-select"><option value="Presencial">Presencial</option><option value="Híbrido">Híbrido</option><option value="Remoto">Remoto</option></select></div><div id="editVagaPreviewContainer" class="mb-3 d-none"><img id="editVagaPreviewImagem" class="img-fluid rounded w-100"></div><div class="mb-3"><label class="btn btn-light border w-100"><i class="bi bi-image"></i> Alterar imagem<input type="file" name="imagem" id="editVagaFileInput" hidden accept="image/*"></label></div></div><div class="modal-footer"><button type="submit" class="btn btn-success">Salvar alterações</button></div></form></div></div>
     </div>
 
     <div class="modal fade" id="editarComentarioModal" tabindex="-1">
-        <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content border-0 shadow-lg rounded-4">
-                <form id="formEditarComentario" action="/editComment" method="POST">
-                    <div class="modal-header border-0">
-                        <h5 class="modal-title fw-bold">Editar comentário</h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                    </div>
-                    <div class="modal-body p-4">
-                        <input type="hidden" name="id" id="editComentarioId">
-                        <textarea name="comentario" id="editComentarioTexto" class="form-control" rows="4"
-                            placeholder="Digite seu comentário..." required></textarea>
-                    </div>
-                    <div class="modal-footer border-0">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                        <button type="submit" class="btn btn-primary" id="salvarComentario">Salvar alterações</button>
-                    </div>
-                </form>
-            </div>
-        </div>
+        <div class="modal-dialog modal-dialog-centered"><div class="modal-content border-0 shadow-lg rounded-4"><form id="formEditarComentario" action="/editComment" method="POST"><div class="modal-header border-0"><h5 class="modal-title fw-bold">Editar comentário</h5><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div><div class="modal-body p-4"><input type="hidden" name="id" id="editComentarioId"><textarea name="comentario" id="editComentarioTexto" class="form-control" rows="4" placeholder="Digite seu comentário..." required></textarea></div><div class="modal-footer border-0"><button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button><button type="submit" class="btn btn-primary" id="salvarComentario">Salvar alterações</button></div></form></div></div>
     </div>
 
-    <div class="modal fade" id="modalDesativarConta" tabindex="-1">
-
+    <div class="modal fade" id="modalStatusConta" tabindex="-1">
         <div class="modal-dialog modal-dialog-centered">
-
-            <div class="modal-content">
-
+            <div class="modal-content border-0 shadow-lg rounded-4">
                 <div class="modal-header">
-
-                    <h5 class="modal-title">
-                        Desativar conta
+                    <h5 class="modal-title fw-bold">
+                        <?= ($statusFormatado === 'ativo') ? 'Bloquear conta' : 'Reativar conta' ?>
                     </h5>
-
                     <button class="btn-close" data-bs-dismiss="modal"></button>
-
                 </div>
-
-                <div class="modal-body">
-
-                    <p class="mb-2">
-                        Tem certeza que deseja desativar sua conta?
-                    </p>
-
-                    <div class="alert alert-warning mb-0">
-
-                        Sua conta ficará indisponível para outros usuários e
-                        somente um administrador poderá reativá-la.
-
-                    </div>
-
+                <div class="modal-body p-4">
+                    <?php if ($statusFormatado === 'ativo') { ?>
+                        <p class="mb-2">Tem certeza que deseja bloquear esta conta?</p>
+                        <div class="alert alert-warning mb-0 border-0">
+                            O perfil ficará indisponível para outros usuários e somente um administrador poderá reativá-lo.
+                        </div>
+                    <?php } else { ?>
+                        <p class="mb-2">Tem certeza que deseja reativar a conta deste usuário?</p>
+                        <div class="alert alert-success mb-0 border-0">
+                            O usuário recuperará o acesso ao sistema e seu perfil voltará a ficar visível para a rede.
+                        </div>
+                    <?php } ?>
                 </div>
-
-                <div class="modal-footer">
-
-                    <button class="btn btn-secondary" data-bs-dismiss="modal">
-
-                        Cancelar
-
+                <div class="modal-footer border-0">
+                    <button class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button id="confirmarAlteracaoStatus" 
+                            class="btn <?= ($statusFormatado === 'ativo') ? 'btn-danger' : 'btn-success' ?>"
+                            data-usuario-id="<?= $usuario['id'] ?>" 
+                            data-session-id="<?= $_SESSION['id'] ?>"
+                            data-status-atual="<?= $statusFormatado ?>">
+                        <?= ($statusFormatado === 'ativo') ? 'Bloquear conta' : 'Ativar conta' ?>
                     </button>
-
-                    <button id="confirmarDesativacao" class="btn btn-danger">
-
-                        Desativar conta
-
-                    </button>
-
                 </div>
-
             </div>
-
         </div>
-
     </div>
 
     <script>
-        // Inicialização dos modais de sucesso
         document.addEventListener('DOMContentLoaded', () => {
             <?php if (isset($_GET['edit']) && $_GET['edit'] == 'post_sucesso') { ?>
                 new bootstrap.Modal(document.getElementById('modalEditPostSucesso')).show();
@@ -1059,22 +646,16 @@ require_once('../app/view/navbar.phtml');
             <?php } ?>
         });
 
-        // Abertura do modal de edição (Funciona para comentários antigos e novos!)
         document.addEventListener('click', function (e) {
-            // O closest garante que funciona mesmo se clicar no ícone ✏️ dentro do botão
             const btnEditar = e.target.closest('.editar-comentario-btn');
-
             if (btnEditar) {
-                e.preventDefault(); // Evita que o link faça a página pular
-
-                // Preenche os dados no modal
+                e.preventDefault();
                 document.getElementById('editComentarioId').value = btnEditar.dataset.id;
                 document.getElementById('editComentarioTexto').value = btnEditar.dataset.comentario;
 
-                // Abre o modal de forma segura
                 const modalElement = document.getElementById('editarComentarioModal');
-                const modalInstance = bootstrap.Modal.getOrCreateInstance(modalElement);
-                modalInstance.show();
+                bootstrap.Modal.getOrCreateInstance(modalElement).show();
             }
         });
     </script>
+</div>

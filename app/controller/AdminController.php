@@ -76,7 +76,7 @@ class AdminController extends Action
         header('Location: /timelineAdmin?delete=success');
         exit;
     }
-    public function blockUser()
+    public function blockUserTimeline()
     {
         Auth::validarAutenticacao();
 
@@ -90,6 +90,57 @@ class AdminController extends Action
         $usuario->desativarConta($_GET['id']);
 
         header('Location: /timelineAdmin?blocked=success');
+        exit;
+    }
+
+    public function adminUsers()
+    {
+        Auth::validarAutenticacao();
+
+        if ($_SESSION['tipo'] != 'admin') {
+
+            header('Location: /');
+            exit;
+
+        }
+
+        $admin = Container::getModel('Admin');
+
+        $this->view->usuarios = $admin->listarUsuarios();
+
+        $this->render('adminUsers');
+    }
+    public function blockUser()
+    {
+        Auth::validarAutenticacao();
+
+        if ($_SESSION['tipo'] != 'admin') {
+            header('Location: /');
+            exit;
+        }
+
+        $usuario = Container::getModel('Usuario');
+
+        $usuario->desativarConta($_GET['id']);
+
+        header('Location: /adminUsers?success=blocked');
+        exit;
+    }
+
+    public function unblockUser()
+    {
+        Auth::validarAutenticacao();
+
+        if ($_SESSION['tipo'] != 'admin') {
+            header('Location: /');
+            exit;
+        }
+
+        $usuario = Container::getModel('Usuario');
+
+        $usuario->reativarConta($_GET['id']);
+
+        header('Location: /adminUsers?success=unblocked');
         exit;
     }
 }

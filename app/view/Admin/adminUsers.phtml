@@ -1,0 +1,202 @@
+<?php
+$tipo = $_SESSION['tipo'];
+require_once('../app/view/navbar.phtml');
+?>
+
+<div class="container py-4">
+
+    <div class="card border-0 shadow-sm rounded-4 mb-4">
+
+        <div class="card-body">
+
+            <h2 class="fw-bold">
+
+                Gerenciar Usuários
+
+            </h2>
+
+            <p class="text-muted mb-0">
+
+                Visualize, bloqueie ou desbloqueie usuários da plataforma.
+
+            </p>
+
+        </div>
+
+    </div>
+    <?php if (isset($_GET['success']) && $_GET['success'] == 'blocked') { ?>
+
+        <div class="alert alert-warning alert-dismissible fade show" role="alert">
+
+            <i class="bi bi-lock-fill me-2"></i>
+
+            Usuário bloqueado com sucesso.
+
+            <button type="button" class="btn-close" data-bs-dismiss="alert">
+            </button>
+
+        </div>
+
+    <?php } ?>
+
+    <?php if (isset($_GET['success']) && $_GET['success'] == 'unblocked') { ?>
+
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+
+            <i class="bi bi-unlock-fill me-2"></i>
+
+            Usuário reativado com sucesso.
+
+            <button type="button" class="btn-close" data-bs-dismiss="alert">
+            </button>
+
+        </div>
+
+    <?php } ?>
+
+    <div class="card border-0 shadow-sm rounded-4">
+
+        <div class="card-body">
+
+            <table class="table align-middle">
+
+                <thead>
+
+                    <tr>
+
+                        <th>Foto</th>
+
+                        <th>Nome</th>
+
+                        <th>Email</th>
+
+                        <th>Tipo</th>
+
+                        <th>Status</th>
+
+                        <th>Cadastrado em</th>
+
+                        <th class="text-center">Ações</th>
+
+                    </tr>
+
+                </thead>
+
+                <tbody>
+
+                    <?php foreach ($this->view->usuarios as $usuario) { ?>
+
+                        <tr>
+
+                            <td width="70">
+
+                                <?php
+                                $foto = (!empty($usuario['foto']))
+                                    ? "/uploads/fotos/" . $usuario['foto']
+                                    : "/uploads/fotos/default-user.png";
+                                ?>
+
+                                <img src="<?= $foto ?>" class="rounded-circle" width="50" height="50"
+                                    style="object-fit:cover;">
+
+                            </td>
+
+                            <td>
+
+                                <strong>
+
+                                    <?= $usuario['nome'] ?>
+
+                                </strong>
+
+                            </td>
+
+                            <td>
+
+                                <?= $usuario['email'] ?>
+
+                            </td>
+
+                            <td>
+
+                                <?= ucfirst($usuario['tipo']) ?>
+
+                            </td>
+
+                            <td>
+
+                                <?php if ($usuario['status'] == 'ativo') { ?>
+
+                                    <span class="badge bg-success">
+
+                                        Ativo
+
+                                    </span>
+
+                                <?php } else { ?>
+
+                                    <span class="badge bg-danger">
+
+                                        Bloqueado
+
+                                    </span>
+
+                                <?php } ?>
+
+                            </td>
+
+                            <td>
+
+                                <?= date('d/m/Y', strtotime($usuario['criado_em'])) ?>
+
+                            </td>
+
+                            <td class="text-center">
+
+                                <!-- VISUALIZAR -->
+
+                                <a href="/profile?id=<?= $usuario['id'] ?>" class="btn btn-outline-primary btn-sm"
+                                    title="Visualizar usuário">
+
+                                    <i class="bi bi-eye"></i>
+
+                                </a>
+
+                                <?php if ($usuario['status'] == 'ativo') { ?>
+
+                                    <!-- BLOQUEAR -->
+
+                                    <a href="/blockUser?id=<?= $usuario['id'] ?>" class="btn btn-outline-danger btn-sm"
+                                        title="Bloquear usuário" onclick="return confirm('Deseja bloquear este usuário?')">
+
+                                        <i class="bi bi-lock-fill"></i>
+
+                                    </a>
+
+                                <?php } else { ?>
+
+                                    <!-- DESBLOQUEAR -->
+
+                                    <a href="/unblockUser?id=<?= $usuario['id'] ?>" class="btn btn-outline-success btn-sm"
+                                        title="Desbloquear usuário" onclick="return confirm('Deseja reativar este usuário?')">
+
+                                        <i class="bi bi-unlock-fill"></i>
+
+                                    </a>
+
+                                <?php } ?>
+
+                            </td>
+
+                        </tr>
+
+                    <?php } ?>
+
+                </tbody>
+            </table>
+
+        </div>
+
+    </div>
+
+</div>

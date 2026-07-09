@@ -1,0 +1,15 @@
+.card-dashboard{
+
+    transition: all .25s ease;
+
+    cursor:pointer;
+
+}
+
+.card-dashboard:hover{
+
+    transform:translateY(-5px);
+
+    box-shadow:0 .8rem 2rem rgba(0,0,0,.15)!important;
+
+}

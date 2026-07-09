@@ -35,7 +35,7 @@ document
 
         document
         .getElementById("btnConfirmarBloqueio")
-        .href="/blockUser?id="+this.dataset.id;
+        .href="/blockUserTimeline?id="+this.dataset.id;
 
         modalBloquear.show();
 
