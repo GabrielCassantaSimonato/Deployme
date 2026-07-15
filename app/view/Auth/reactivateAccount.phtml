@@ -14,20 +14,29 @@
             Informe seu e-mail para reativar a sua conta.
         </p>
 
-        <?php if (isset($_GET['info']) && $_GET['info'] == 'ja_ativo'): ?>
+        <?php
+        // Renderiza um alerta informativo caso a query string indique que a conta consultada já se encontra ativa
+        if (isset($_GET['info']) && $_GET['info'] == 'ja_ativo'):
+            ?>
             <div class="alert alert-info text-center p-2 rounded-3 small mb-3" role="alert">
                 <i class="bi bi-info-circle-fill me-1"></i>
                 Esta conta já está ativa. Você já pode fazer login normalmente.
             </div>
         <?php endif; ?>
 
-        <?php if (isset($_GET['error']) && $_GET['error'] == 'usuario_nao_encontrado'): ?>
+        <?php
+        // Renderiza uma mensagem de erro caso o e-mail submetido não seja localizado na base de dados
+        if (isset($_GET['error']) && $_GET['error'] == 'usuario_nao_encontrado'):
+            ?>
             <div class="alert alert-danger text-center p-2 rounded-3 small mb-3" role="alert">
                 O e-mail informado não está cadastrado no sistema.
             </div>
         <?php endif; ?>
 
-        <?php if (isset($_GET['error']) && $_GET['error'] == 'dados_invalidos'): ?>
+        <?php
+        // Renderiza uma mensagem de atenção caso os dados obrigatórios do formulário ou o aceite dos termos estejam ausentes
+        if (isset($_GET['error']) && $_GET['error'] == 'dados_invalidos'):
+            ?>
             <div class="alert alert-warning text-center p-2 rounded-3 small mb-3" role="alert">
                 Por favor, preencha o e-mail e aceite os termos da LGPD.
             </div>

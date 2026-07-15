@@ -15,17 +15,28 @@ class Usuario extends Model
     private $foto;
     private $criado_em;
 
-    // GET e SET mágico
+    /**
+     * Recupera de forma dinâmica o valor de um atributo privado da classe.
+     */
     public function __get($atributo)
     {
         return $this->$atributo;
     }
 
+    /**
+     * Atribui dinamicamente um valor a um atributo privado da classe.
+     */
     public function __set($atributo, $valor)
     {
         $this->$atributo = $valor;
     }
 
+    /**
+     * Insere um novo registro de usuário na tabela principal do banco de dados.
+     * 
+     * Armazena dados de credenciais básicas, tipo de conta, gênero e foto de perfil,
+     * retornando o identificador gerado na inserção.
+     */
     public function salvarUsuario()
     {
         $query = "
@@ -50,6 +61,9 @@ class Usuario extends Model
         return $this->db->lastInsertId();
     }
 
+    /**
+     * Verifica se o endereço de e-mail informado já está associado a uma conta no sistema.
+     */
     public function emailExiste()
     {
         $query = "SELECT id FROM usuarios WHERE email = :email";
@@ -60,6 +74,12 @@ class Usuario extends Model
         return $stmt->rowCount() > 0;
     }
 
+    /**
+     * Realiza a validação básica das propriedades recebidas no formulário de cadastro.
+     * 
+     * Garante o preenchimento dos campos obrigatórios, consistência das chaves,
+     * restrição de comprimento mínimo de senha e valida a existência prévia de e-mail.
+     */
     public function validarCadastro()
     {
         $erros = [];
@@ -83,6 +103,9 @@ class Usuario extends Model
         return $erros;
     }
 
+    /**
+     * Localiza e retorna o registro de um usuário com base no e-mail fornecido.
+     */
     public function buscarPorEmail()
     {
         $query = "
@@ -98,6 +121,12 @@ class Usuario extends Model
         return $stmt->fetch(\PDO::FETCH_ASSOC);
     }
 
+    /**
+     * Recupera o perfil completo de um usuário, consolidando dados específicos.
+     * 
+     * Executa junções relacionais para agregar detalhes de localização, currículos
+     * e dados acadêmicos (estudantes) ou dados corporativos (recrutadores).
+     */
     public function buscarUsuarioCompleto($id)
     {
         $query = "
@@ -139,9 +168,14 @@ class Usuario extends Model
         return $stmt->fetch(\PDO::FETCH_ASSOC);
     }
 
+    /**
+     * Processa a persistência de novos dados cadastrais para o perfil do usuário.
+     * 
+     * Atualiza os dados comuns na tabela de usuários e gerencia a propagação de campos específicos
+     * na tabela de estudantes ou recrutadores conforme o tipo de conta ativo.
+     */
     public function updateProfile($dados)
     {
-        // USUÁRIOS
         $query = "
             UPDATE usuarios 
             SET nome = :nome,
@@ -171,7 +205,6 @@ class Usuario extends Model
 
         $stmt->execute();
 
-        // ESTUDANTE
         if ($_SESSION['tipo'] == 'estudante') {
             $queryEstudante = "
                 UPDATE estudantes 
@@ -214,7 +247,6 @@ class Usuario extends Model
             $stmt->execute();
         }
 
-        // RECRUTADOR
         if ($_SESSION['tipo'] == 'recrutador') {
             $query = "
                 UPDATE recrutadores 
@@ -231,6 +263,9 @@ class Usuario extends Model
         }
     }
 
+    /**
+     * Aplica um novo hash criptográfico de senha para a conta associada ao e-mail informado.
+     */
     public function atualizarSenha()
     {
         $query = "
@@ -247,6 +282,12 @@ class Usuario extends Model
         return $stmt->execute();
     }
 
+    /**
+     * Retorna a listagem de todos os membros e usuários registrados na plataforma.
+     * 
+     * Exclui o próprio usuário logado e administradores, trazendo metadados de localização,
+     * área de atuação acadêmica ou corporativa e o status de relacionamento social (seguindo).
+     */
     public function listarUsuarios()
     {
         $query = "
@@ -282,18 +323,20 @@ class Usuario extends Model
         return $stmt->fetchAll(\PDO::FETCH_ASSOC);
     }
 
+    /**
+     * Retorna a listagem de contatos habilitados para conversação via chat privado.
+     * 
+     * Retorna informações de perfil, identificador de conversa e estatísticas
+     * de mensagens não lidas ou autoria do último envio realizado entre os contatos.
+     */
     public function listarUsuariosChat()
     {
         $query = "
-
     SELECT
-
         u.id,
         u.nome,
         u.foto,
-
         c.id AS conversa_id,
-
         (
             SELECT m.mensagem
             FROM mensagens m
@@ -301,7 +344,6 @@ class Usuario extends Model
             ORDER BY m.created_at DESC
             LIMIT 1
         ) AS ultima_mensagem,
-
         (
             SELECT m.created_at
             FROM mensagens m
@@ -309,7 +351,6 @@ class Usuario extends Model
             ORDER BY m.created_at DESC
             LIMIT 1
         ) AS ultima_data,
-
         (
             SELECT COUNT(*)
             FROM mensagens m
@@ -320,7 +361,6 @@ class Usuario extends Model
             AND
                 m.lida = 0
         ) AS nao_lidas,
-
         (
             SELECT
                 CASE
@@ -333,47 +373,29 @@ class Usuario extends Model
             ORDER BY m.created_at DESC
             LIMIT 1
         ) AS foi_enviada_por_mim
-
     FROM usuarios u
-
     INNER JOIN conversas c
-
         ON
-
         (
             (c.usuario1_id = :usuario_logado AND c.usuario2_id = u.id)
-
             OR
-
             (c.usuario2_id = :usuario_logado AND c.usuario1_id = u.id)
         )
-
     INNER JOIN seguidores s
-
         ON
-
         s.seguindo_id = u.id
-
     WHERE
-
         s.usuario_id = :usuario_logado
-
     ORDER BY
-
         ultima_data DESC,
-
         u.nome ASC
-
     ";
 
         $stmt = $this->db->prepare($query);
 
         $stmt->bindValue(
-
             ':usuario_logado',
-
             $_SESSION['id']
-
         );
 
         $stmt->execute();
@@ -381,90 +403,56 @@ class Usuario extends Model
         return $stmt->fetchAll(\PDO::FETCH_ASSOC);
     }
 
-    public function buscarUltimaMensagem(
-        $usuario_id
-    ) {
-
+    /**
+     * Busca os metadados da última mensagem trocada entre o usuário ativo e o contato indicado.
+     */
+    public function buscarUltimaMensagem($usuario_id)
+    {
         $query = "
-
         SELECT
-
             m.mensagem,
-
             m.created_at,
-
             m.remetente_id
-
         FROM conversas c
-
         INNER JOIN mensagens m
-
         ON m.conversa_id = c.id
-
         WHERE
-
         (
-
             c.usuario1_id = :usuario_logado
-
             AND
-
             c.usuario2_id = :usuario
-
         )
-
         OR
-
         (
-
             c.usuario2_id = :usuario_logado
-
             AND
-
             c.usuario1_id = :usuario
-
         )
-
         ORDER BY
-
         m.created_at DESC
-
         LIMIT 1
-
     ";
 
-        $stmt = $this->db->prepare(
-
-            $query
-
-        );
+        $stmt = $this->db->prepare($query);
 
         $stmt->bindValue(
-
             ':usuario_logado',
-
             $_SESSION['id']
-
         );
 
         $stmt->bindValue(
-
             ':usuario',
-
             $usuario_id
-
         );
 
         $stmt->execute();
 
-        return $stmt->fetch(
-
-            \PDO::FETCH_ASSOC
-
-        );
-
+        return $stmt->fetch(\PDO::FETCH_ASSOC);
     }
 
+    /**
+     * Altera o status de acesso e insere ou limpa a data de desativação de uma conta.
+     */
     public function desativarConta($id, $novoStatus = 'bloqueado')
     {
         $query = "
@@ -482,7 +470,9 @@ class Usuario extends Model
         return $stmt->execute();
     }
 
-    // Ativa o usuário usando o ID localizado
+    /**
+     * Reativa o cadastro de um usuário anteriormente bloqueado definindo seu status como ativo.
+     */
     public function reativarConta($usuario_id)
     {
         $query = "

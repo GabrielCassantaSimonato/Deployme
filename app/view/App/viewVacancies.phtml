@@ -1,16 +1,13 @@
 <?php
-
+// Carrega o tipo de usuário logado na sessão ativa e inclui a barra de navegação global
 $tipo = $_SESSION['tipo'];
 require_once('../app/view/navbar.phtml');
-
 ?>
 
 <div class="container py-4">
 
     <div class="card border-0 shadow-sm rounded-4 mb-4">
-
         <div class="card-body">
-
             <h2 class="fw-bold mb-2">
                 Vagas Disponíveis
             </h2>
@@ -21,7 +18,6 @@ require_once('../app/view/navbar.phtml');
 
             <!-- FILTROS -->
             <div class="row g-2">
-
                 <div class="col-md-5">
                     <input type="text" class="form-control filtro-vaga" placeholder="Pesquisar vaga...">
                 </div>
@@ -31,37 +27,28 @@ require_once('../app/view/navbar.phtml');
                 </div>
 
                 <div class="col-md-3">
-
                     <select class="form-select filtro-vaga">
-
                         <option value="">Todas as modalidades</option>
                         <option>Presencial</option>
                         <option>Remoto</option>
                         <option>Híbrido</option>
-
                     </select>
-
                 </div>
-
             </div>
-
         </div>
-
     </div>
 
-    <?php foreach ($this->view->vagas as $vaga) { ?>
-
+    <?php
+    // Percorre a lista de vagas repassada pela view do controller para renderizar cada card dinamicamente no feed
+    foreach ($this->view->vagas as $vaga) {
+        ?>
         <div class="card shadow-sm rounded-4 mb-3 vaga-card bg-white">
-
             <div class="card-body">
-
                 <div class="d-flex align-items-center mb-3">
-
                     <img src="<?= !empty($vaga['foto']) ? '/uploads/fotos/' . $vaga['foto'] : '/uploads/fotos/default-user.png' ?>"
                         width="50" height="50" class="rounded-circle me-3" style="object-fit:cover;">
 
                     <div>
-
                         <div class="fw-bold">
                             <?= htmlspecialchars($vaga['empresa']) ?>
                         </div>
@@ -70,47 +57,35 @@ require_once('../app/view/navbar.phtml');
                             Publicado por
                             <?= htmlspecialchars($vaga['nome']) ?>
                         </small>
-
                     </div>
-
                 </div>
 
                 <h5 class="fw-bold">
                     <?= htmlspecialchars($vaga['titulo']) ?>
                 </h5>
 
-                <?php if (!empty($vaga['descricao'])) { ?>
-
+                <?php
+                // Renderiza o parágrafo descritivo de atribuições se a especificação da vaga possuir conteúdo registrado
+                if (!empty($vaga['descricao'])) {
+                    ?>
                     <p class="text-muted mt-2 mb-3">
                         <?= nl2br(htmlspecialchars($vaga['descricao'])) ?>
                     </p>
-
                 <?php } ?>
 
                 <div class="text-muted mb-3">
-
                     <i class="bi bi-geo-alt"></i>
-
                     <?= htmlspecialchars($vaga['localizacao']) ?>
-
                     •
-
                     <?= htmlspecialchars($vaga['modalidade']) ?>
-
                 </div>
 
-                <a href="/vacancyDetails?id=<?= $vaga['publicacao_id'] ?>" class="btn btn-success rounded-pill px-4">
-
+                <a href="/vacancyDetails?id=<?= $vaga['publicacao_id'] ?>" class="btn btn-primary rounded-pill px-4">
                     <i class="bi bi-arrow-right-circle"></i>
-
                     Ver vaga
-
                 </a>
-
             </div>
-
         </div>
-
     <?php } ?>
 
 </div>

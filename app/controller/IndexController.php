@@ -8,46 +8,56 @@ use app\service\EmailService;
 
 class IndexController extends Action
 {
+    /**
+     * Renderiza a página inicial (landing page) da plataforma.
+     */
     public function index()
     {
         $this->render('index');
     }
 
+    /**
+     * Renderiza o formulário de cadastro de estudantes.
+     * 
+     * Carrega as tabelas auxiliares necessárias para alimentar os campos de seleção
+     * (cursos, universidades, gêneros, semestres) antes de exibir a view de cadastro.
+     */
     public function signUpStudent()
     {
         $this->carregarDadosFormulario();
         $this->render('signUpStudent');
     }
 
-    // =========================
-    // FORM RECRUTADOR (GET)
-    // =========================
+    /**
+     * Renderiza o formulário de cadastro de recrutadores.
+     * 
+     * Carrega as informações necessárias para preencher os elementos dinâmicos da view,
+     * incluindo as opções de senioridade e gêneros cadastrados.
+     */
     public function signUpRecruiter()
     {
         $this->carregarDadosFormulario();
         $this->render('signUpRecruiter');
     }
 
-    // =========================
-    // CADASTRO ESTUDANTE (POST)
-    // =========================
+    /**
+     * Processa a submissão e o registro do cadastro de um estudante.
+     * 
+     * Valida os campos fornecidos, realiza o upload da foto de perfil e do arquivo de currículo,
+     * criptografa a senha do usuário, armazena os registros nas tabelas de usuário e estudante,
+     * e dispara um e-mail de boas-vindas após a persistência bem-sucedida.
+     */
     public function studentRegister()
     {
         $usuario = Container::getModel('Usuario');
         $estudante = Container::getModel('Estudante');
 
-        // =========================
-        // DADOS USUÁRIO
-        // =========================
         $usuario->__set('nome', $_POST['nome'] ?? null);
         $usuario->__set('email', $_POST['email'] ?? null);
         $usuario->__set('senha', $_POST['senha'] ?? null);
         $usuario->__set('tipo', 'estudante');
         $usuario->__set('genero_id', $_POST['genero_id'] ?? null);
 
-        // =========================
-        // VALIDAÇÃO
-        // =========================
         $erros = $usuario->validarCadastro();
         $fotoNome = null;
 
@@ -78,30 +88,19 @@ class IndexController extends Action
         }
 
         if (!empty($erros)) {
-            // Recarrega selects
             $this->carregarDadosFormulario();
 
-            // Mantém dados e erros
             $this->view->erros = $erros;
             $this->view->dados = $_POST;
 
             $this->render('signUpStudent');
-            return; // 🚨 ESSENCIAL
+            return;
         }
 
-        // =========================
-        // HASH SENHA
-        // =========================
         $usuario->__set('senha', password_hash($_POST['senha'], PASSWORD_DEFAULT));
 
-        // =========================
-        // SALVA USUÁRIO
-        // =========================
         $usuario_id = $usuario->salvarUsuario();
 
-        // =========================
-        // DADOS ESTUDANTE
-        // =========================
         $estudante->__set('usuario_id', $usuario_id);
         $estudante->__set('universidade_id', $_POST['universidade_id'] ?? null);
         $estudante->__set('curso_id', $_POST['curso_id'] ?? null);
@@ -115,27 +114,25 @@ class IndexController extends Action
         $estudante->__set('uf', $_POST['uf'] ?? null);
         $estudante->__set('curriculo', $curriculoNome ?? null);
 
-        // =========================
-        // SALVA ESTUDANTE
-        // =========================
         $estudante->salvarEstudante();
         EmailService::enviarBoasVindas($_POST['email'], $_POST['nome']);
 
-        // =========================
-        // REDIRECT FINAL
-        // =========================
         header('Location: /successRegister');
         exit;
     }
 
+    /**
+     * Processa a submissão e o registro do cadastro de um recrutador.
+     * 
+     * Efetua a validação das credenciais básicas, gerencia o upload opcional de foto de perfil,
+     * persiste o registro do usuário com criptografia hash na senha e adiciona as
+     * informações exclusivas de sua atuação corporativa na tabela de recrutadores.
+     */
     public function recruiterRegister()
     {
         $usuario = Container::getModel('Usuario');
         $recrutador = Container::getModel('Recrutador');
 
-        // =========================
-        // USUÁRIO
-        // =========================
         $usuario->__set('nome', $_POST['nome'] ?? null);
         $usuario->__set('email', $_POST['email'] ?? null);
         $usuario->__set('senha', $_POST['senha'] ?? null);
@@ -166,13 +163,9 @@ class IndexController extends Action
             return;
         }
 
-        // senha segura
         $usuario->__set('senha', password_hash($_POST['senha'], PASSWORD_DEFAULT));
         $usuario_id = $usuario->salvarUsuario();
 
-        // =========================
-        // RECRUTADOR
-        // =========================
         $recrutador->__set('usuario_id', $usuario_id);
         $recrutador->__set('empresa', $_POST['empresa'] ?? null);
         $recrutador->__set('senioridade_id', $_POST['senioridade_id'] ?? null);
@@ -184,32 +177,44 @@ class IndexController extends Action
         exit;
     }
 
-    // =========================
-    // TELA SUCESSO
-    // =========================
+    /**
+     * Renderiza a página de confirmação de cadastro realizado com sucesso.
+     */
     public function successRegister()
     {
         $this->render('successRegister');
     }
 
-    // =========================
-    // OUTRAS TELAS
-    // =========================
+    /**
+     * Renderiza a página informativa de políticas de privacidade e LGPD da plataforma.
+     */
     public function lgpd()
     {
         $this->render('lgpd');
     }
 
+    /**
+     * Renderiza a tela de autenticação para usuários gerais.
+     */
     public function login()
     {
         $this->render('login');
     }
 
+    /**
+     * Renderiza a tela de login exclusiva para administradores.
+     */
     public function loginAdmin()
     {
         $this->render('loginAdmin');
     }
 
+    /**
+     * Carrega tabelas de domínio para popular listas de seleção dos formulários de cadastro.
+     * 
+     * Executa consultas aos modelos de Cursos, Universidades, Gêneros, Semestres
+     * e Senioridade e injeta os resultados nos parâmetros de visualização do controller.
+     */
     private function carregarDadosFormulario()
     {
         $curso = Container::getModel('Curso');
@@ -225,11 +230,20 @@ class IndexController extends Action
         $this->view->senioridade = $senioridade->getSenioridades();
     }
 
+    /**
+     * Renderiza a página de solicitação de recuperação de senha.
+     */
     public function forgotPassword()
     {
         $this->render('forgotPassword');
     }
 
+    /**
+     * Executa a validação e alteração de senha de um usuário existente.
+     * 
+     * Confirma a correspondência entre as entradas de senha digitadas, valida a restrição de tamanho,
+     * verifica a existência do e-mail informado e atualiza o hash da senha no banco de dados.
+     */
     public function resetPassword()
     {
         $usuario = Container::getModel('Usuario');
@@ -238,7 +252,6 @@ class IndexController extends Action
         $senha = $_POST['senha'];
         $confirmarSenha = $_POST['confirmar_senha'];
 
-        // Validação tamanho mínimo
         if (strlen($senha) < 8) {
             header(
                 'Location: /forgotPassword?erro=' .
@@ -247,7 +260,6 @@ class IndexController extends Action
             exit;
         }
 
-        // Confirmação de senha
         if ($senha !== $confirmarSenha) {
             header(
                 'Location: /forgotPassword?erro=' .
@@ -256,7 +268,6 @@ class IndexController extends Action
             exit;
         }
 
-        // Verifica se o email existe
         $usuario->__set('email', $email);
         $usuarioEncontrado = $usuario->buscarPorEmail();
 
@@ -268,7 +279,6 @@ class IndexController extends Action
             exit;
         }
 
-        // Atualiza senha
         $usuario->__set('email', $email);
         $usuario->__set('senha', password_hash($senha, PASSWORD_DEFAULT));
 

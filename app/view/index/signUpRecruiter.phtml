@@ -1,4 +1,4 @@
-<div id="signup-page"> 
+<div id="signup-page">
     <div class="signup-card">
         <div class="signup-side-info">
             <img src="/img/logo_deployme.png" alt="Deployme" style="height: 200px; filter: brightness(0) invert(1);"
@@ -42,13 +42,14 @@
                             <input type="text" name="nome"
                                 class="form-control <?= isset($this->view->erros['nome']) ? 'is-invalid' : '' ?>"
                                 value="<?= $this->view->dados['nome'] ?? '' ?>">
-
-                            <?php if (isset($this->view->erros['nome'])) { ?>
+                            <?php
+                            // Renderiza feedback de erro de validação para o campo nome
+                            if (isset($this->view->erros['nome'])) {
+                                ?>
                                 <div class="invalid-feedback">
                                     <?= $this->view->erros['nome'] ?>
                                 </div>
                             <?php } ?>
-
                             <label>Nome Completo</label>
                         </div>
                     </div>
@@ -59,21 +60,23 @@
                             <select name="genero_id"
                                 class="form-select <?= isset($this->view->erros['genero_id']) ? 'is-invalid' : '' ?>">
                                 <option value="" disabled selected>Escolha...</option>
-
-                                <?php foreach ($this->view->generos as $g) { ?>
-                                    <option value="<?= $g['id'] ?>"
-                                        <?= (isset($this->view->dados['genero']) && $this->view->dados['genero'] == $g['id']) ? 'selected' : '' ?>>
+                                <?php
+                                // Itera pelos gêneros cadastrados para montar as opções do seletor
+                                foreach ($this->view->generos as $g) {
+                                    ?>
+                                    <option value="<?= $g['id'] ?>" <?= (isset($this->view->dados['genero']) && $this->view->dados['genero'] == $g['id']) ? 'selected' : '' ?>>
                                         <?= $g['genero'] ?>
                                     </option>
                                 <?php } ?>
                             </select>
-
-                            <?php if (isset($this->view->erros['genero_id'])) { ?>
+                            <?php
+                            // Renderiza feedback de erro para a seleção de gênero
+                            if (isset($this->view->erros['genero_id'])) {
+                                ?>
                                 <div class="invalid-feedback">
                                     <?= $this->view->erros['genero_id'] ?>
                                 </div>
                             <?php } ?>
-
                             <label>Gênero</label>
                         </div>
                     </div>
@@ -84,23 +87,22 @@
                             <input type="email" name="email"
                                 class="form-control <?= isset($this->view->erros['email']) ? 'is-invalid' : '' ?>"
                                 value="<?= $this->view->dados['email'] ?? '' ?>">
-
-                            <?php if (isset($this->view->erros['email'])) { ?>
+                            <?php
+                            // Renderiza feedback de erro caso o e-mail seja inválido ou já cadastrado
+                            if (isset($this->view->erros['email'])) {
+                                ?>
                                 <div class="invalid-feedback">
                                     <?= $this->view->erros['email'] ?>
                                 </div>
                             <?php } ?>
-
                             <label>E-mail de Acesso</label>
                         </div>
                     </div>
-
                 </div>
 
                 <!-- Recrutador -->
                 <div class="recruiter-field">
                     <div class="form-section-header">Dados Corporativos</div>
-
                     <div class="row g-3 mb-4">
 
                         <!-- EMPRESA -->
@@ -109,47 +111,49 @@
                                 <input type="text" name="empresa"
                                     class="form-control <?= isset($this->view->erros['empresa']) ? 'is-invalid' : '' ?>"
                                     value="<?= $this->view->dados['empresa'] ?? '' ?>">
-
-                                <?php if (isset($this->view->erros['empresa'])) { ?>
+                                <?php
+                                // Renderiza feedback de erro para o campo nome da empresa
+                                if (isset($this->view->erros['empresa'])) {
+                                    ?>
                                     <div class="invalid-feedback">
                                         <?= $this->view->erros['empresa'] ?>
                                     </div>
                                 <?php } ?>
-
                                 <label>Nome da Empresa</label>
                             </div>
                         </div>
 
                         <!-- SENIORIDADE -->
                         <div class="col-md-4">
-                        <div class="form-floating">
-                            <select name="senioridade_id"
-                                class="form-select <?= isset($this->view->erros['senioridade_id']) ? 'is-invalid' : '' ?>">
-                                <option value="" disabled selected>Escolha...</option>
-
-                                <?php foreach ($this->view->senioridade as $senioridade) { ?>
-                                    <option value="<?= $g['id'] ?>"
-                                        <?= (isset($this->view->dados['senioridade']) && $this->view->dados['senioridade'] == $senioridade['id']) ? 'selected' : '' ?>>
-                                        <?= $senioridade['senioridade'] ?>
-                                    </option>
+                            <div class="form-floating">
+                                <select name="senioridade_id"
+                                    class="form-select <?= isset($this->view->erros['senioridade_id']) ? 'is-invalid' : '' ?>">
+                                    <option value="" disabled selected>Escolha...</option>
+                                    <?php
+                                    // Itera pelas opções de senioridade para o seletor do recrutador
+                                    foreach ($this->view->senioridade as $s) {
+                                        ?>
+                                        <option value="<?= $s['id'] ?>" <?= (isset($this->view->dados['senioridade']) && $this->view->dados['senioridade'] == $s['id']) ? 'selected' : '' ?>>
+                                            <?= $s['senioridade'] ?>
+                                        </option>
+                                    <?php } ?>
+                                </select>
+                                <?php
+                                // Renderiza feedback de erro para a seleção de senioridade
+                                if (isset($this->view->erros['senioridade_id'])) {
+                                    ?>
+                                    <div class="invalid-feedback">
+                                        <?= $this->view->erros['senioridade_id'] ?>
+                                    </div>
                                 <?php } ?>
-                            </select>
-
-                            <?php if (isset($this->view->erros['senioridade_id'])) { ?>
-                                <div class="invalid-feedback">
-                                    <?= $this->view->erros['senioridade_id'] ?>
-                                </div>
-                            <?php } ?>
-
-                            <label>Senioridade</label>
+                                <label>Senioridade</label>
+                            </div>
                         </div>
-                    </div>
                     </div>
                 </div>
 
                 <!-- Upload -->
                 <div class="form-section-header">Uploads e Segurança</div>
-
                 <div class="row g-3">
                     <div class="col-md-6">
                         <label class="upload-card" for="photo-file">
@@ -169,13 +173,14 @@
                         <div class="form-floating">
                             <input type="password" name="senha"
                                 class="form-control <?= isset($this->view->erros['senha']) ? 'is-invalid' : '' ?>">
-
-                            <?php if (isset($this->view->erros['senha'])) { ?>
+                            <?php
+                            // Renderiza feedback de erro caso a senha não atenda aos critérios de segurança
+                            if (isset($this->view->erros['senha'])) {
+                                ?>
                                 <div class="invalid-feedback">
                                     <?= $this->view->erros['senha'] ?>
                                 </div>
                             <?php } ?>
-
                             <label>Defina sua Senha</label>
                         </div>
                     </div>
@@ -185,16 +190,15 @@
                 <div class="form-check my-4">
                     <input class="form-check-input" type="checkbox" name="termos" required id="termsCheck">
                     <label class="form-check-label small text-muted" for="termsCheck">
-                        Li e concordo com a
-                        <a href="/lgpd" class="text-primary fw-bold text-decoration-none">
-                            Política de LGPD
-                        </a> da Deployme.
+                        Li e concordo com a <a href="/lgpd" class="text-primary fw-bold text-decoration-none">Política
+                            de LGPD</a> da Deployme.
                     </label>
                 </div>
 
                 <button type="submit" class="btn btn-primary btn-lg w-100 py-3 shadow-lg">
                     Finalizar Cadastro
                 </button>
-
             </form>
         </div>
+    </div>
+</div>

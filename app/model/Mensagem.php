@@ -6,6 +6,12 @@ use MF\Model\Model;
 
 class Mensagem extends Model
 {
+    /**
+     * Recupera o histórico de mensagens de uma determinada conversa.
+     * 
+     * Retorna o conteúdo das mensagens, dados de arquivos de imagem anexados
+     * e o nome e foto de perfil do remetente, ordenando de forma cronológica.
+     */
     public function buscarMensagens($conversa_id)
     {
         $query = "
@@ -26,6 +32,12 @@ class Mensagem extends Model
         return $stmt->fetchAll(\PDO::FETCH_ASSOC);
     }
 
+    /**
+     * Salva uma nova mensagem enviada no chat.
+     * 
+     * Registra o conteúdo textual, a referência da conversa, o remetente
+     * e o caminho de imagem anexa (caso exista) na tabela de mensagens.
+     */
     public function salvarMensagem($conversa_id, $remetente_id, $mensagem, $imagem = null)
     {
         $query = "
@@ -67,6 +79,12 @@ class Mensagem extends Model
         return $stmt->execute();
     }
 
+    /**
+     * Sinaliza todas as mensagens pendentes recebidas em uma conversa como lidas.
+     * 
+     * Altera o status do marcador de leitura de mensagens enviadas por outros usuários
+     * dentro de uma conversa ativa para o usuário atualmente logado.
+     */
     public function marcarComoLida($conversa_id, $usuario_logado)
     {
         $query = "
@@ -85,6 +103,12 @@ class Mensagem extends Model
         return $stmt->execute();
     }
 
+    /**
+     * Retorna a quantidade de mensagens ainda não lidas recebidas de um contato.
+     * 
+     * Contabiliza as mensagens pendentes enviadas pelo contato selecionado direcionadas
+     * para o usuário atualmente autenticado na plataforma.
+     */
     public function contarMensagensNaoLidas($usuario_logado, $usuario_id)
     {
         $query = "
@@ -109,47 +133,46 @@ class Mensagem extends Model
 
         return $stmt->fetch(\PDO::FETCH_ASSOC)['total'];
     }
+
+    /**
+     * Exclui uma mensagem de chat específica enviada pelo usuário.
+     * 
+     * Remove o registro correspondente no banco de dados assegurando que apenas
+     * o remetente original possua permissão para deletar a mensagem.
+     */
     public function deleteMessage($id, $usuario)
     {
-
         $query = "
-
         DELETE FROM mensagens
-
         WHERE id = :id
-
         AND remetente_id = :usuario
-
     ";
 
         $stmt = $this->db->prepare($query);
 
         $stmt->bindValue(
-
             ':id',
-
             $id,
-
             \PDO::PARAM_INT
-
         );
 
         $stmt->bindValue(
-
             ':usuario',
-
             $usuario,
-
             \PDO::PARAM_INT
-
         );
 
         return $stmt->execute();
-
     }
+
+    /**
+     * Aplica alterações de texto e gerenciamento de arquivos anexos em uma mensagem.
+     * 
+     * Permite editar o conteúdo escrito, gerencia a remoção de arquivos físicos antigos
+     * de imagem do diretório do servidor e atualiza os campos na tabela de mensagens.
+     */
     public function editarMensagem($id, $usuarioId, $mensagem, $novaImagem = null, $excluirImagem = false)
     {
-        // Busca a mensagem
         $query = "
         SELECT imagem
         FROM mensagens
@@ -170,11 +193,7 @@ class Mensagem extends Model
 
         $imagemAtual = $registro['imagem'];
 
-        // -----------------------------
-        // Remove imagem antiga
-        // -----------------------------
         if (($excluirImagem || $novaImagem) && !empty($imagemAtual)) {
-
             $arquivo = __DIR__ .
                 "/../../public/uploads/chat/" .
                 $imagemAtual;
@@ -186,16 +205,10 @@ class Mensagem extends Model
             $imagemAtual = null;
         }
 
-        // -----------------------------
-        // Se foi enviada uma nova imagem
-        // -----------------------------
         if ($novaImagem) {
             $imagemAtual = $novaImagem;
         }
 
-        // -----------------------------
-        // Atualiza a mensagem
-        // -----------------------------
         $query = "
         UPDATE mensagens
         SET

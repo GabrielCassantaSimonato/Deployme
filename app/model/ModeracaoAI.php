@@ -6,6 +6,13 @@ use MF\Model\Model;
 
 class ModeracaoAI extends Model
 {
+    /**
+     * Analisa o conteúdo textual de uma publicação com base nas diretrizes da comunidade.
+     * 
+     * Consome a API do Google Gemini para realizar a moderação automática do texto recebido,
+     * validando-o contra regras de discursos de ódio, ofensas, assuntos políticos ou violentos,
+     * e retorna uma estrutura JSON informando se a publicação foi aprovada ou o motivo do bloqueio.
+     */
     public function analisar($textoUsuario)
     {
         $apiKey = $_ENV['GEMINI_API_KEY_ANALYZE'];
@@ -75,7 +82,6 @@ class ModeracaoAI extends Model
             $jsonResponse['candidates'][0]['content']['parts'][0]['text']
         )
         ) {
-
             return json_decode(
                 $jsonResponse['candidates'][0]['content']['parts'][0]['text'],
                 true

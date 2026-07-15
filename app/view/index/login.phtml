@@ -1,7 +1,5 @@
 <div id="login-form-view" class="view-transition">
-
     <div id="login-form-page">
-
         <div class="login-premium-container">
 
             <a href="/" class="back-link mb-4 text-decoration-none">
@@ -17,21 +15,30 @@
                 Login
             </h3>
 
-            <?php if (isset($_GET['reactivated']) && $_GET['reactivated'] == 'success') { ?>
+            <?php
+            // Exibe alerta de sucesso caso a conta tenha sido reativada com êxito
+            if (isset($_GET['reactivated']) && $_GET['reactivated'] == 'success') {
+                ?>
                 <div class="alert alert-success rounded-4 border-0 shadow-sm mb-4 text-center">
                     <i class="bi bi-check-circle-fill me-2"></i>
                     Conta reativada com sucesso! Você já pode entrar.
                 </div>
             <?php } ?>
 
-            <?php if (isset($_GET['erro']) && $_GET['erro'] == 1) { ?>
+            <?php
+            // Exibe alerta de erro se as credenciais de autenticação estiverem incorretas
+            if (isset($_GET['erro']) && $_GET['erro'] == 1) {
+                ?>
                 <div class="alert alert-danger rounded-4 border-0 shadow-sm mb-4">
                     <i class="bi bi-exclamation-triangle-fill me-2"></i>
                     Email ou senha inválidos.
                 </div>
             <?php } ?>
 
-            <?php if (isset($_GET['auth']) && $_GET['auth'] == 'required') { ?>
+            <?php
+            // Exibe alerta de aviso caso o usuário tente acessar rotas restritas sem estar autenticado
+            if (isset($_GET['auth']) && $_GET['auth'] == 'required') {
+                ?>
                 <div class="alert alert-warning d-flex align-items-center mb-4">
                     <i class="bi bi-lock-fill me-2"></i>
                     Você precisa estar logado para acessar esta página.
@@ -39,7 +46,6 @@
             <?php } ?>
 
             <form action="/auth" method="POST">
-
                 <div class="form-floating mb-3">
                     <input type="email" class="form-control" id="loginEmail" name="email" placeholder="E-mail" required>
                     <label for="loginEmail">E-mail</label>
@@ -63,7 +69,6 @@
                 <button type="submit" class="btn btn-primary btn-lg w-100 py-3 shadow-lg mb-4">
                     Entrar
                 </button>
-
             </form>
 
             <hr class="my-4 opacity-50">
@@ -76,12 +81,13 @@
             </div>
 
         </div>
-
     </div>
-
 </div>
 
-<?php if (isset($_GET['password']) && $_GET['password'] == 'updated') { ?>
+<?php
+// Renderiza o modal de notificação caso a redefinição de senha tenha sido concluída
+if (isset($_GET['password']) && $_GET['password'] == 'updated') {
+    ?>
     <div class="modal fade" id="modalSenhaAtualizada" tabindex="-1">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content border-0 shadow-lg rounded-4">
@@ -98,8 +104,10 @@
     </div>
 <?php } ?>
 
-
-<?php if (isset($_GET['erro']) && $_GET['erro'] == 'bloqueado') { ?>
+<?php
+// Renderiza o modal de bloqueio caso o usuário tente entrar com uma conta desativada
+if (isset($_GET['erro']) && $_GET['erro'] == 'bloqueado') {
+    ?>
     <div class="modal fade" id="modalContaBloqueada" tabindex="-1">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content border-0 shadow-lg rounded-4">
@@ -123,17 +131,20 @@
     </div>
 <?php } ?>
 
-
 <script>
     document.addEventListener("DOMContentLoaded", () => {
-        // Senha atualizada
-        <?php if (isset($_GET['password']) && $_GET['password'] == 'updated') { ?>
-            new bootstrap.Modal(document.getElementById("modalSenhaAtualizada")).show();
+        <?php
+        // Script inline: dispara o modal de senha atualizada conforme o parâmetro de resposta
+        if (isset($_GET['password']) && $_GET['password'] == 'updated') {
+            ?>
+                    new bootstrap.Modal(document.getElementById("modalSenhaAtualizada")).show();
         <?php } ?>
 
-        // Conta bloqueada
-        <?php if (isset($_GET['erro']) && $_GET['erro'] == 'bloqueado') { ?>
-            new bootstrap.Modal(document.getElementById("modalContaBloqueada")).show();
+        <?php
+        // Script inline: dispara o modal de conta bloqueada conforme o erro identificado
+        if (isset($_GET['erro']) && $_GET['erro'] == 'bloqueado') {
+            ?>
+                    new bootstrap.Modal(document.getElementById("modalContaBloqueada")).show();
         <?php } ?>
     });
 </script>

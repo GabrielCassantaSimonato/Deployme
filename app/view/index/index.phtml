@@ -11,15 +11,12 @@
 
         <div class="collapse navbar-collapse" id="navbarNav">
             <ul class="navbar-nav ms-auto align-items-center gap-2">
-
                 <li class="nav-item d-flex align-items-center">
                     <a class="nav-link px-3 fw-600" href="/#beneficios">Benefícios</a>
                 </li>
 
                 <li class="nav-item d-flex align-items-center">
-                    <a class="nav-link px-3 fw-600" href="/login">
-                        Fazer Login
-                    </a>
+                    <a class="nav-link px-3 fw-600" href="/login">Fazer Login</a>
                 </li>
 
                 <li class="nav-item ms-lg-3">
@@ -27,7 +24,6 @@
                         Criar Perfil
                     </a>
                 </li>
-
             </ul>
         </div>
     </div>
@@ -40,8 +36,9 @@
             <div class="row align-items-center">
                 <div class="col-lg-6 mb-5 mb-lg-0">
                     <span class="badge rounded-pill px-3 py-2 mb-3"
-                        style="background: var(--brand-blue-soft); color: var(--brand-blue); font-weight: 700; letter-spacing: 1px;">LANÇAMENTO
-                        2026</span>
+                        style="background: var(--brand-blue-soft); color: var(--brand-blue); font-weight: 700; letter-spacing: 1px;">
+                        LANÇAMENTO 2026
+                    </span>
                     <h1 class="hero-title">Onde o talento vira <span>carreira</span>.</h1>
                     <p class="hero-subtitle pe-lg-5">A rede social definitiva para estudantes de TI. Construa seu
                         portfólio, conecte-se com recrutadores e conquiste seu primeiro estágio técnico.</p>
@@ -56,6 +53,7 @@
                         </a>
                     </div>
                 </div>
+
                 <div class="col-lg-6">
                     <div
                         style="background: var(--brand-slate); border-radius: 30px; padding: 25px; box-shadow: 0 50px 100px -20px rgba(15, 23, 42, 0.25);">
@@ -139,7 +137,13 @@
                     <a href="#" class="text-muted text-decoration-none small fw-600">Instagram</a>
                 </div>
             </div>
-            <p class="text-muted small pb-4 mb-0">&copy; 2026 Deployme. Todos os direitos reservados.</p>
+            <p class="text-muted small pb-4 mb-0">
+                &copy;
+                <?php
+                // Renderiza dinamicamente o ano corrente de lançamento no rodapé da página inicial institucional
+                ?>
+                <?= date('Y') ?> Deployme. Todos os direitos reservados.
+            </p>
         </div>
     </footer>
 </div>

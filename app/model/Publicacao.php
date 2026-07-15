@@ -12,17 +12,28 @@ class Publicacao extends Model
     private $imagem;
     private $tipo;
 
+    /**
+     * Recupera de forma dinâmica o valor de um atributo privado da classe.
+     */
     public function __get($atributo)
     {
         return $this->$atributo;
     }
 
+    /**
+     * Atribui dinamicamente um valor a um atributo privado da classe.
+     */
     public function __set($atributo, $valor)
     {
         $this->$atributo = $valor;
     }
 
-    // SALVAR PUBLICAÇÃO
+    /**
+     * Registra uma nova publicação geral no sistema.
+     * 
+     * Insere o conteúdo textual, referência de imagem opcional e o tipo de post
+     * na tabela publicacoes, retornando o ID do registro inserido.
+     */
     public function salvar()
     {
         $query = "
@@ -51,7 +62,9 @@ class Publicacao extends Model
         return $this->db->lastInsertId();
     }
 
-    // SALVAR VAGA
+    /**
+     * Salva as especificações de uma vaga de trabalho na tabela correspondente.
+     */
     public function salvarVaga($dados)
     {
         $query = "
@@ -87,6 +100,12 @@ class Publicacao extends Model
         $stmt->execute();
     }
 
+    /**
+     * Lista as publicações para o feed do usuário logado.
+     * 
+     * Traz as publicações próprias e das contas que o usuário segue, mapeando dados
+     * detalhados de vagas e informações completas de compartilhamentos anteriores.
+     */
     public function listarPublicacoes($usuarioLogado)
     {
         $query = "
@@ -101,15 +120,12 @@ class Publicacao extends Model
                 v.localizacao,
                 v.modalidade,
                 v.salario,
-                /* Dados do Post Original */
                 po.id AS post_original_id,
                 po.tipo AS post_original_tipo,
                 po.conteudo AS post_original_conteudo,
                 po.imagem AS post_original_imagem,
-                /* Autor Original */
                 uo.nome AS autor_original_nome,
                 uo.foto AS autor_original_foto,
-                /* Dados da Vaga Original */
                 vo.titulo AS post_original_titulo,
                 vo.empresa AS post_original_empresa,
                 vo.localizacao AS post_original_localizacao,
@@ -120,11 +136,9 @@ class Publicacao extends Model
             LEFT JOIN estudantes e ON e.usuario_id = u.id
             LEFT JOIN recrutadores r ON r.usuario_id = u.id
             LEFT JOIN vagas v ON v.publicacao_id = p.id
-            /* Compartilhamentos */
             LEFT JOIN publicacoes po ON po.id = p.publicacao_original_id
             LEFT JOIN usuarios uo ON uo.id = po.usuario_id
             LEFT JOIN vagas vo ON vo.publicacao_id = po.id
-            /* Pessoas seguidas */
             LEFT JOIN seguidores s ON s.seguindo_id = p.usuario_id AND s.usuario_id = :usuarioLogado
             WHERE p.usuario_id = :usuarioLogado
                OR s.usuario_id IS NOT NULL
@@ -137,6 +151,13 @@ class Publicacao extends Model
 
         return $stmt->fetchAll(\PDO::FETCH_ASSOC);
     }
+
+    /**
+     * Lista todas as publicações do sistema para a moderação administrativa.
+     * 
+     * Retorna o conjunto completo de posts e seus dados correlacionados de vagas
+     * e compartilhamentos sem aplicar filtros de relacionamento social ou amizades.
+     */
     public function listarPublicacoesAdmin()
     {
         $query = "
@@ -151,48 +172,32 @@ class Publicacao extends Model
             v.localizacao,
             v.modalidade,
             v.salario,
-
-            /* Dados do Post Original */
             po.id AS post_original_id,
             po.tipo AS post_original_tipo,
             po.conteudo AS post_original_conteudo,
             po.imagem AS post_original_imagem,
-
-            /* Autor Original */
             uo.nome AS autor_original_nome,
             uo.foto AS autor_original_foto,
-
-            /* Dados da Vaga Original */
             vo.titulo AS post_original_titulo,
             vo.empresa AS post_original_empresa,
             vo.localizacao AS post_original_localizacao,
             vo.modalidade AS post_original_modalidade,
             vo.salario AS post_original_salario
-
         FROM publicacoes p
-
         INNER JOIN usuarios u
             ON u.id = p.usuario_id
-
         LEFT JOIN estudantes e
             ON e.usuario_id = u.id
-
         LEFT JOIN recrutadores r
             ON r.usuario_id = u.id
-
         LEFT JOIN vagas v
             ON v.publicacao_id = p.id
-
-        /* Compartilhamentos */
         LEFT JOIN publicacoes po
             ON po.id = p.publicacao_original_id
-
         LEFT JOIN usuarios uo
             ON uo.id = po.usuario_id
-
         LEFT JOIN vagas vo
             ON vo.publicacao_id = po.id
-
         ORDER BY p.created_at DESC
     ";
 
@@ -202,6 +207,12 @@ class Publicacao extends Model
         return $stmt->fetchAll(\PDO::FETCH_ASSOC);
     }
 
+    /**
+     * Retorna a lista de publicações geradas por um perfil de usuário específico.
+     * 
+     * Carrega as postagens pertencentes à conta consultada para renderização
+     * do feed de perfil exclusivo.
+     */
     public function getPublicacoesUsuario()
     {
         $query = "
@@ -216,7 +227,6 @@ class Publicacao extends Model
                 v.localizacao,
                 v.modalidade,
                 v.salario,
-                -- Dados do post original (para compartilhamentos)
                 p_orig.conteudo     AS post_original_conteudo,
                 p_orig.imagem       AS post_original_imagem,
                 p_orig.tipo         AS post_original_tipo,
@@ -231,7 +241,6 @@ class Publicacao extends Model
             INNER JOIN usuarios u ON u.id = p.usuario_id
             LEFT JOIN estudantes e ON e.usuario_id = u.id
             LEFT JOIN vagas v ON v.publicacao_id = p.id
-            -- JOINs do post original
             LEFT JOIN publicacoes p_orig ON p_orig.id = p.publicacao_original_id
             LEFT JOIN usuarios u_orig ON u_orig.id = p_orig.usuario_id
             LEFT JOIN vagas v_orig ON v_orig.publicacao_id = p_orig.id
@@ -246,6 +255,11 @@ class Publicacao extends Model
         return $stmt->fetchAll(\PDO::FETCH_ASSOC);
     }
 
+    /**
+     * Altera o conteúdo de texto e imagem de uma publicação existente.
+     * 
+     * Realiza a atualização garantindo o vínculo de propriedade da postagem.
+     */
     public function updatePost()
     {
         $query = "
@@ -275,6 +289,9 @@ class Publicacao extends Model
         return $stmt->execute();
     }
 
+    /**
+     * Atualiza os detalhes descritivos de uma vaga de emprego ativa.
+     */
     public function updateVacancy($dados)
     {
         $query = "
@@ -302,16 +319,19 @@ class Publicacao extends Model
         return $stmt->execute();
     }
 
+    /**
+     * Exclui em lote uma publicação base do tipo post do banco de dados.
+     * 
+     * Executa o processo dentro de uma transação SQL para assegurar a deleção em cascata
+     * de compartilhamentos, curtidas, comentários, notificações associadas e da postagem principal.
+     */
     public function excluirPost()
     {
         try {
-
             $this->db->beginTransaction();
 
-            // Compartilhamentos
             $this->excluirCompartilhamentos();
 
-            // Curtidas
             $query = "
             DELETE FROM curtidas
             WHERE publicacao_id = :id
@@ -321,7 +341,6 @@ class Publicacao extends Model
             $stmt->bindValue(':id', $this->__get('id'));
             $stmt->execute();
 
-            // Comentários
             $query = "
             DELETE FROM comentarios
             WHERE publicacao_id = :id
@@ -331,7 +350,6 @@ class Publicacao extends Model
             $stmt->bindValue(':id', $this->__get('id'));
             $stmt->execute();
 
-            // Notificações
             $query = "
             DELETE FROM notificacoes
             WHERE referencia_id = :id
@@ -341,7 +359,6 @@ class Publicacao extends Model
             $stmt->bindValue(':id', $this->__get('id'));
             $stmt->execute();
 
-            // Publicação
             $query = "
             DELETE FROM publicacoes
             WHERE id = :id
@@ -358,26 +375,25 @@ class Publicacao extends Model
             $this->db->commit();
 
             return true;
-
         } catch (\Exception $e) {
-
             $this->db->rollBack();
-
             throw $e;
-
         }
     }
 
+    /**
+     * Remove uma publicação de vaga e seus metadados de forma transacional.
+     * 
+     * Realiza a remoção em cascata de compartilhamentos, candidaturas correlacionadas,
+     * dados de vagas, comentários, curtidas e notificações, concluindo com a postagem principal.
+     */
     public function excluirVaga()
     {
         try {
-
             $this->db->beginTransaction();
 
-            // Compartilhamentos
             $this->excluirCompartilhamentos();
 
-            // Descobre a vaga
             $query = "
             SELECT id
             FROM vagas
@@ -391,8 +407,6 @@ class Publicacao extends Model
             $vaga = $stmt->fetch(\PDO::FETCH_ASSOC);
 
             if ($vaga) {
-
-                // Candidaturas
                 $query = "
                 DELETE FROM candidaturas
                 WHERE vaga_id = :vaga_id
@@ -402,7 +416,6 @@ class Publicacao extends Model
                 $stmt->bindValue(':vaga_id', $vaga['id']);
                 $stmt->execute();
 
-                // Vaga
                 $query = "
                 DELETE FROM vagas
                 WHERE id = :vaga_id
@@ -413,7 +426,6 @@ class Publicacao extends Model
                 $stmt->execute();
             }
 
-            // Curtidas
             $query = "
             DELETE FROM curtidas
             WHERE publicacao_id = :id
@@ -423,7 +435,6 @@ class Publicacao extends Model
             $stmt->bindValue(':id', $this->__get('id'));
             $stmt->execute();
 
-            // Comentários
             $query = "
             DELETE FROM comentarios
             WHERE publicacao_id = :id
@@ -433,7 +444,6 @@ class Publicacao extends Model
             $stmt->bindValue(':id', $this->__get('id'));
             $stmt->execute();
 
-            // Notificações
             $query = "
             DELETE FROM notificacoes
             WHERE referencia_id = :id
@@ -443,7 +453,6 @@ class Publicacao extends Model
             $stmt->bindValue(':id', $this->__get('id'));
             $stmt->execute();
 
-            // Publicação
             $query = "
             DELETE FROM publicacoes
             WHERE id = :id
@@ -460,15 +469,15 @@ class Publicacao extends Model
             $this->db->commit();
 
             return true;
-
         } catch (\Exception $e) {
-
             $this->db->rollBack();
-
             throw $e;
-
         }
     }
+
+    /**
+     * Registra o compartilhamento de uma publicação efetuado por um usuário.
+     */
     public function compartilhar($usuario_id, $publicacao_original_id)
     {
         $query = "
@@ -490,6 +499,10 @@ class Publicacao extends Model
 
         return $stmt->execute();
     }
+
+    /**
+     * Remove todos os compartilhamentos vinculados a uma publicação específica.
+     */
     public function excluirCompartilhamentos()
     {
         $query = "
@@ -504,6 +517,9 @@ class Publicacao extends Model
         return $stmt->execute();
     }
 
+    /**
+     * Retorna o conjunto completo de vagas registradas na plataforma.
+     */
     public function listarTodasVagas()
     {
         $query = "
@@ -525,6 +541,9 @@ class Publicacao extends Model
         return $stmt->fetchAll(\PDO::FETCH_ASSOC);
     }
 
+    /**
+     * Busca os metadados descritivos de uma vaga com base em seu ID de publicação.
+     */
     public function buscarVagaPorPublicacao($publicacao_id)
     {
         $query = "
@@ -547,6 +566,9 @@ class Publicacao extends Model
         return $stmt->fetch(\PDO::FETCH_ASSOC);
     }
 
+    /**
+     * Lista todas as vagas e os totais de candidaturas associadas de um recrutador.
+     */
     public function listarMinhasVagas($usuario_id)
     {
         $query = "
@@ -574,6 +596,9 @@ class Publicacao extends Model
         return $stmt->fetchAll(\PDO::FETCH_ASSOC);
     }
 
+    /**
+     * Busca os metadados de uma vaga de emprego utilizando seu identificador exclusivo.
+     */
     public function buscarVagaPorId($vaga_id)
     {
         $query = "
@@ -588,6 +613,10 @@ class Publicacao extends Model
 
         return $stmt->fetch(\PDO::FETCH_ASSOC);
     }
+
+    /**
+     * Recupera o identificador do autor da publicação pelo ID do post.
+     */
     public function getById($id)
     {
         $query = "SELECT usuario_id FROM publicacoes WHERE id = :id";
@@ -596,15 +625,17 @@ class Publicacao extends Model
         $stmt->execute();
         return $stmt->fetch(\PDO::FETCH_ASSOC);
     }
+
+    /**
+     * Executa a exclusão forçada de uma publicação pelo administrador.
+     * 
+     * Processa a deleção completa de compartilhamentos, dados de candidaturas e vagas,
+     * comentários, curtidas e notificações sem validar posse do registro.
+     */
     public function excluirPostAdmin()
     {
         try {
-
             $this->db->beginTransaction();
-
-            // ===========================================
-            // EXCLUI COMPARTILHAMENTOS DA PUBLICAÇÃO
-            // ===========================================
 
             $query = "
             DELETE FROM publicacoes
@@ -614,10 +645,6 @@ class Publicacao extends Model
             $stmt = $this->db->prepare($query);
             $stmt->bindValue(':id', $this->__get('id'));
             $stmt->execute();
-
-            // ===========================================
-            // VERIFICA SE É UMA VAGA
-            // ===========================================
 
             $query = "
             SELECT id
@@ -632,11 +659,6 @@ class Publicacao extends Model
             $vaga = $stmt->fetch(\PDO::FETCH_ASSOC);
 
             if ($vaga) {
-
-                // =======================================
-                // EXCLUI CANDIDATURAS
-                // =======================================
-
                 $query = "
                 DELETE FROM candidaturas
                 WHERE vaga_id = :vaga_id
@@ -645,10 +667,6 @@ class Publicacao extends Model
                 $stmt = $this->db->prepare($query);
                 $stmt->bindValue(':vaga_id', $vaga['id']);
                 $stmt->execute();
-
-                // =======================================
-                // EXCLUI VAGA
-                // =======================================
 
                 $query = "
                 DELETE FROM vagas
@@ -660,10 +678,6 @@ class Publicacao extends Model
                 $stmt->execute();
             }
 
-            // ===========================================
-            // CURTIDAS
-            // ===========================================
-
             $query = "
             DELETE FROM curtidas
             WHERE publicacao_id = :id
@@ -672,10 +686,6 @@ class Publicacao extends Model
             $stmt = $this->db->prepare($query);
             $stmt->bindValue(':id', $this->__get('id'));
             $stmt->execute();
-
-            // ===========================================
-            // COMENTÁRIOS
-            // ===========================================
 
             $query = "
             DELETE FROM comentarios
@@ -686,10 +696,6 @@ class Publicacao extends Model
             $stmt->bindValue(':id', $this->__get('id'));
             $stmt->execute();
 
-            // ===========================================
-            // NOTIFICAÇÕES
-            // ===========================================
-
             $query = "
             DELETE FROM notificacoes
             WHERE referencia_id = :id
@@ -698,10 +704,6 @@ class Publicacao extends Model
             $stmt = $this->db->prepare($query);
             $stmt->bindValue(':id', $this->__get('id'));
             $stmt->execute();
-
-            // ===========================================
-            // PUBLICAÇÃO
-            // ===========================================
 
             $query = "
             DELETE FROM publicacoes
@@ -715,11 +717,8 @@ class Publicacao extends Model
             $this->db->commit();
 
             return true;
-
         } catch (\Exception $e) {
-
             $this->db->rollBack();
-
             throw $e;
         }
     }

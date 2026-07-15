@@ -1,6 +1,6 @@
 <?php
+// Resgata o tipo de perfil ativo do usuário e faz a inclusão da barra de navegação global
 $tipo = $_SESSION['tipo'];
-
 require_once '../app/view/navbar.phtml';
 ?>
 
@@ -8,45 +8,58 @@ require_once '../app/view/navbar.phtml';
     <div class="card border-0 shadow-sm rounded-4" style="height:80vh;">
         <div class="row g-0 h-100">
 
+            <!-- COLUNA DA ESQUERDA (LISTA DE CONVERSAS ACTIVAS) -->
             <div class="col-md-4 border-end d-flex flex-column" style="height: 100%;">
                 <div class="p-3 border-bottom">
                     <h4 class="fw-bold mb-0">Conversas</h4>
                 </div>
 
                 <div id="listaUsuarios" class="flex-grow-1" style="overflow-y: auto; max-height: calc(80vh - 73px);">
-                    <?php if (!empty($this->view->usuarios)) { ?>
-                        <?php foreach ($this->view->usuarios as $usuario) {
-                            $classeAtivo = ($this->view->usuarioSelecionado == $usuario['id']) ? 'usuario-ativo' : '';
+                    <?php
+                    // Condicional estrutural: valida se a coleção de contatos com histórico ou habilitados não está vazia
+                    if (!empty($this->view->usuarios)) {
+                        ?>
+                        <?php
+                        // Laço iterativo que constrói os links da barra lateral para cada contato da rede
+                        foreach ($this->view->usuarios as $usuario) {
+                            $classeAtivo = ($this->view->usuarioSelecionado == $usuario['id']) ? 'usuario-chat-ativo' : '';
                             ?>
                             <a href="/openConversation?usuario=<?= $usuario['id'] ?>"
                                 class="usuario-chat text-decoration-none text-dark d-block p-3 border-bottom <?= $classeAtivo ?>">
-
                                 <div class="d-flex align-items-center">
                                     <img src="<?= !empty($usuario['foto']) ? '/uploads/fotos/' . $usuario['foto'] : '/uploads/fotos/default-user.png' ?>"
                                         width="50" height="50" class="rounded-circle me-3" style="object-fit:cover;">
 
-                                    <div>
-                                        <div class="fw-bold d-flex align-items-center">
-                                            <?= htmlspecialchars($usuario['nome']) ?>
-
-                                            <?php if ($usuario['nao_lidas'] > 0) { ?>
-                                                <span class="badge bg-danger ms-2">
+                                    <div class="flex-grow-1">
+                                        <div class="fw-bold d-flex align-items-center justify-content-between">
+                                            <span>
+                                                <?= htmlspecialchars($usuario['nome']) ?>
+                                            </span>
+                                            <?php
+                                            // Renderiza a badge numérica com o contador se existirem mensagens pendentes de leitura
+                                            if ($usuario['nao_lidas'] > 0) {
+                                                ?>
+                                                <span class="badge bg-danger rounded-pill">
                                                     <?= $usuario['nao_lidas'] ?>
                                                 </span>
                                             <?php } ?>
                                         </div>
 
-                                        <small class="text-muted d-block">
-                                            <?php if (!empty($usuario['ultima_mensagem'])) { ?>
-                                                <?= $usuario['foi_enviada_por_mim'] ? 'Você: ' : htmlspecialchars(explode(' ', trim($usuario['nome']))[0]) . ': ' ?>
-                                                <?= mb_strimwidth($usuario['ultima_mensagem'], 0, 30, '...') ?>
-                                            <?php } else { ?>
-                                                Clique para conversar
-                                            <?php } ?>
+                                        <small class="text-muted d-block text-truncate" style="max-width: 200px;">
+                                            <?php
+                                            // Renderiza o prefixo de autoria (Você ou Nome do contato) seguido do trecho cortado do último texto enviado
+                                            if (!empty($usuario['ultima_mensagem'])) {
+                                                echo $usuario['foi_enviada_por_mim'] ? 'Você: ' : htmlspecialchars(explode(' ', trim($usuario['nome']))[0]) . ': ';
+                                                echo mb_strimwidth($usuario['ultima_mensagem'], 0, 30, '...');
+                                            } else {
+                                                echo 'Clique para conversar';
+                                            }
+                                            ?>
                                         </small>
 
-                                        <small class="text-muted text-uppercase" style="font-size: 0.75rem;">
+                                        <small class="text-muted text-uppercase d-block mt-1" style="font-size: 0.70rem;">
                                             <?php
+                                            // Processa o timestamp da última mensagem para exibir 'Hoje' ou a data completa formatada
                                             if (!empty($usuario['ultima_data'])) {
                                                 $data = strtotime($usuario['ultima_data']);
                                                 if (date('Y-m-d', $data) == date('Y-m-d')) {
@@ -64,6 +77,7 @@ require_once '../app/view/navbar.phtml';
                             </a>
                         <?php } ?>
                     <?php } else { ?>
+                        <!-- FEEDBACK VISUAL SE NÃO HOUVER CONTATOS APTOS NA PLATAFORMA -->
                         <div class="text-center text-muted p-5">
                             Você ainda não segue ninguém.
                         </div>
@@ -71,20 +85,27 @@ require_once '../app/view/navbar.phtml';
                 </div>
             </div>
 
+            <!-- COLUNA DA DIREITA (CORPO DA CONVERSA SELECIONADA) -->
             <div class="col-md-8 d-flex flex-column" style="height:100%;">
-                <?php if ($this->view->conversaAtual) { ?>
-
+                <?php
+                // Condicional de controle de chat: renderiza a janela de mensagens se houver um identificador de conversa ativo
+                if ($this->view->conversaAtual) {
+                    ?>
                     <div id="mensagens" class="flex-grow-1 p-4" style="overflow-y:auto;">
-
-                        <?php if (!empty($this->view->mensagens)) { ?>
-
-                            <?php foreach ($this->view->mensagens as $mensagem) {
+                        <?php
+                        // Condicional de histórico: valida se o array de mensagens trocadas não está em branco
+                        if (!empty($this->view->mensagens)) {
+                            ?>
+                            <?php
+                            // Percorre o histórico de mensagens para montar os balões de diálogo alinhados à esquerda ou direita
+                            foreach ($this->view->mensagens as $mensagem) {
                                 $minhaMensagem = $mensagem['remetente_id'] == $_SESSION['id'];
                                 ?>
-
                                 <div class="d-flex mb-4 <?= $minhaMensagem ? 'justify-content-end' : 'justify-content-start' ?>">
-
-                                    <?php if (!$minhaMensagem) { ?>
+                                    <?php
+                                    // Insere o avatar miniatura do contato do lado esquerdo se a autoria não for do usuário logado
+                                    if (!$minhaMensagem) {
+                                        ?>
                                         <img src="<?= !empty($mensagem['foto']) ? '/uploads/fotos/' . $mensagem['foto'] : '/uploads/fotos/default-user.png' ?>"
                                             width="40" height="40" class="rounded-circle me-2" style="object-fit:cover;">
                                     <?php } ?>
@@ -94,18 +115,22 @@ require_once '../app/view/navbar.phtml';
                                             data-id="<?= $mensagem['id'] ?>"
                                             data-message="<?= htmlspecialchars($mensagem['mensagem']) ?>"
                                             data-image="<?= !empty($mensagem['imagem']) ? htmlspecialchars($mensagem['imagem']) : '' ?>">
-
-                                            <?php if (!empty($mensagem['mensagem'])) { ?>
+                                            <?php
+                                            // Processa e exibe o corpo de texto bruto enviado, convertendo quebras de linha
+                                            if (!empty($mensagem['mensagem'])) {
+                                                ?>
                                                 <?= nl2br(htmlspecialchars($mensagem['mensagem'])) ?>
                                             <?php } ?>
 
-                                            <?php if (!empty($mensagem['imagem'])) { ?>
+                                            <?php
+                                            // Insere a tag de imagem tratada caso a mensagem possua anexo de mídia visual
+                                            if (!empty($mensagem['imagem'])) {
+                                                ?>
                                                 <div class="mt-2">
                                                     <img src="/uploads/chat/<?= htmlspecialchars($mensagem['imagem']) ?>"
                                                         class="img-fluid rounded" style="max-width:250px">
                                                 </div>
                                             <?php } ?>
-
                                         </div>
 
                                         <small class="text-muted d-block <?= $minhaMensagem ? 'text-end' : '' ?>">
@@ -113,22 +138,24 @@ require_once '../app/view/navbar.phtml';
                                         </small>
                                     </div>
 
-                                    <?php if ($minhaMensagem) { ?>
+                                    <?php
+                                    // Insere o avatar do próprio usuário ativo do lado direito se a autoria da mensagem for dele
+                                    if ($minhaMensagem) {
+                                        ?>
                                         <img src="<?= !empty($_SESSION['foto_perfil']) ? '/uploads/fotos/' . $_SESSION['foto_perfil'] : '/uploads/fotos/default-user.png' ?>"
                                             width="40" height="40" class="rounded-circle ms-2" style="object-fit:cover;">
                                     <?php } ?>
-
                                 </div>
                             <?php } ?>
-
                         <?php } else { ?>
+                            <!-- MENSAGEM PADRÃO CASO SEJA UM INÍCIO DE CONVERSA TOTALMENTE LIMPO -->
                             <div class="text-center text-muted mt-5">
                                 Nenhuma mensagem ainda.
                             </div>
                         <?php } ?>
-
                     </div>
 
+                    <!-- BARRA DE INPUT DE MENSAGENS -->
                     <div class="border-top p-3 bg-white">
                         <form action="/sendMessage" method="POST" enctype="multipart/form-data">
                             <input type="hidden" name="conversa_id" value="<?= $this->view->conversaAtual ?>">
@@ -169,6 +196,7 @@ require_once '../app/view/navbar.phtml';
                     </div>
 
                 <?php } else { ?>
+                    <!-- ESPAÇO EM BRANCO EXIBIDO ANTES DO SELECIONAMENTO DE QUALQUER CONVERSA -->
                     <div class="flex-grow-1 d-flex justify-content-center align-items-center text-muted">
                         Selecione um usuário para iniciar uma conversa.
                     </div>
@@ -179,6 +207,7 @@ require_once '../app/view/navbar.phtml';
     </div>
 </div>
 
+<!-- INJEÇÃO DE CHAVES E VARIÁVEIS GLOBAIS PARA CONSUMO DO SCRIPT EXTERNO DE WEBSOCKET / AJAX -->
 <script>
     const conversaAtual = <?= $this->view->conversaAtual ?? 'null' ?>;
     const usuarioLogado = <?= $_SESSION['id'] ?>;
@@ -186,6 +215,7 @@ require_once '../app/view/navbar.phtml';
     const usuarioSelecionado = <?= json_encode($this->view->usuarioSelecionado); ?>;
 </script>
 
+<!-- MENU CONTEXTUAL SUSPENSO (EDITAR / EXCLUIR MENSAGEM) -->
 <div id="menuMensagem" class="dropdown-menu shadow">
     <a href="#" id="btnEditarMensagem" class="dropdown-item">
         <i class="bi bi-pencil me-2"></i> Editar
@@ -195,6 +225,7 @@ require_once '../app/view/navbar.phtml';
     </a>
 </div>
 
+<!-- MODAL CONFIRMAÇÃO DE DELEÇÃO -->
 <div class="modal fade" id="modalExcluirMensagem" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
@@ -213,6 +244,7 @@ require_once '../app/view/navbar.phtml';
     </div>
 </div>
 
+<!-- MODAL COMPORTAMENTO DE EDIÇÃO -->
 <div class="modal fade" id="modalEditarMensagem" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
@@ -226,7 +258,6 @@ require_once '../app/view/navbar.phtml';
                     <div class="position-relative d-inline-block">
                         <img id="imgEditarModal" src="" class="img-fluid rounded shadow-sm"
                             style="max-height:160px; object-fit:cover; border-radius:10px;">
-
                         <button type="button" id="btnExcluirFotoMensagem"
                             class="btn btn-danger btn-sm position-absolute top-0 end-0 m-2 rounded-circle d-none"
                             title="Excluir imagem">

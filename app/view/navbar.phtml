@@ -1,6 +1,9 @@
 <nav class="navbar-custom">
 
     <div class="nav-left">
+        <?php
+        // Define dinamicamente o redirecionamento do logotipo: se for administrador vai para a timeline do admin, caso contrário vai para o feed comum
+        ?>
         <a href="<?= $tipo == 'admin' ? '/timelineAdmin' : '/timeline' ?>">
             <img src="/img/logo_deployme.png" alt="Deployme" class="logo-navbar">
         </a>
@@ -13,8 +16,10 @@
             <span>Pessoas</span>
         </a>
 
-        <?php if ($tipo == 'estudante') { ?>
-
+        <?php
+        // Renderiza as opções exclusivas do menu de navegação (Ver vagas e Minhas candidaturas) apenas se o usuário logado for um estudante
+        if ($tipo == 'estudante') {
+            ?>
             <a href="/viewVacancies" class="nav-icon text-decoration-none">
                 <i class="bi bi-globe"></i>
                 <span>Ver vagas</span>
@@ -24,16 +29,16 @@
                 <i class="bi bi-briefcase"></i>
                 <span>Minhas candidaturas</span>
             </a>
-
         <?php } ?>
 
-        <?php if ($tipo == 'recrutador') { ?>
-
+        <?php
+        // Renderiza a opção de gerenciamento de anúncios (Minhas vagas) apenas se a conta conectada for de um recrutador
+        if ($tipo == 'recrutador') {
+            ?>
             <a href="/myVacancies" class="nav-icon text-decoration-none">
                 <i class="bi bi-file-earmark-text"></i>
                 <span>Minhas vagas</span>
             </a>
-
         <?php } ?>
 
         <a href="/chat" class="nav-icon text-decoration-none">
@@ -42,68 +47,44 @@
         </a>
 
         <div class="position-relative d-inline-block">
-
             <div id="btnNotificacoes" class="nav-icon" style="cursor:pointer; user-select:none;">
                 <i class="bi bi-bell"></i>
                 <span>Notificações</span>
-
                 <span id="notificationBadge" class="notification-badge" style="display:none;">
-
                     0
-
                 </span>
-
             </div>
 
-            <div id="dropdownNotificacoes" class="dropdown-menu shadow" style="
-                    display:none;
-                    position:absolute;
-                    top:100%;
-                    right:0;
-                    width:360px;
-                    max-height:400px;
-                    overflow-y:auto;
-                    z-index:1000;
-                    white-space:normal;
-                 ">
-
+            <div id="dropdownNotificacoes" class="dropdown-menu shadow"
+                style="display:none; position:absolute; top:100%; right:0; width:360px; max-height:400px; overflow-y:auto; z-index:1000; white-space:normal;">
                 <div class="dropdown-header fw-bold border-bottom p-3">
                     Notificações
                 </div>
-
                 <div id="listaNotificacoes">
-
                     <div class="text-center p-3 text-muted">
                         Nenhuma notificação.
                     </div>
-
                 </div>
-
             </div>
-
         </div>
 
-        <?php if ($tipo == 'admin') { ?>
-
+        <?php
+        // Injeta o atalho de acesso ao Painel Administrativo (Dashboard) somente se o nível de privilégio do usuário for admin
+        if ($tipo == 'admin') {
+            ?>
             <a href="/admin" class="nav-icon text-decoration-none">
                 <i class="bi bi-speedometer2"></i>
                 <span>Painel</span>
             </a>
-
         <?php } ?>
 
     </div>
 
     <div class="nav-right">
-
         <a href="/logout" class="nav-icon logout text-decoration-none">
-
             <i class="bi bi-box-arrow-right"></i>
-
             <span>Sair</span>
-
         </a>
-
     </div>
 
 </nav>

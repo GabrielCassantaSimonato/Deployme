@@ -1,4 +1,5 @@
 <?php
+// Carrega as referências de controle e tipo de perfil ativo do usuário e faz a inclusão da navbar global
 $tipo = $_SESSION['tipo'];
 require_once('../app/view/navbar.phtml');
 ?>
@@ -11,11 +12,8 @@ require_once('../app/view/navbar.phtml');
 
     <!-- FILTROS -->
     <div class="card border-0 shadow-sm mb-4">
-
         <div class="card-body">
-
             <div class="row g-2">
-
                 <div class="col-md-3">
                     <input type="text" class="form-control filtro" placeholder="Nome">
                 </div>
@@ -35,186 +33,120 @@ require_once('../app/view/navbar.phtml');
                 <div class="col-md-3">
                     <input type="text" class="form-control filtro" placeholder="Curso ou Empresa">
                 </div>
-
             </div>
-
         </div>
-
     </div>
 
     <!-- USUÁRIOS -->
     <div class="row">
-
-        <?php foreach ($this->view->usuarios as $usuario) { ?>
-
+        <?php
+        // Itera sobre a coleção de usuários cadastrados repassados pela view para renderizar os cards individuais
+        foreach ($this->view->usuarios as $usuario) {
+            ?>
             <div class="col-md-4 mb-4 usuario-card">
-
                 <div class="card border-0 shadow-sm h-100">
-
                     <div class="card-body text-center">
 
                         <!-- FOTO -->
                         <a href="/profile?id=<?= $usuario['id'] ?>">
-
-                            <img src="<?= !empty($usuario['foto'])
-                                ? '/uploads/fotos/' . $usuario['foto']
-                                : '/uploads/fotos/default-user.png' ?>" class="rounded-circle mb-3" style="
-                                    width:90px;
-                                    height:90px;
-                                    object-fit:cover;
-                                ">
-
+                            <img src="<?= !empty($usuario['foto']) ? '/uploads/fotos/' . $usuario['foto'] : '/uploads/fotos/default-user.png' ?>"
+                                class="rounded-circle mb-3" style="width:90px; height:90px; object-fit:cover;">
                         </a>
 
                         <!-- NOME -->
                         <h5>
-
                             <a href="/profile?id=<?= $usuario['id'] ?>" class="text-decoration-none text-dark">
-
                                 <?= htmlspecialchars($usuario['nome']) ?>
-
                             </a>
-
                         </h5>
 
                         <!-- LOCALIZAÇÃO -->
-                        <?php if (
-                            !empty($usuario['cidade']) ||
-                            !empty($usuario['uf'])
-                        ) { ?>
-
+                        <?php
+                        // Condicional de exibição: renderiza a cidade e o estado do perfil se houver dados cadastrados
+                        if (!empty($usuario['cidade']) || !empty($usuario['uf'])) {
+                            ?>
                             <div class="text-muted">
-
                                 <?= htmlspecialchars($usuario['cidade']) ?>
-
-                                <?php if (!empty($usuario['uf'])) { ?>
-
+                                <?php
+                                // Insere o hífen separador se a propriedade da unidade federativa não estiver vazia
+                                if (!empty($usuario['uf'])) {
+                                    ?>
                                     -
                                     <?= htmlspecialchars($usuario['uf']) ?>
-
                                 <?php } ?>
-
                             </div>
-
                         <?php } ?>
 
-                        <!-- ESTUDANTE -->
-                        <?php if ($usuario['tipo'] == 'estudante') { ?>
-
-                            <?php if (!empty($usuario['curso'])) { ?>
-
-                                <div class="text-muted">
-
-                                    <?= htmlspecialchars(
-                                        $usuario['curso']
-                                    ) ?>
-
-                                </div>
-
-                            <?php } ?>
-
-                            <?php if (!empty($usuario['universidade'])) { ?>
-
-                                <div class="text-muted mb-3">
-
-                                    <?= htmlspecialchars(
-                                        $usuario['universidade']
-                                    ) ?>
-
-                                </div>
-
-                            <?php } ?>
-
-                        <?php } ?>
-
-                        <!-- RECRUTADOR -->
-                        <?php if ($usuario['tipo'] == 'recrutador') { ?>
-
-                            <div class="text-primary fw-semibold">
-
-                                Recrutador
-
-                            </div>
-
-                            <div class="text-muted mb-3">
-
-                                <?= htmlspecialchars(
-                                    $usuario['empresa']
-                                ) ?>
-
-                            </div>
-
-                        <?php } ?>
-
-                        <!-- BOTÃO SEGUIR -->
-                        <button class="btn btn-seguir
-    <?= $usuario['seguindo']
-        ? 'btn-danger'
-        : 'btn-primary'
-        ?>" data-id="<?= $usuario['id'] ?>" data-seguindo="<?= $usuario['seguindo'] ?>">
-
-                            <?= $usuario['seguindo']
-                                ? 'Deixar de seguir'
-                                : 'Seguir'
+                        <!-- METADADOS SE FOR ESTUDANTE -->
+                        <?php
+                        // Condicional de tipo: renderiza dados específicos acadêmicos (curso e faculdade) caso seja estudante
+                        if ($usuario['tipo'] == 'estudante') {
+                            ?>
+                            <?php
+                            // Exibe o curso de graduação atual do estudante se houver preenchimento na base de dados
+                            if (!empty($usuario['curso'])) {
                                 ?>
+                                <div class="text-muted">
+                                    <?= htmlspecialchars($usuario['curso']) ?>
+                                </div>
+                            <?php } ?>
 
+                            <?php
+                            // Exibe a instituição de ensino superior do estudante se houver preenchimento na base de dados
+                            if (!empty($usuario['universidade'])) {
+                                ?>
+                                <div class="text-muted mb-3">
+                                    <?= htmlspecialchars($usuario['universidade']) ?>
+                                </div>
+                            <?php } ?>
+                        <?php } ?>
+
+                        <!-- METADADOS SE FOR RECRUTADOR -->
+                        <?php
+                        // Condicional de tipo: renderiza dados de identificação corporativa corporativos caso o perfil seja recrutador
+                        if ($usuario['tipo'] == 'recrutador') {
+                            ?>
+                            <div class="text-primary fw-semibold">
+                                Recrutador
+                            </div>
+                            <div class="text-muted mb-3">
+                                <?= htmlspecialchars($usuario['empresa']) ?>
+                            </div>
+                        <?php } ?>
+
+                        <!-- BOTÃO SEGUIR / DEIXAR DE SEGUIR -->
+                        <button class="btn btn-seguir <?= $usuario['seguindo'] ? 'btn-danger' : 'btn-primary' ?>"
+                            data-id="<?= $usuario['id'] ?>" data-seguindo="<?= $usuario['seguindo'] ?>">
+                            <?php
+                            // Altera de forma dinâmica o rótulo textual do botão baseando-se no status de relacionamento (seguindo)
+                            ?>
+                            <?= $usuario['seguindo'] ? 'Deixar de seguir' : 'Seguir' ?>
                         </button>
 
                     </div>
-
                 </div>
-
             </div>
-
         <?php } ?>
-
     </div>
 
 </div>
 
 <script>
-
-    document
-        .querySelectorAll('.filtro')
-        .forEach(input => {
-
-            input.addEventListener(
-                'keyup',
-                filtrarUsuarios
-            );
-
-        });
+    document.querySelectorAll('.filtro').forEach(input => {
+        input.addEventListener('keyup', filtrarUsuarios);
+    });
 
     function filtrarUsuarios() {
-        const filtros =
-            Array.from(
-                document.querySelectorAll('.filtro')
-            )
-                .map(
-                    campo => campo.value.toLowerCase()
-                );
+        const filtros = Array.from(document.querySelectorAll('.filtro'))
+            .map(campo => campo.value.toLowerCase());
 
-        document
-            .querySelectorAll('.usuario-card')
-            .forEach(card => {
+        document.querySelectorAll('.usuario-card').forEach(card => {
+            const texto = card.innerText.toLowerCase();
+            const exibir = filtros.every(filtro =>
+                !filtro || texto.includes(filtro)
+            );
 
-                const texto =
-                    card.innerText.toLowerCase();
-
-                const exibir =
-                    filtros.every(
-                        filtro =>
-                            !filtro ||
-                            texto.includes(filtro)
-                    );
-
-                card.style.display =
-                    exibir
-                        ? ''
-                        : 'none';
-
-            });
-
+            card.style.display = exibir ? '' : 'none';
+        });
     }
-
 </script>

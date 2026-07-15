@@ -6,6 +6,12 @@ use MF\Model\Model;
 
 class Comentario extends Model
 {
+    /**
+     * Insere um novo comentário em uma publicação.
+     * 
+     * Armazena o texto do comentário associando-o ao identificador da postagem
+     * e ao usuário autor da ação.
+     */
     public function comentar($usuario_id, $publicacao_id, $comentario)
     {
         $query = "
@@ -29,6 +35,12 @@ class Comentario extends Model
         return $stmt->execute();
     }
 
+    /**
+     * Retorna a lista de comentários vinculados a uma publicação específica.
+     * 
+     * Consolida o conteúdo textual e a data de criação do comentário, trazendo
+     * também o nome e a foto de perfil do autor para exibição na timeline.
+     */
     public function listarComentarios($publicacao_id)
     {
         $query = "
@@ -49,6 +61,9 @@ class Comentario extends Model
         return $stmt->fetchAll(\PDO::FETCH_ASSOC);
     }
 
+    /**
+     * Calcula a quantidade total de comentários ativos em uma postagem.
+     */
     public function totalComentarios($publicacao_id)
     {
         $query = "
@@ -64,6 +79,11 @@ class Comentario extends Model
         return $stmt->fetch(\PDO::FETCH_ASSOC);
     }
 
+    /**
+     * Exclui permanentemente um comentário específico do banco de dados.
+     * 
+     * Realiza a remoção validando se o autor da requisição é de fato o proprietário do comentário.
+     */
     public function delete($id, $usuario_id)
     {
         $query = "
@@ -80,6 +100,11 @@ class Comentario extends Model
         return $stmt->execute();
     }
 
+    /**
+     * Atualiza o conteúdo textual de um comentário existente.
+     * 
+     * Altera o campo de texto certificando que a operação seja efetuada pelo autor original.
+     */
     public function editar($id, $usuario_id, $comentario)
     {
         $query = "

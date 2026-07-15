@@ -6,7 +6,6 @@ use MF\model\Model;
 
 class Estudante extends Model
 {
-
     private $id;
     private $usuario_id;
     private $universidade_id;
@@ -21,16 +20,28 @@ class Estudante extends Model
     private $uf;
     private $curriculo;
 
+    /**
+     * Recupera de forma dinâmica o valor de um atributo privado da classe.
+     */
     public function __get($atributo)
     {
         return $this->$atributo;
     }
 
+    /**
+     * Atribui dinamicamente um valor a um atributo privado da classe.
+     */
     public function __set($atributo, $valor)
     {
         $this->$atributo = $valor;
     }
 
+    /**
+     * Salva as informações específicas de perfil de um estudante.
+     * 
+     * Executa a inserção dos dados de endereço, acadêmicos, contato técnico e link do arquivo
+     * de currículo na tabela estudantes com base nas propriedades carregadas na instância.
+     */
     public function salvarEstudante()
     {
         $query = "INSERT INTO estudantes 
@@ -56,6 +67,9 @@ class Estudante extends Model
         return $stmt->execute();
     }
 
+    /**
+     * Busca a localização (cidade e UF) associada a um estudante específico.
+     */
     public function buscarPorUsuario($usuario_id)
     {
         $query = "
@@ -73,6 +87,9 @@ class Estudante extends Model
         return $stmt->fetch(\PDO::FETCH_ASSOC);
     }
 
+    /**
+     * Busca o nome do arquivo de currículo cadastrado para um determinado usuário.
+     */
     public function buscarCurriculo($usuario_id)
     {
         $query = "
@@ -95,5 +112,3 @@ class Estudante extends Model
         );
     }
 }
-
-?>

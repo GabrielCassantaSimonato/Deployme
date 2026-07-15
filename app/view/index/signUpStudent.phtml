@@ -6,7 +6,6 @@
             <h2 class="fw-800 mb-4" id="info-title">A tua jornada começa agora.</h2>
             <p class="lead opacity-75 mb-5" id="info-subtitle">Acesso a talentos e vagas reais em um clique.</p>
 
-            <!-- FRASES ATUALIZADAS CONFORME SOLICITADO -->
             <div class="d-flex flex-column gap-4">
                 <div class="d-flex align-items-center gap-3">
                     <i class="bi bi-people-fill text-primary fs-4"></i>
@@ -32,15 +31,19 @@
             <h3 class="fw-800 mb-4" id="form-heading">Criar Conta</h3>
 
             <form id="registrationForm" action="/studentRegister" method="POST" enctype="multipart/form-data">
+
                 <!-- Dados Pessoais -->
                 <div class="form-section-header">Dados Pessoais</div>
                 <div class="row g-3 mb-4">
                     <div class="col-md-8">
                         <div class="form-floating">
-                            <input type="text" name="nome" class="form-control 
-                                <?= isset($this->view->erros['nome']) ? 'is-invalid' : '' ?>"
+                            <input type="text" name="nome"
+                                class="form-control <?= isset($this->view->erros['nome']) ? 'is-invalid' : '' ?>"
                                 value="<?= $this->view->dados['nome'] ?? '' ?>">
-                            <?php if (isset($this->view->erros['nome'])) { ?>
+                            <?php
+                            // Renderiza mensagem de erro de validação para o campo nome
+                            if (isset($this->view->erros['nome'])) {
+                                ?>
                                 <div class="invalid-feedback">
                                     <?= $this->view->erros['nome'] ?>
                                 </div>
@@ -48,27 +51,33 @@
                             <label>Nome Completo</label>
                         </div>
                     </div>
+
                     <div class="col-md-4">
                         <div class="form-floating">
                             <select class="form-select" name="genero_id" required>
                                 <option value="" selected disabled>Escolha...</option>
-
-                                <?php foreach ($this->view->generos as $g) { ?>
+                                <?php
+                                // Itera pela coleção de gêneros disponíveis para compor o seletor
+                                foreach ($this->view->generos as $g) {
+                                    ?>
                                     <option value="<?= $g['id'] ?>">
                                         <?= $g['genero'] ?>
                                     </option>
                                 <?php } ?>
-
                             </select>
                             <label>Gênero</label>
                         </div>
                     </div>
+
                     <div class="col-12">
                         <div class="form-floating">
-                            <input type="email" name="email" class="form-control 
-                                <?= isset($this->view->erros['email']) ? 'is-invalid' : '' ?>"
+                            <input type="email" name="email"
+                                class="form-control <?= isset($this->view->erros['email']) ? 'is-invalid' : '' ?>"
                                 value="<?= $this->view->dados['email'] ?? '' ?>">
-                            <?php if (isset($this->view->erros['email'])) { ?>
+                            <?php
+                            // Renderiza erro caso o e-mail seja inválido ou já exista na base
+                            if (isset($this->view->erros['email'])) {
+                                ?>
                                 <div class="invalid-feedback">
                                     <?= $this->view->erros['email'] ?>
                                 </div>
@@ -82,15 +91,18 @@
                 <div class="student-field">
                     <div class="form-section-header">Vida Acadêmica</div>
 
-                    <!-- LINHA 1 -->
                     <div class="row g-3 mb-4">
-
                         <div class="col-md-6">
                             <div class="form-floating">
                                 <select class="form-select" name="universidade_id" required>
                                     <option value="" selected disabled>Escolha...</option>
-                                    <?php foreach ($this->view->universidades as $u) { ?>
-                                        <option value="<?= $u['id'] ?>"><?= $u['nome'] ?></option>
+                                    <?php
+                                    // Itera pelas universidades cadastradas para o seletor acadêmico
+                                    foreach ($this->view->universidades as $u) {
+                                        ?>
+                                        <option value="<?= $u['id'] ?>">
+                                            <?= $u['nome'] ?>
+                                        </option>
                                     <?php } ?>
                                 </select>
                                 <label>Universidade</label>
@@ -101,8 +113,13 @@
                             <div class="form-floating">
                                 <select class="form-select" name="curso_id" required>
                                     <option value="" selected disabled>Escolha...</option>
-                                    <?php foreach ($this->view->cursos as $c) { ?>
-                                        <option value="<?= $c['id'] ?>"><?= $c['nome'] ?></option>
+                                    <?php
+                                    // Itera pelos cursos disponíveis para o seletor
+                                    foreach ($this->view->cursos as $c) {
+                                        ?>
+                                        <option value="<?= $c['id'] ?>">
+                                            <?= $c['nome'] ?>
+                                        </option>
                                     <?php } ?>
                                 </select>
                                 <label>Curso</label>
@@ -113,72 +130,83 @@
                             <div class="form-floating">
                                 <select class="form-select" name="semestre_id" required>
                                     <option value="" selected disabled>...</option>
-                                    <?php foreach ($this->view->semestres as $s) { ?>
-                                        <option value="<?= $s['id'] ?>"><?= $s['semestre'] ?></option>
+                                    <?php
+                                    // Itera pelos semestres para o seletor
+                                    foreach ($this->view->semestres as $s) {
+                                        ?>
+                                        <option value="<?= $s['id'] ?>">
+                                            <?= $s['semestre'] ?>
+                                        </option>
                                     <?php } ?>
                                 </select>
                                 <label>Sem.</label>
                             </div>
                         </div>
-
                     </div>
 
                     <div class="row mb-4">
                         <div class="col-12">
-
                             <div class="github-modern-input input-group">
-                                <span class="input-group-text">
-                                    <i class="bi bi-github"></i>
-                                </span>
-
+                                <span class="input-group-text"><i class="bi bi-github"></i></span>
                                 <div class="form-floating flex-grow-1">
                                     <input type="text" id="github-user" class="form-control" name="github"
                                         placeholder="User">
                                     <label>Seu Username do GitHub</label>
                                 </div>
                             </div>
-
                             <div id="github-feedback" class="mt-2 d-none align-items-center p-3 bg-light rounded-4">
                                 <img id="github-avatar" src=""
                                     style="width:40px; border-radius:50%; margin-right:15px; border: 2px solid white;">
                                 <span id="github-status" class="small fw-800"></span>
                             </div>
-
                         </div>
                     </div>
                 </div>
+
                 <!-- Localização -->
                 <div class="form-section-header">Localização</div>
                 <div class="row g-3 mb-4">
                     <div class="col-md-4">
-                        <div class="form-floating"><input type="text" class="form-control" id="cep"
-                                placeholder="00000-000" name="cep" maxlength="9" onkeyup="mascaraCEP(this)"
-                                onblur="buscaViaCEP(this.value)"><label>CEP</label>
+                        <div class="form-floating">
+                            <input type="text" class="form-control" id="cep" placeholder="00000-000" name="cep"
+                                maxlength="9" onkeyup="mascaraCEP(this)" onblur="buscaViaCEP(this.value)">
+                            <label>CEP</label>
                         </div>
                     </div>
                     <div class="col-md-8">
-                        <div class="form-floating"><input type="text" name="rua" class="form-control" id="rua"
-                                placeholder="Rua"><label>Rua
-                                / Logradouro</label></div>
+                        <div class="form-floating">
+                            <input type="text" name="rua" class="form-control" id="rua" placeholder="Rua">
+                            <label>Rua / Logradouro</label>
+                        </div>
                     </div>
                     <div class="col-md-5">
-                        <div class="form-floating"><input type="text" name="bairro" class="form-control" id="bairro"
-                                placeholder="Bairro"><label>Bairro</label></div>
+                        <div class="form-floating">
+                            <input type="text" name="bairro" class="form-control" id="bairro" placeholder="Bairro">
+                            <label>Bairro</label>
+                        </div>
                     </div>
                     <div class="col-md-5">
-                        <div class="form-floating"><input type="text" name="cidade" class="form-control" id="cidade"
-                                placeholder="Cidade"><label>Cidade</label></div>
+                        <div class="form-floating">
+                            <input type="text" name="cidade" class="form-control" id="cidade" placeholder="Cidade">
+                            <label>Cidade</label>
+                        </div>
                     </div>
                     <div class="col-md-5">
-                        <div class="form-floating"><input type="text" name="complemento" class="form-control"
-                                id="complemento" placeholder="Comp."><label>Complemento</label></div>
+                        <div class="form-floating">
+                            <input type="text" name="complemento" class="form-control" id="complemento"
+                                placeholder="Comp.">
+                            <label>Complemento</label>
+                        </div>
                     </div>
                     <div class="col-md-2">
-                        <div class="form-floating"><input type="text" name="uf" class="form-control" id="uf"
-                                placeholder="UF"><label>UF</label></div>
+                        <div class="form-floating">
+                            <input type="text" name="uf" class="form-control" id="uf" placeholder="UF">
+                            <label>UF</label>
+                        </div>
                     </div>
                 </div>
-                <!-- Ficheiros -->
+
+                <!-- Upload -->
                 <div class="form-section-header">Uploads e Segurança</div>
                 <div class="row g-3">
                     <div class="col-md-6">
@@ -193,8 +221,7 @@
                     </div>
                     <div class="col-md-6 student-field">
                         <label class="upload-card" for="resume-file">
-                            <div class="upload-icon"><i class="bi bi-file-earmark-pdf text-danger"></i>
-                            </div>
+                            <div class="upload-icon"><i class="bi bi-file-earmark-pdf text-danger"></i></div>
                             <div class="text-start">
                                 <div class="small fw-800 text-dark">Currículo PDF</div>
                                 <div class="x-small text-muted" id="resume-text">Max 5MB</div>
@@ -202,19 +229,21 @@
                         </label>
                         <input type="file" name="curriculo" id="resume-file" class="d-none" accept="application/pdf">
                         <button type="button" id="btnAnalyze" class="btn-ai-analyze w-100 d-none mt-2">
-                            <i class="bi bi-stars me-1"></i>
-                            Analisar currículo com IA
+                            <i class="bi bi-stars me-1"></i> Analisar currículo com IA
                         </button>
                     </div>
                 </div>
 
+                <!-- SENHA -->
                 <div class="row mt-4">
                     <div class="col-12">
                         <div class="form-floating">
-                            <input type="password" name="senha" class="form-control 
-                                <?= isset($this->view->erros['senha']) ? 'is-invalid' : '' ?>">
-
-                            <?php if (isset($this->view->erros['senha'])) { ?>
+                            <input type="password" name="senha"
+                                class="form-control <?= isset($this->view->erros['senha']) ? 'is-invalid' : '' ?>">
+                            <?php
+                            // Renderiza erro de validação para a senha
+                            if (isset($this->view->erros['senha'])) {
+                                ?>
                                 <div class="invalid-feedback">
                                     <?= $this->view->erros['senha'] ?>
                                 </div>
@@ -224,6 +253,7 @@
                     </div>
                 </div>
 
+                <!-- Termos -->
                 <div class="form-check my-4">
                     <input class="form-check-input" type="checkbox" required id="termsCheck">
                     <label class="form-check-label small text-muted" for="termsCheck">
@@ -232,93 +262,42 @@
                     </label>
                 </div>
 
-                <button type="submit" class="btn btn-primary btn-lg w-100 py-3 shadow-lg">Finalizar
-                    Cadastro</button>
+                <button type="submit" class="btn btn-primary btn-lg w-100 py-3 shadow-lg">Finalizar Cadastro</button>
             </form>
         </div>
 
         <!-- MODAL IA -->
         <div class="modal fade" id="aiModal" tabindex="-1">
-
             <div class="modal-dialog modal-dialog-centered modal-lg">
-
                 <div class="modal-content border-0 shadow-lg rounded-4 overflow-hidden">
-
-                    <!-- HEADER -->
                     <div class="modal-header bg-dark text-white border-0 p-4">
-
                         <div>
-                            <h4 class="fw-bold mb-1">
-                                <i class="bi bi-stars me-2 text-warning"></i>
-                                Análise Inteligente
+                            <h4 class="fw-bold mb-1"><i class="bi bi-stars me-2 text-warning"></i> Análise Inteligente
                             </h4>
-
-                            <small class="opacity-75">
-                                Feedback gerado por IA
-                            </small>
+                            <small class="opacity-75">Feedback gerado por IA</small>
                         </div>
-
-                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal">
-                        </button>
-
+                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
                     </div>
-
-                    <!-- BODY -->
                     <div class="modal-body p-5">
-
-                        <!-- SCORE -->
                         <div class="text-center mb-5">
-
-                            <div id="aiScore" class="display-1 fw-bold text-primary">
-                                0
-                            </div>
-
-                            <div class="text-muted">
-                                Score do currículo
-                            </div>
-
+                            <div id="aiScore" class="display-1 fw-bold text-primary">0</div>
+                            <div class="text-muted">Score do currículo</div>
                         </div>
-
-                        <!-- FEEDBACK -->
                         <div class="mb-4">
-
-                            <h5 class="fw-bold mb-3">
-                                Feedback Geral
-                            </h5>
-
-                            <p id="aiFeedback" class="text-muted lh-lg">
-                            </p>
-
+                            <h5 class="fw-bold mb-3">Feedback Geral</h5>
+                            <p id="aiFeedback" class="text-muted lh-lg"></p>
                         </div>
-
-                        <!-- PONTOS FORTES -->
                         <div class="mb-4">
-
-                            <h5 class="fw-bold mb-3 text-success">
-                                Pontos Fortes
-                            </h5>
-
-                            <p id="aiStrong" class="text-muted lh-lg">
-                            </p>
-
+                            <h5 class="fw-bold mb-3 text-success">Pontos Fortes</h5>
+                            <p id="aiStrong" class="text-muted lh-lg"></p>
                         </div>
-
-                        <!-- MELHORIAS -->
                         <div>
-
-                            <h5 class="fw-bold mb-3 text-warning">
-                                O que pode melhorar
-                            </h5>
-
-                            <p id="aiImprove" class="text-muted lh-lg">
-                            </p>
-
+                            <h5 class="fw-bold mb-3 text-warning">O que pode melhorar</h5>
+                            <p id="aiImprove" class="text-muted lh-lg"></p>
                         </div>
-
                     </div>
-
                 </div>
-
             </div>
-
         </div>
+    </div>
+</div>

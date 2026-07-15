@@ -6,6 +6,12 @@ use MF\Model\Model;
 
 class Curtida extends Model
 {
+    /**
+     * Registra uma curtida em uma publicação.
+     * 
+     * Insere uma nova linha de relação contendo o identificador do usuário
+     * e o identificador da publicação correspondente na tabela de curtidas.
+     */
     public function curtir($usuario_id, $publicacao_id)
     {
         $query = "
@@ -23,6 +29,12 @@ class Curtida extends Model
         return $stmt->execute();
     }
 
+    /**
+     * Remove uma curtida previamente registrada em uma publicação.
+     * 
+     * Executa a exclusão da linha de relação entre o usuário e a publicação
+     * na tabela de curtidas.
+     */
     public function descurtir($usuario_id, $publicacao_id)
     {
         $query = "
@@ -39,6 +51,12 @@ class Curtida extends Model
         return $stmt->execute();
     }
 
+    /**
+     * Verifica se um usuário específico já curtiu uma determinada publicação.
+     * 
+     * Consulta a tabela de curtidas e retorna o registro correspondente
+     * caso a relação entre usuário e publicação exista na base.
+     */
     public function usuarioCurtiu($usuario_id, $publicacao_id)
     {
         $query = "
@@ -58,6 +76,9 @@ class Curtida extends Model
         return $stmt->fetch(\PDO::FETCH_ASSOC);
     }
 
+    /**
+     * Calcula o número total de curtidas acumuladas em uma publicação.
+     */
     public function totalCurtidas($publicacao_id)
     {
         $query = "

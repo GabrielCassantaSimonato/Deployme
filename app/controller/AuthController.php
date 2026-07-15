@@ -7,6 +7,13 @@ use MF\model\Container;
 
 class AuthController extends Action
 {
+    /**
+     * Realiza a autenticação do usuário no sistema.
+     * 
+     * Verifica as credenciais (e-mail e senha), valida o status da conta,
+     * inicia a sessão e armazena os dados do usuário (estudante, recrutador ou admin),
+     * redirecionando-o para a respectiva tela inicial (timeline).
+     */
     public function auth()
     {
         if (session_status() !== PHP_SESSION_ACTIVE) {
@@ -21,33 +28,27 @@ class AuthController extends Action
 
         $dadosUsuario = $usuario->buscarPorEmail();
 
-        // usuário existe?
         if (!$dadosUsuario) {
             header('Location: /login?erro=1');
             exit;
         }
-        // Conta bloqueada
-        if ($dadosUsuario['status'] === 'bloqueado') {
 
+        if ($dadosUsuario['status'] === 'bloqueado') {
             header('Location: /login?erro=bloqueado');
             exit;
-
         }
 
-        // valida senha
         if (!password_verify($senha, $dadosUsuario['senha'])) {
             header('Location: /login?erro=1');
             exit;
         }
 
-        // SESSÃO PRINCIPAL
         $_SESSION['id'] = $dadosUsuario['id'];
         $_SESSION['nome'] = $dadosUsuario['nome'];
         $_SESSION['tipo'] = $dadosUsuario['tipo'];
         $_SESSION['foto_perfil'] = $dadosUsuario['foto'];
         $_SESSION['email'] = $dadosUsuario['email'];
 
-        // ESTUDANTE
         if ($dadosUsuario['tipo'] == 'estudante') {
             $estudante = Container::getModel('Estudante');
             $dadosEstudante = $estudante->buscarPorUsuario($dadosUsuario['id']);
@@ -56,7 +57,6 @@ class AuthController extends Action
             $_SESSION['uf'] = $dadosEstudante['uf'];
         }
 
-        // RECRUTADOR
         if ($dadosUsuario['tipo'] == 'recrutador') {
             $recrutador = Container::getModel('Recrutador');
             $dadosRecrutador = $recrutador->buscarPorUsuario($dadosUsuario['id']);
@@ -64,17 +64,21 @@ class AuthController extends Action
             $_SESSION['empresa'] = $dadosRecrutador['empresa'];
         }
 
-        // ADMIN
         if ($dadosUsuario['tipo'] == 'admin') {
             header('Location: /timelineAdmin');
             exit;
         }
 
-        // REDIRECIONAMENTO
         header('Location: /timeline');
         exit;
     }
 
+    /**
+     * Encerra a sessão do usuário atual.
+     * 
+     * Inicia o contexto da sessão para garantir o acesso, destrói todos os dados
+     * registrados na sessão ativa e redireciona o usuário para a página inicial (home).
+     */
     public function logout()
     {
         session_start();
@@ -83,53 +87,55 @@ class AuthController extends Action
         header('Location: /');
         exit;
     }
+
+    /**
+     * Renderiza a view de reativação de conta.
+     * 
+     * Exibe a página com o formulário para que o usuário possa solicitar
+     * a recuperação/reativação de seu perfil no sistema.
+     */
     public function reactivateAccount()
     {
         $this->render('reactivateAccount');
     }
+
+    /**
+     * Processa a ação de reativação de conta enviada pelo formulário.
+     * 
+     * Valida os campos recebidos (e-mail e aceite do termo de LGPD), busca o usuário
+     * correspondente, verifica se a conta já está ativa e, caso esteja inativa/desativada,
+     * executa a reativação antes de redirecionar para a tela de login.
+     */
     public function reactivateAccountAction()
     {
-        // 1. Captura os dados do formulário HTML
         $email = isset($_POST['email']) ? trim($_POST['email']) : '';
         $lgpd = isset($_POST['lgpd']) ? true : false;
 
-        // 2. Validação básica de preenchimento e LGPD
         if (empty($email) || !$lgpd) {
             header('Location: /reactivateAccount?error=dados_invalidos');
             exit;
         }
 
         $usuario = Container::getModel('Usuario');
-
-        // --- AJUSTE AQUI ---
-        // Atribui o e-mail ao objeto antes de buscar (padrão do seu modelo)
         $usuario->__set('email', $email);
-        // Se o seu framework não usar __set, tente: $usuario->email = $email;
 
-        // 3. Usa o seu método existente que não recebe parâmetros
         $dadosUsuario = $usuario->buscarPorEmail();
 
-        // Se o seu método buscarPorEmail retornar o próprio objeto preenchido em vez de um array,
-        // nós pegamos o ID direto dele. Vamos garantir os dois cenários:
         $usuario_id = is_array($dadosUsuario) ? ($dadosUsuario['id'] ?? null) : $usuario->__get('id');
         $usuario_status = is_array($dadosUsuario) ? ($dadosUsuario['status'] ?? null) : $usuario->__get('status');
 
         if (!$usuario_id) {
-            // Usuário não encontrado
             header('Location: /reactivateAccount?error=usuario_nao_encontrado');
             exit;
         }
 
-        // 4. Verifica se a conta já está ativa
         if ($usuario_status == 'ativo') {
             header('Location: /reactivateAccount?info=ja_ativo');
             exit;
         }
 
-        // 5. Se passou pelas validações, reativa a conta usando o ID encontrado
         $usuario->reativarConta($usuario_id);
 
-        // 6. Redireciona para o login informando o sucesso
         header('Location: /login?reactivated=success');
         exit;
     }

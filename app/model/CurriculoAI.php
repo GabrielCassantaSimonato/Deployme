@@ -1,17 +1,24 @@
 <?php
 
 namespace app\model;
+
 use MF\model\Model;
 
 class CurriculoAI
 {
-
+    /**
+     * Envia o texto extraído do currículo para a API do Google Gemini para avaliação profissional.
+     * 
+     * Configura e consome a API do Gemini utilizando curl para realizar a análise de perfil,
+     * definindo parâmetros de comportamento específicos para forçar o retorno estruturado
+     * estritamente como um objeto JSON.
+     */
     public static function analisarCurriculo($textoCurriculo)
     {
-
         $apiKey = $_ENV['GEMINI_API_KEY_ANALYZE'];
         $modelo = 'gemini-2.5-flash';
         $url = "https://generativelanguage.googleapis.com/v1beta/models/{$modelo}:generateContent?key={$apiKey}";
+
         $prompt = "
         Atue como um recrutador técnico sênior da plataforma Deployme.
         Analise o currículo abaixo e gere uma avaliação profissional.
@@ -34,7 +41,7 @@ class CurriculoAI
     \"score\": 0
 }
 ";
-        //Corpo da requisição
+
         $body = [
             'contents' => [
                 [
@@ -46,10 +53,11 @@ class CurriculoAI
                 ]
             ],
             'generationConfig' => [
-                'temperature' => 0.1, //temperatura para respostas determinísticas 
-                'responseMimeType' => 'application/json' //Formato da resposta
+                'temperature' => 0.1,
+                'responseMimeType' => 'application/json'
             ]
         ];
+
         $curl = curl_init();
 
         curl_setopt_array($curl, [
@@ -68,9 +76,7 @@ class CurriculoAI
 
         $responseData = json_decode($response, true);
 
-        $textoIA =
-            $responseData['candidates'][0]['content']['parts'][0]['text']
-            ?? null;
+        $textoIA = $responseData['candidates'][0]['content']['parts'][0]['text'] ?? null;
 
         return json_decode($textoIA, true);
     }

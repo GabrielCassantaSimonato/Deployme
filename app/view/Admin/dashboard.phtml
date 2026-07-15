@@ -1,4 +1,5 @@
 <?php
+// Carrega as variáveis de sessão essenciais, inicializa a estrutura do dashboard e inclui a barra de navegação global
 $tipo = $_SESSION['tipo'];
 $dashboard = $this->view->dashboard;
 require_once('../app/view/navbar.phtml');
@@ -7,190 +8,127 @@ require_once('../app/view/navbar.phtml');
 <div class="container py-4">
 
     <div class="card border-0 shadow-sm rounded-4 mb-4">
-
         <div class="card-body">
-
             <h2 class="fw-bold mb-2">
-
                 Painel Administrativo
-
             </h2>
-
             <p class="text-muted mb-0">
-
                 Bem-vindo,
                 <strong>
+                    <?php
+                    // Renderiza o nome do administrador atualmente logado na sessão ativa
+                    ?>
                     <?= $_SESSION['nome'] ?>
                 </strong>.
-
                 Gerencie usuários, publicações, vagas e acompanhe as estatísticas da plataforma.
-
             </p>
-
         </div>
-
     </div>
 
     <div class="row g-4">
 
         <div class="col-md-4">
-
             <a href="/adminUsers" class="text-decoration-none">
-
                 <div class="card border-0 shadow-sm rounded-4 h-100 card-dashboard">
-
                     <div class="card-body text-center">
-
                         <i class="bi bi-people-fill display-5 text-primary"></i>
-
                         <h6 class="mt-3 text-muted">
-
                             Usuários
-
                         </h6>
-
                         <h2 class="fw-bold text-dark">
-
+                            <?php
+                            // Exibe o número consolidado de usuários gerais, utilizando 0 como fallback
+                            ?>
                             <?= $dashboard['usuarios'] ?? 0 ?>
-
                         </h2>
-
                     </div>
-
                 </div>
-
             </a>
-
         </div>
 
         <div class="col-md-4">
-
             <div class="card border-0 shadow-sm rounded-4">
-
                 <div class="card-body text-center">
-
                     <i class="bi bi-mortarboard-fill display-5 text-success"></i>
-
                     <h6 class="mt-3 text-muted">
-
                         Estudantes
-
                     </h6>
-
                     <h2 class="fw-bold">
-
+                        <?php
+                        // Exibe o número consolidado de perfis do tipo estudante cadastrados, utilizando 0 como fallback
+                        ?>
                         <?= $dashboard['estudantes'] ?? 0 ?>
-
                     </h2>
-
                 </div>
-
             </div>
-
         </div>
 
         <div class="col-md-4">
-
             <div class="card border-0 shadow-sm rounded-4">
-
                 <div class="card-body text-center">
-
                     <i class="bi bi-building display-5 text-info"></i>
-
                     <h6 class="mt-3 text-muted">
-
                         Recrutadores
-
                     </h6>
-
                     <h2 class="fw-bold">
-
+                        <?php
+                        // Exibe o número consolidado de perfis do tipo recrutador cadastrados, utilizando 0 como fallback
+                        ?>
                         <?= $dashboard['recrutadores'] ?? 0 ?>
-
                     </h2>
-
                 </div>
-
             </div>
-
         </div>
 
         <div class="col-md-4">
-
             <div class="card border-0 shadow-sm rounded-4">
-
                 <div class="card-body text-center">
-
                     <i class="bi bi-file-earmark-text-fill display-5 text-warning"></i>
-
                     <h6 class="mt-3 text-muted">
-
                         Publicações
-
                     </h6>
-
                     <h2 class="fw-bold">
-
+                        <?php
+                        // Exibe o total acumulado de publicações no feed da plataforma, utilizando 0 como fallback
+                        ?>
                         <?= $dashboard['publicacoes'] ?? 0 ?>
-
                     </h2>
-
                 </div>
-
             </div>
-
         </div>
 
         <div class="col-md-4">
-
             <div class="card border-0 shadow-sm rounded-4">
-
                 <div class="card-body text-center">
-
                     <i class="bi bi-briefcase-fill display-5 text-secondary"></i>
-
                     <h6 class="mt-3 text-muted">
-
                         Vagas
-
                     </h6>
-
                     <h2 class="fw-bold">
-
+                        <?php
+                        // Exibe o total acumulado de anúncios de oportunidades e vagas cadastrados, utilizando 0 como fallback
+                        ?>
                         <?= $dashboard['vagas'] ?? 0 ?>
-
                     </h2>
-
                 </div>
-
             </div>
-
         </div>
 
         <div class="col-md-4">
-
             <div class="card border-0 shadow-sm rounded-4">
-
                 <div class="card-body text-center">
-
                     <i class="bi bi-slash-circle-fill display-5 text-danger"></i>
-
                     <h6 class="mt-3 text-muted">
-
                         Contas bloqueadas
-
                     </h6>
-
                     <h2 class="fw-bold">
-
+                        <?php
+                        // Exibe a soma de perfis suspensos ou suspensos de forma administrativa, utilizando 0 como fallback
+                        ?>
                         <?= $dashboard['bloqueados'] ?? 0 ?>
-
                     </h2>
-
                 </div>
-
             </div>
-
         </div>
 
     </div>

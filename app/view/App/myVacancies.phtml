@@ -1,129 +1,76 @@
 <?php
-
+// Carrega o tipo de perfil do usuário a partir da sessão ativa e inclui o componente global de navegação (navbar)
 $tipo = $_SESSION['tipo'];
-
-require_once(
-    '../app/view/navbar.phtml'
-);
-
+require_once('../app/view/navbar.phtml');
 ?>
 
 <div class="container py-4">
 
     <div class="card border-0 shadow-sm rounded-4 mb-4">
-
         <div class="card-body">
-
             <h2 class="fw-bold">
-
                 Minhas vagas
-
             </h2>
-
             <p class="text-muted mb-0">
-
                 Gerencie as vagas publicadas.
-
             </p>
-
         </div>
-
     </div>
 
-    <?php if (!empty($this->view->vagas)) { ?>
-
-        <?php foreach (
-
-            $this->view->vagas
-
-            as $vaga
-
-        ) { ?>
-
+    <?php
+    // Condicional de controle: valida se o array de vagas cadastradas pelo recrutador não está vazio antes de renderizar os cards
+    if (!empty($this->view->vagas)) {
+        ?>
+        <?php
+        // Itera sobre a coleção de vagas publicadas pelo recrutador para construir as listagens individuais de monitoramento
+        foreach ($this->view->vagas as $vaga) {
+            ?>
             <div class="card border-0 shadow-sm rounded-4 mb-3">
-
                 <div class="card-body">
-
                     <div class="d-flex justify-content-between align-items-center">
 
                         <div>
-
                             <h5 class="fw-bold">
-
-                                <?= htmlspecialchars(
-
-                                    $vaga['titulo']
-
-                                ) ?>
-
+                                <?= htmlspecialchars($vaga['titulo']) ?>
                             </h5>
 
                             <div class="text-muted">
-
                                 📍
-
-                                <?= htmlspecialchars(
-
-                                    $vaga['localizacao']
-
-                                ) ?>
-
+                                <?= htmlspecialchars($vaga['localizacao']) ?>
                             </div>
 
                             <div class="text-muted">
-
                                 💻
-
-                                <?= htmlspecialchars(
-
-                                    $vaga['modalidade']
-
-                                ) ?>
-
+                                <?= htmlspecialchars($vaga['modalidade']) ?>
                             </div>
 
                             <div class="text-muted">
-
                                 👥
-
-                                <?= $vaga['total_candidatos'] ?>
-
-                                candidatos
-
+                                <?php
+                                // Exibe dinamicamente o número total consolidado de estudantes que se candidataram à respectiva oportunidade
+                                ?>
+                                <?= $vaga['total_candidatos'] ?> candidatos
                             </div>
-
                         </div>
 
                         <div>
-
                             <a href="/vacancyCandidates?id=<?= $vaga['id'] ?>" class="btn btn-primary rounded-pill">
-
                                 Ver candidatos
-
                             </a>
-
                         </div>
 
                     </div>
-
                 </div>
-
             </div>
-
         <?php } ?>
 
     <?php } else { ?>
-
+        <!-- BLOCO ALTERNATIVO (EMPTY STATE) -->
         <div class="card border-0 shadow-sm rounded-4">
-
             <div class="card-body text-center text-muted">
-
                 Você ainda não publicou nenhuma vaga.
-
             </div>
-
         </div>
-
     <?php } ?>
 
 </div>

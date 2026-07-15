@@ -8,20 +8,24 @@ use app\middleware\Auth;
 
 class AppController extends Action
 {
+    /**
+     * Renderiza a linha do tempo (timeline) principal do usuário.
+     * 
+     * Carrega as estatísticas de seguidores, lista as publicações relevantes,
+     * e popula cada postagem com dados de curtidas, comentários e o status
+     * de interação do usuário atual antes de exibir a view da timeline.
+     */
     public function timeline()
     {
         Auth::validarAutenticacao();
 
-        // SEGUIDORES
         $seguidores = Container::getModel('Seguidores');
         $this->view->totalSeguidores = $seguidores->totalSeguidores($_SESSION['id']);
         $this->view->totalSeguindo = $seguidores->totalSeguindo($_SESSION['id']);
 
-        // PUBLICAÇÕES
         $publicacao = Container::getModel('Publicacao');
         $publicacoes = $publicacao->listarPublicacoes($_SESSION['id']);
 
-        // CURTIDAS, COMENTÁRIOS
         $curtida = Container::getModel('Curtida');
         $comentario = Container::getModel('Comentario');
 
@@ -36,12 +40,18 @@ class AppController extends Action
         $this->render('timeline');
     }
 
+    /**
+     * Cria uma nova publicação do tipo "post".
+     * 
+     * Processa o upload opcional de imagens anexadas, envia o conteúdo textual
+     * para moderação automática por inteligência artificial e, caso aprovado,
+     * persiste o registro no banco de dados.
+     */
     public function post()
     {
         Auth::validarAutenticacao();
         $imagem = null;
 
-        // UPLOAD IMAGEM
         if (!empty($_FILES['imagem']['name'])) {
             $extensao = pathinfo(
                 $_FILES['imagem']['name'],
@@ -81,12 +91,18 @@ class AppController extends Action
         header('Location: /timeline?post=sucesso');
     }
 
+    /**
+     * Cria uma nova publicação do tipo "vaga".
+     * 
+     * Gerencia o upload da imagem de divulgação, insere o registro base
+     * na tabela de publicações e armazena os metadados descritivos da vaga
+     * (título, empresa, salário, localização, modalidade) na tabela de vagas.
+     */
     public function vacancy()
     {
         Auth::validarAutenticacao();
         $imagem = null;
 
-        // UPLOAD
         if (!empty($_FILES['imagem']['name'])) {
             $extensao = pathinfo(
                 $_FILES['imagem']['name'],
@@ -103,7 +119,6 @@ class AppController extends Action
             $imagem = $nomeImagem;
         }
 
-        // SALVA PUBLICAÇÃO
         $publicacao = Container::getModel('Publicacao');
         $publicacao->__set('usuario_id', $_SESSION['id']);
         $publicacao->__set('conteudo', $_POST['conteudo']);
@@ -112,7 +127,6 @@ class AppController extends Action
 
         $publicacaoId = $publicacao->salvar();
 
-        // SALVA VAGA
         $publicacao->salvarVaga([
             'publicacao_id' => $publicacaoId,
             'titulo' => $_POST['titulo_vaga'],
@@ -126,6 +140,13 @@ class AppController extends Action
         header('Location: /timeline?post=sucesso');
     }
 
+    /**
+     * Atualiza os dados de uma publicação do tipo "post".
+     * 
+     * Submete o novo texto à moderação automática por inteligência artificial,
+     * trata a substituição opcional do arquivo de imagem e atualiza o post
+     * no banco de dados com base no identificador fornecido.
+     */
     public function updatePost()
     {
         Auth::validarAutenticacao();
@@ -164,13 +185,18 @@ class AppController extends Action
         header('Location: /timeline?edit=post_sucesso');
     }
 
+    /**
+     * Atualiza os dados de uma publicação do tipo "vaga".
+     * 
+     * Executa a atualização da imagem e do texto base na tabela de publicações
+     * e propaga as alterações de metadados da oportunidade na tabela relacionada de vagas.
+     */
     public function updateVacancy()
     {
         Auth::validarAutenticacao();
 
         $imagem = '';
 
-        // UPLOAD (Alinhado com o padrão usado na criação)
         if (!empty($_FILES['imagem']['name'])) {
             $extensao = pathinfo(
                 $_FILES['imagem']['name'],
@@ -189,7 +215,6 @@ class AppController extends Action
 
         $publicacao = Container::getModel('Publicacao');
 
-        // 1. ATUALIZA A PUBLICAÇÃO BASE (Tabela publicacoes)
         $publicacao->__set('id', $_POST['id']);
         $publicacao->__set('usuario_id', $_SESSION['id']);
         $publicacao->__set('conteudo', $_POST['conteudo']);
@@ -197,7 +222,6 @@ class AppController extends Action
 
         $publicacao->updatePost();
 
-        // 2. ATUALIZA OS DETALHES DA VAGA (Tabela vagas)
         $publicacao->updateVacancy([
             'publicacao_id' => $_POST['id'],
             'titulo' => $_POST['titulo'],
@@ -211,6 +235,12 @@ class AppController extends Action
         header('Location: /timeline?edit=vaga_sucesso');
     }
 
+    /**
+     * Exclui uma publicação do tipo "post" pertencente ao usuário.
+     * 
+     * Atribui as chaves de identificação do post e do proprietário logado,
+     * remove o registro do banco de dados e redireciona de volta para a timeline.
+     */
     public function deletePost()
     {
         Auth::validarAutenticacao();
@@ -224,6 +254,12 @@ class AppController extends Action
         header('Location: /timeline?delete=success');
     }
 
+    /**
+     * Exclui uma publicação de vaga e seus metadados.
+     * 
+     * Atribui o ID da postagem e valida a posse do registro antes de remover os
+     * dados da tabela de publicações e seus dependentes na tabela de candidaturas e vagas.
+     */
     public function deleteVacancy()
     {
         Auth::validarAutenticacao();
@@ -237,6 +273,12 @@ class AppController extends Action
         header('Location: /timeline?delete=success');
     }
 
+    /**
+     * Registra uma curtida em uma publicação específica.
+     * 
+     * Adiciona o vínculo de curtida, emite uma notificação interna para o autor original
+     * do post (caso a ação não seja própria) e devolve a contagem atualizada em JSON.
+     */
     public function like()
     {
         Auth::validarAutenticacao();
@@ -249,20 +291,17 @@ class AppController extends Action
 
         $total = $curtida->totalCurtidas($publicacaoId);
 
-        // --- LOGICA DE NOTIFICAÇÃO ---
         $publicacaoModel = Container::getModel('Publicacao');
-        $post = $publicacaoModel->getById($publicacaoId); // Pega dados do post original
+        $post = $publicacaoModel->getById($publicacaoId);
 
-        // Notifica apenas se o dono do post existir e não for o próprio usuário curtindo seu post
         if ($post && isset($post['usuario_id']) && $post['usuario_id'] != $usuarioOrigem) {
             \app\model\Notificacao::salvar(
-                $post['usuario_id'], // Destino: dono do post
-                $usuarioOrigem,      // Origem: quem curtiu
+                $post['usuario_id'],
+                $usuarioOrigem,
                 'like',
                 $publicacaoId
             );
         }
-        // -----------------------------
 
         echo json_encode([
             'status' => 'ok',
@@ -272,6 +311,12 @@ class AppController extends Action
         exit;
     }
 
+    /**
+     * Remove uma curtida previamente efetuada.
+     * 
+     * Desvincula a curtida do usuário na publicação selecionada e responde via AJAX
+     * com a quantidade total de marcações de gostei atualizadas no elemento correspondente.
+     */
     public function unlike()
     {
         Auth::validarAutenticacao();
@@ -289,6 +334,13 @@ class AppController extends Action
         exit;
     }
 
+    /**
+     * Adiciona um comentário em uma determinada publicação.
+     * 
+     * Insere a mensagem textual, dispara uma notificação ao proprietário do post
+     * e devolve uma resposta imediata (via AJAX caso a requisição seja assíncrona,
+     * ou efetuando redirecionamento para o fluxo padrão de páginas).
+     */
     public function comment()
     {
         Auth::validarAutenticacao();
@@ -304,21 +356,18 @@ class AppController extends Action
             $textoComentario
         );
 
-        // --- LOGICA DE NOTIFICAÇÃO ---
         $publicacaoModel = Container::getModel('Publicacao');
         $post = $publicacaoModel->getById($publicacaoId);
 
         if ($post && isset($post['usuario_id']) && $post['usuario_id'] != $usuarioOrigem) {
             \app\model\Notificacao::salvar(
-                $post['usuario_id'], // Destino: dono do post
-                $usuarioOrigem,      // Origem: quem comentou
+                $post['usuario_id'],
+                $usuarioOrigem,
                 'comment',
                 $publicacaoId
             );
         }
-        // -----------------------------
 
-        // SE FOR AJAX
         if (
             isset($_SERVER['HTTP_X_REQUESTED_WITH']) &&
             strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) == 'xmlhttprequest'
@@ -339,9 +388,15 @@ class AppController extends Action
             exit;
         }
 
-        // FUNCIONAMENTO NORMAL
         header('Location: /timeline');
     }
+
+    /**
+     * Remove um comentário inserido anteriormente pelo autor.
+     * 
+     * Deleta a linha do comentário assegurando o vínculo com o usuário autenticado.
+     * Retorna o totalizador atualizado caso a exclusão ocorra em uma chamada assíncrona.
+     */
     public function deleteComment()
     {
         Auth::validarAutenticacao();
@@ -367,6 +422,12 @@ class AppController extends Action
         header('Location: /timeline');
     }
 
+    /**
+     * Edita a mensagem de um comentário ativo.
+     * 
+     * Recebe o ID do comentário, o novo texto e aplica as atualizações no banco de dados,
+     * retornando uma confirmação estruturada em JSON para o front-end.
+     */
     public function editComment()
     {
         Auth::validarAutenticacao();
@@ -383,6 +444,12 @@ class AppController extends Action
         exit;
     }
 
+    /**
+     * Registra o compartilhamento de uma publicação externa.
+     * 
+     * Clona ou vincula o identificador do post ao feed do usuário que compartilhou
+     * e gera uma notificação associada ao publicador original do post.
+     */
     public function share()
     {
         Auth::validarAutenticacao();
@@ -393,22 +460,26 @@ class AppController extends Action
         $publicacao = Container::getModel('Publicacao');
         $publicacao->compartilhar($usuarioOrigem, $publicacaoId);
 
-        // --- LOGICA DE NOTIFICAÇÃO ---
         $post = $publicacao->getById($publicacaoId);
 
         if ($post && isset($post['usuario_id']) && $post['usuario_id'] != $usuarioOrigem) {
             \app\model\Notificacao::salvar(
-                $post['usuario_id'], // Destino: dono do post original
-                $usuarioOrigem,      // Origem: quem compartilhou
+                $post['usuario_id'],
+                $usuarioOrigem,
                 'share',
                 $publicacaoId
             );
         }
-        // -----------------------------
 
         header('Location: /timeline?share=sucesso');
     }
 
+    /**
+     * Renderiza a listagem de membros ou pessoas recomendadas do sistema.
+     * 
+     * Recupera todos os perfis ativos e repassa o conjunto de dados para a view
+     * dedicada à navegação social da rede.
+     */
     public function people()
     {
         Auth::validarAutenticacao();
@@ -419,6 +490,12 @@ class AppController extends Action
         $this->render('people');
     }
 
+    /**
+     * Estabelece uma conexão de amizade/seguimento entre dois usuários.
+     * 
+     * Assina a relação de seguimento no banco de dados e registra uma notificação
+     * no perfil de destino avisando que há um novo seguidor.
+     */
     public function follow()
     {
         Auth::validarAutenticacao();
@@ -448,6 +525,12 @@ class AppController extends Action
         exit;
     }
 
+    /**
+     * Remove a relação de seguimento estabelecida.
+     * 
+     * Executa o desligamento de conexões na base e sinaliza a conclusão
+     * da ação estruturando um JSON de sucesso para o cliente.
+     */
     public function unfollow()
     {
         Auth::validarAutenticacao();
@@ -460,6 +543,12 @@ class AppController extends Action
         exit;
     }
 
+    /**
+     * Renderiza a view de conexões de um usuário específico.
+     * 
+     * Consolida e carrega nos parâmetros de visualização os vetores populados de
+     * usuários que seguem a conta ativa e de contas que o usuário logado está seguindo.
+     */
     public function followers()
     {
         Auth::validarAutenticacao();
@@ -471,6 +560,12 @@ class AppController extends Action
         $this->render('followers');
     }
 
+    /**
+     * Renderiza o painel de listagem de vagas abertas.
+     * 
+     * Consulta todas as oportunidades ativas estruturadas e as disponibiliza
+     * para pesquisa e consulta visual dos candidatos interessados.
+     */
     public function viewVacancies()
     {
         Auth::validarAutenticacao();
@@ -481,6 +576,12 @@ class AppController extends Action
         $this->render('viewVacancies');
     }
 
+    /**
+     * Renderiza a view contendo as especificações completas de uma vaga de emprego.
+     * 
+     * Busca os dados detalhados da vaga com base em seu ID do post correspondente,
+     * resgata as informações de perfil curricular do candidato logado e preenche a tela.
+     */
     public function vacancyDetails()
     {
         Auth::validarAutenticacao();
@@ -494,6 +595,12 @@ class AppController extends Action
         $this->render('vacancyDetails');
     }
 
+    /**
+     * Inscreve um candidato em uma vaga disponível.
+     * 
+     * Verifica a duplicidade para impedir múltiplas candidaturas na mesma vaga pelo mesmo autor.
+     * Captura os dados de contato, referências e currículo fornecidos e cria a candidatura.
+     */
     public function applyVacancy()
     {
         Auth::validarAutenticacao();
@@ -534,6 +641,12 @@ class AppController extends Action
         exit;
     }
 
+    /**
+     * Renderiza a listagem de inscrições em processos seletivos do próprio usuário.
+     * 
+     * Filtra e consolida o status de todas as candidaturas que o usuário efetuou
+     * na plataforma para acompanhamento centralizado.
+     */
     public function myApplications()
     {
         Auth::validarAutenticacao();
@@ -544,6 +657,12 @@ class AppController extends Action
         $this->render('myApplications');
     }
 
+    /**
+     * Lista todas as vagas publicadas pelo usuário logado.
+     * 
+     * Restringe as vagas com base no ID de usuário da sessão ativa e exibe a tela
+     * administrativa de controle de anúncios do recrutador ou da empresa.
+     */
     public function myVacancies()
     {
         Auth::validarAutenticacao();
@@ -554,6 +673,12 @@ class AppController extends Action
         $this->render('myVacancies');
     }
 
+    /**
+     * Exibe o quadro de candidatos cadastrados em uma vaga de trabalho anunciada.
+     * 
+     * Retorna as propriedades da vaga e recupera em uma lista estruturada os currículos
+     * e dados de contato de todos os estudantes que submeteram candidatura à oportunidade.
+     */
     public function vacancyCandidates()
     {
         Auth::validarAutenticacao();
@@ -568,6 +693,12 @@ class AppController extends Action
         $this->render('vacancyCandidates');
     }
 
+    /**
+     * Atualiza o status atual do processo seletivo de uma candidatura.
+     * 
+     * Modifica o status (ex: aprovado, reprovado, em andamento) associado ao candidato
+     * e recarrega a página de controle daquela vaga.
+     */
     public function updateApplicationStatus()
     {
         Auth::validarAutenticacao();
@@ -579,6 +710,12 @@ class AppController extends Action
         exit;
     }
 
+    /**
+     * Cancela a candidatura de um estudante em uma determinada vaga.
+     * 
+     * Executa a remoção do registro de candidatura ativo e redireciona o usuário
+     * para sua tela geral de candidaturas.
+     */
     public function withdrawApplication()
     {
         Auth::validarAutenticacao();
@@ -590,6 +727,13 @@ class AppController extends Action
         exit;
     }
 
+    /**
+     * Renderiza e gerencia a interface interna de chat em tempo real.
+     * 
+     * Constrói a relação de contatos ativos no chat, anexa a última mensagem enviada,
+     * contabiliza elementos não lidos e ordena a lista. Caso haja uma conversa selecionada,
+     * renderiza o histórico de mensagens e marca as pendentes como lidas.
+     */
     public function chat()
     {
         Auth::validarAutenticacao();
@@ -597,7 +741,6 @@ class AppController extends Action
         $usuario = Container::getModel('Usuario');
         $this->view->usuarios = $usuario->listarUsuariosChat();
 
-        // MAPEIA E ATRIBUI DADOS DA ÚLTIMA MENSAGEM DE CADA USUÁRIO
         foreach ($this->view->usuarios as &$u) {
             $ultima = $usuario->buscarUltimaMensagem($u['id']);
 
@@ -611,7 +754,6 @@ class AppController extends Action
             );
         }
 
-        // ORDENA A LISTA DE USUÁRIOS COM BASE NA DATA DA ÚLTIMA MENSAGEM (MAIS RECENTE PRIMEIRO)
         usort($this->view->usuarios, function ($a, $b) {
             $dataA = $a['ultima_data'] ?? '0000-00-00 00:00:00';
             $dataB = $b['ultima_data'] ?? '0000-00-00 00:00:00';
@@ -642,6 +784,12 @@ class AppController extends Action
         $this->render('chat');
     }
 
+    /**
+     * Busca ou inicia uma instância de conversa privada entre o usuário logado e outro membro.
+     * 
+     * Executa a validação da relação de amizade ou chat inicial, cria a sala na base de dados
+     * caso não exista e redireciona para a view de chat com o ID da conversa parametrizado.
+     */
     public function openConversation()
     {
         Auth::validarAutenticacao();
@@ -656,6 +804,12 @@ class AppController extends Action
         exit;
     }
 
+    /**
+     * Envia e persiste uma mensagem textual ou de mídia (imagem) na conversa ativa.
+     * 
+     * Filtra tipos permitidos de mídia, armazena arquivos anexados no diretório do servidor
+     * correspondente e registra a nova mensagem na conversa referenciada.
+     */
     public function sendMessage()
     {
         Auth::validarAutenticacao();
@@ -666,7 +820,6 @@ class AppController extends Action
             isset($_FILES['imagem']) &&
             $_FILES['imagem']['error'] === UPLOAD_ERR_OK
         ) {
-
             $permitidos = [
                 'image/jpeg',
                 'image/png',
@@ -680,7 +833,6 @@ class AppController extends Action
                     $permitidos
                 )
             ) {
-
                 $extensao = pathinfo(
                     $_FILES['imagem']['name'],
                     PATHINFO_EXTENSION
@@ -695,9 +847,7 @@ class AppController extends Action
                     $_FILES['imagem']['tmp_name'],
                     __DIR__ . '/../../public/uploads/chat/' . $nomeImagem
                 );
-
             }
-
         }
 
         $mensagem = Container::getModel(
@@ -705,15 +855,10 @@ class AppController extends Action
         );
 
         $mensagem->salvarMensagem(
-
             $_POST['conversa_id'],
-
             $_SESSION['id'],
-
             $_POST['mensagem'],
-
             $nomeImagem
-
         );
 
         header(
@@ -723,6 +868,13 @@ class AppController extends Action
 
         exit;
     }
+
+    /**
+     * Carrega de maneira dinâmica (chamada assíncrona) o conjunto de mensagens de um chat.
+     * 
+     * Exige o envio do parâmetro da conversa na requisição, busca as novas interações
+     * registradas e responde devolvendo a lista completa serializada em JSON.
+     */
     public function loadMessages()
     {
         Auth::validarAutenticacao();
@@ -746,70 +898,70 @@ class AppController extends Action
         exit;
     }
 
+    /**
+     * Retorna a lista de usuários habilitados para conversação em formato JSON.
+     * 
+     * Executa a autenticação e carrega os dados brutos de interações do banco de dados
+     * para estruturar canais de chat dinâmicos no front-end.
+     */
     public function loadConversations()
     {
-
         Auth::validarAutenticacao();
 
         $usuario = Container::getModel(
-
             'Usuario'
-
         );
 
         echo json_encode(
-
             $usuario->listarUsuariosChat()
-
         );
 
         exit;
-
     }
+
+    /**
+     * Remove uma mensagem enviada na janela de chat de forma lógica ou física.
+     * 
+     * Identifica a mensagem a ser eliminada, valida o autor do disparo da ação
+     * de exclusão e responde com o status da transação em JSON.
+     */
     public function deleteMessage()
     {
-
         Auth::validarAutenticacao();
 
         if (!isset($_POST['id'])) {
-
             http_response_code(400);
 
             echo json_encode([
-
                 'status' => 'erro',
-
                 'mensagem' => 'Mensagem inválida.'
-
             ]);
 
             exit;
-
         }
 
         $mensagem = Container::getModel(
-
             'Mensagem'
-
         );
 
         $resultado = $mensagem->deleteMessage(
-
             $_POST['id'],
-
             $_SESSION['id']
-
         );
 
         echo json_encode([
-
             'status' => $resultado ? 'ok' : 'erro'
-
         ]);
 
         exit;
-
     }
+
+    /**
+     * Permite a edição do conteúdo textual ou substituição de imagem de uma mensagem de chat.
+     * 
+     * Gerencia a deleção e o upload de novos anexos, valida o remetente original da mensagem
+     * e reescreve os parâmetros textuais modificados devolvendo a estrutura modificada.
+     */
     public function editMessage()
     {
         Auth::validarAutenticacao();
@@ -824,7 +976,6 @@ class AppController extends Action
             isset($_FILES['nova_imagem']) &&
             $_FILES['nova_imagem']['error'] === UPLOAD_ERR_OK
         ) {
-
             $permitidos = [
                 'image/jpeg',
                 'image/png',
@@ -833,7 +984,6 @@ class AppController extends Action
             ];
 
             if (in_array($_FILES['nova_imagem']['type'], $permitidos)) {
-
                 $extensao = pathinfo(
                     $_FILES['nova_imagem']['name'],
                     PATHINFO_EXTENSION
@@ -845,17 +995,12 @@ class AppController extends Action
                     $extensao;
 
                 move_uploaded_file(
-
                     $_FILES['nova_imagem']['tmp_name'],
-
                     __DIR__ .
                     '/../../public/uploads/chat/' .
                     $novaImagem
-
                 );
-
             }
-
         }
 
         $mensagemModel = Container::getModel('Mensagem');
@@ -874,10 +1019,16 @@ class AppController extends Action
             "imagem" => $imagemFinal
         ]);
     }
+
+    /**
+     * Retorna em lote as notificações ativas pertencentes ao usuário.
+     * 
+     * Consulta a coleção de avisos recebidos (novas interações, likes, follows, etc.)
+     * associados ao identificador logado e os disponibiliza de forma serializada em JSON.
+     */
     public function loadNotifications()
     {
         Auth::validarAutenticacao();
-
 
         $notificacaoModel = Container::getModel('Notificacao');
         $notificacoes = $notificacaoModel->listar($_SESSION['id']);
@@ -886,6 +1037,13 @@ class AppController extends Action
         echo json_encode($notificacoes);
         exit;
     }
+
+    /**
+     * Altera o status de uma notificação pendente para lida.
+     * 
+     * Captura o identificador da notificação via POST, atualiza seu estado no
+     * banco de dados e sinaliza a conclusão bem-sucedida via JSON.
+     */
     public function readNotification()
     {
         Auth::validarAutenticacao();
@@ -894,7 +1052,6 @@ class AppController extends Action
         if ($notificacaoId) {
             $notificacao = Container::getModel('Notificacao');
 
-
             $notificacao->marcarComoLida($notificacaoId);
         }
 
@@ -902,5 +1059,4 @@ class AppController extends Action
         echo json_encode(['success' => true]);
         exit;
     }
-
 }

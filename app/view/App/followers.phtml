@@ -1,4 +1,5 @@
 <?php
+// Carrega o tipo de perfil do usuário a partir da sessão ativa e faz a inclusão da navbar global da Deployme
 $tipo = $_SESSION['tipo'];
 require_once('../app/view/navbar.phtml');
 ?>
@@ -6,9 +7,7 @@ require_once('../app/view/navbar.phtml');
 <div class="container py-4">
     <!-- TOPO -->
     <div class="card border-0 shadow-sm rounded-4 mb-4">
-
         <div class="card-body text-center p-4">
-
             <h2 class="fw-bold mb-3">
                 Minha Rede
             </h2>
@@ -18,216 +17,126 @@ require_once('../app/view/navbar.phtml');
             </p>
 
             <div class="d-flex justify-content-center gap-3">
-
                 <button id="btnSeguidores" class="btn btn-primary rounded-pill px-4">
-
-                    <?= count($this->view->seguidores) ?>
-                    Seguidores
-
+                    <?php
+                    // Conta o número total de registros dentro do array de seguidores da view
+                    ?>
+                    <?= count($this->view->seguidores) ?> Seguidores
                 </button>
 
                 <button id="btnSeguindo" class="btn btn-outline-primary rounded-pill px-4">
-
-                    <?= count($this->view->seguindo) ?>
-                    Seguindo
-
+                    <?php
+                    // Conta o número total de registros dentro do array de perfis seguidos pela view
+                    ?>
+                    <?= count($this->view->seguindo) ?> Seguindo
                 </button>
-
             </div>
-
         </div>
-
     </div>
 
     <!-- LISTA SEGUIDORES -->
     <div id="listaSeguidores">
-
-        <?php if (!empty($this->view->seguidores)) { ?>
-
-            <?php foreach ($this->view->seguidores as $usuario) { ?>
-
+        <?php
+        // Condicional estrutural: valida se a coleção de seguidores possui registros antes de renderizar os cards
+        if (!empty($this->view->seguidores)) {
+            ?>
+            <?php
+            // Itera pela lista de seguidores para montar dinamicamente os cartões de perfil na aba ativa
+            foreach ($this->view->seguidores as $usuario) {
+                ?>
                 <div class="card border-0 shadow-sm rounded-4 mb-3">
-
                     <div class="card-body d-flex align-items-center">
-
-                        <img src="<?= !empty($usuario['foto'])
-                            ? '/uploads/fotos/' . $usuario['foto']
-                            : '/uploads/fotos/default-user.png' ?>" class="rounded-circle me-3" width="60" height="60"
-                            style="object-fit:cover;">
+                        <img src="<?= !empty($usuario['foto']) ? '/uploads/fotos/' . $usuario['foto'] : '/uploads/fotos/default-user.png' ?>"
+                            class="rounded-circle me-3" width="60" height="60" style="object-fit:cover;">
 
                         <div class="flex-grow-1">
-
                             <a href="/profile?id=<?= $usuario['id'] ?>" class="fw-bold text-dark text-decoration-none">
-
                                 <?= htmlspecialchars($usuario['nome']) ?>
-
                             </a>
-
                             <div class="text-muted small">
-
                                 <?= ucfirst($usuario['tipo']) ?>
-
                             </div>
-
                         </div>
 
                         <a href="/profile?id=<?= $usuario['id'] ?>" class="btn btn-outline-primary rounded-pill">
-
                             Ver Perfil
-
                         </a>
-
                     </div>
-
                 </div>
-
             <?php } ?>
 
         <?php } else { ?>
-
+            <!-- LAYOUT ALTERNATIVO CASO SEGUIDORES SEJA ZERO -->
             <div class="card border-0 shadow-sm rounded-4">
-
                 <div class="card-body text-center text-muted">
-
                     Nenhum seguidor encontrado.
-
                 </div>
-
             </div>
-
         <?php } ?>
-
     </div>
 
     <!-- LISTA SEGUINDO -->
     <div id="listaSeguindo" style="display:none;">
-
-        <?php if (!empty($this->view->seguindo)) { ?>
-
-            <?php foreach ($this->view->seguindo as $usuario) { ?>
-
+        <?php
+        // Condicional estrutural: valida se a coleção de perfis seguidos não está vazia
+        if (!empty($this->view->seguindo)) {
+            ?>
+            <?php
+            // Itera pela lista de contas acompanhadas pelo usuário logado para renderizar os cards de identificação
+            foreach ($this->view->seguindo as $usuario) {
+                ?>
                 <div class="card border-0 shadow-sm rounded-4 mb-3">
-
                     <div class="card-body d-flex align-items-center">
-
-                        <img src="<?= !empty($usuario['foto'])
-                            ? '/uploads/fotos/' . $usuario['foto']
-                            : '/uploads/fotos/default-user.png' ?>" class="rounded-circle me-3" width="60" height="60"
-                            style="object-fit:cover;">
+                        <img src="<?= !empty($usuario['foto']) ? '/uploads/fotos/' . $usuario['foto'] : '/uploads/fotos/default-user.png' ?>"
+                            class="rounded-circle me-3" width="60" height="60" style="object-fit:cover;">
 
                         <div class="flex-grow-1">
-
                             <a href="/profile?id=<?= $usuario['id'] ?>" class="fw-bold text-dark text-decoration-none">
-
                                 <?= htmlspecialchars($usuario['nome']) ?>
-
                             </a>
-
                             <div class="text-muted small">
-
                                 <?= ucfirst($usuario['tipo']) ?>
-
                             </div>
-
                         </div>
 
                         <a href="/profile?id=<?= $usuario['id'] ?>" class="btn btn-outline-primary rounded-pill">
-
                             Ver Perfil
-
                         </a>
-
                     </div>
-
                 </div>
-
             <?php } ?>
 
         <?php } else { ?>
-
+            <!-- LAYOUT ALTERNATIVO CASO SEGUINDO SEJA ZERO -->
             <div class="card border-0 shadow-sm rounded-4">
-
                 <div class="card-body text-center text-muted">
-
                     Você ainda não segue ninguém.
-
                 </div>
-
             </div>
-
         <?php } ?>
-
     </div>
 </div>
 
 <script>
+    document.getElementById('btnSeguidores').addEventListener('click', function () {
+        document.getElementById('listaSeguidores').style.display = 'block';
+        document.getElementById('listaSeguindo').style.display = 'none';
 
-    document
-        .getElementById('btnSeguidores')
-        .addEventListener('click', function () {
+        this.classList.remove('btn-outline-primary');
+        this.classList.add('btn-primary');
 
-            document.getElementById(
-                'listaSeguidores'
-            ).style.display = 'block';
+        document.getElementById('btnSeguindo').classList.remove('btn-primary');
+        document.getElementById('btnSeguindo').classList.add('btn-outline-primary');
+    });
 
-            document.getElementById(
-                'listaSeguindo'
-            ).style.display = 'none';
+    document.getElementById('btnSeguindo').addEventListener('click', function () {
+        document.getElementById('listaSeguidores').style.display = 'none';
+        document.getElementById('listaSeguindo').style.display = 'block';
 
-            this.classList.remove(
-                'btn-outline-primary'
-            );
+        this.classList.remove('btn-outline-primary');
+        this.classList.add('btn-primary');
 
-            this.classList.add(
-                'btn-primary'
-            );
-
-            document
-                .getElementById('btnSeguindo')
-                .classList.remove(
-                    'btn-primary'
-                );
-
-            document
-                .getElementById('btnSeguindo')
-                .classList.add(
-                    'btn-outline-primary'
-                );
-
-        });
-
-    document
-        .getElementById('btnSeguindo')
-        .addEventListener('click', function () {
-
-            document.getElementById(
-                'listaSeguidores'
-            ).style.display = 'none';
-
-            document.getElementById(
-                'listaSeguindo'
-            ).style.display = 'block';
-
-            this.classList.remove(
-                'btn-outline-primary'
-            );
-
-            this.classList.add(
-                'btn-primary'
-            );
-
-            document
-                .getElementById('btnSeguidores')
-                .classList.remove(
-                    'btn-primary'
-                );
-
-            document
-                .getElementById('btnSeguidores')
-                .classList.add(
-                    'btn-outline-primary'
-                );
-
-        });
-
+        document.getElementById('btnSeguidores').classList.remove('btn-primary');
+        document.getElementById('btnSeguidores').classList.add('btn-outline-primary');
+    });
 </script>

@@ -7,14 +7,18 @@ use PHPMailer\PHPMailer\Exception;
 
 class EmailService
 {
-
+    /**
+     * Dispara um e-mail de boas-vindas assíncrono para o novo usuário cadastrado.
+     * 
+     * Configura as credenciais SMTP do PHPMailer utilizando variáveis de ambiente,
+     * define as propriedades de envio do servidor de e-mail e renderiza dinamicamente
+     * o template HTML de boas-vindas contido no arquivo de view correspondente.
+     */
     public static function enviarBoasVindas($email, $nome)
     {
-
         $mail = new PHPMailer(true);
 
         try {
-
             $mail->isSMTP();
             $mail->Host = 'smtp.gmail.com';
             $mail->SMTPAuth = true;
@@ -41,9 +45,7 @@ class EmailService
             $mail->send();
 
             return true;
-
         } catch (Exception $e) {
-
             return false;
         }
     }

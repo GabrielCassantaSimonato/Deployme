@@ -1,9 +1,9 @@
 <?php
+// Carrega as referências de controle de exibição de perfil, trata o status de ativação da conta e inclui a navbar
 $usuario = $this->view->dadosUsuario;
 $tipo = $usuario['tipo'];
 $modoLeitura = $this->view->modo_leitura ?? false;
 
-// Se vier exatamente 'ativo', ele fica ativo. Qualquer outra coisa (bloqueado, nulo, vazio) vira 'bloqueado'.
 $statusFormatado = (isset($usuario['status']) && strtolower(trim($usuario['status'])) === 'ativo') ? 'ativo' : 'bloqueado';
 require_once('../app/view/navbar.phtml');
 ?>
@@ -13,15 +13,17 @@ require_once('../app/view/navbar.phtml');
 
     <div class="linkedin-profile-card">
         <div class="linkedin-profile-header">
-            <img src="<?= !empty($usuario['foto']) ? '/uploads/fotos/' . $usuario['foto'] : '/uploads/fotos/default-user.png' ?>"
-                class="linkedin-profile-photo">
+            <img src="<?= !empty($usuario['foto']) ? '/uploads/fotos/' . $usuario['foto'] : '/uploads/fotos/default-user.png' ?>" class="linkedin-profile-photo">
 
             <div class="linkedin-profile-info">
                 <h2>
                     <?= $usuario['nome'] ?>
                 </h2>
 
-                <?php if ($usuario['tipo'] == 'estudante') { ?>
+                <?php
+                // Injeta dinamicamente os dados geográficos de cidade e estado se o perfil consultado pertencer a um estudante
+                if ($usuario['tipo'] == 'estudante') {
+                ?>
                     <p class="linkedin-subtitle">
                         <i class="bi bi-geo-alt-fill me-1"></i>
                         <?= $usuario['cidade'] ?> -
@@ -29,10 +31,16 @@ require_once('../app/view/navbar.phtml');
                     </p>
                 <?php } ?>
 
-                <?php if (!$modoLeitura) { ?>
+                <?php
+                // Renderiza os botões de ação e gerenciamento de perfil apenas se a view não estiver em modo leitura estrito
+                if (!$modoLeitura) {
+                ?>
                     <div class="linkedin-profile-actions">
                         <div class="d-flex gap-2">
-                            <?php if ($usuario['id'] == $_SESSION['id']) { ?>
+                            <?php
+                            // Exibe botões de gerenciamento avançado (Editar e Seguidores) apenas se o usuário for o dono do perfil
+                            if ($usuario['id'] == $_SESSION['id']) {
+                            ?>
                                 <a href="/editProfile" class="btn btn-primary">
                                     Editar Perfil
                                 </a>
@@ -42,20 +50,26 @@ require_once('../app/view/navbar.phtml');
                                 </a>
                             <?php } ?>
 
-                            <?php if ($statusFormatado === 'ativo') { ?>
-    <button class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#modalStatusConta">
-        <?= $usuario['id'] == $_SESSION['id'] ? 'Desativar minha conta' : 'Bloquear usuário' ?>
-    </button>
-<?php } else { ?>
-    <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#modalStatusConta">
-        Ativar usuário
-    </button>
-<?php } ?>
+                            <?php
+                            // Altera a cor e o rótulo do botão de controle de status dependendo se a conta está ativa ou suspensa
+                            if ($statusFormatado === 'ativo') {
+                            ?>
+                                <button class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#modalStatusConta">
+                                    <?= $usuario['id'] == $_SESSION['id'] ? 'Desativar minha conta' : 'Bloquear usuário' ?>
+                                </button>
+                            <?php } else { ?>
+                                <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#modalStatusConta">
+                                    Ativar usuário
+                                </button>
+                            <?php } ?>
                         </div>
                     </div>
                 <?php } ?>
 
-                <?php if ($usuario['tipo'] == 'recrutador') { ?>
+                <?php
+                // Renderiza o nome da corporação vinculada se o perfil consultado for de um recrutador cadastrado
+                if ($usuario['tipo'] == 'recrutador') {
+                ?>
                     <p class="linkedin-subtitle">
                         <i class="bi bi-buildings-fill me-1"></i>
                         <?= $usuario['empresa'] ?>
@@ -64,9 +78,15 @@ require_once('../app/view/navbar.phtml');
             </div>
         </div>
 
-        <?php if ($usuario['tipo'] == 'estudante') { ?>
+        <?php
+        // Renderiza a seção de atalhos rápidos de recursos (GitHub e Currículo) caso a conta consultada pertença a um estudante
+        if ($usuario['tipo'] == 'estudante') {
+        ?>
             <div class="linkedin-actions">
-                <?php if (!empty($usuario['curriculo'])) { ?>
+                <?php
+                // Injeta o link para download ou visualização do arquivo PDF se o estudante possuir currículo anexado
+                if (!empty($usuario['curriculo'])) {
+                ?>
                     <a href="/uploads/currículos/<?= $usuario['curriculo'] ?>" target="_blank" class="linkedin-feature-card">
                         <div class="linkedin-feature-icon bg-primary-custom">
                             <i class="bi bi-file-earmark-pdf-fill"></i>
@@ -88,9 +108,11 @@ require_once('../app/view/navbar.phtml');
                     </div>
                 <?php } ?>
 
-                <?php if (!empty($usuario['github'])) { ?>
-                    <a href="https://github.com/<?= str_replace(['https://github.com/', 'http://github.com/', 'github.com/'], '', trim($usuario['github'])) ?>"
-                        target="_blank" class="linkedin-feature-card">
+                <?php
+                // Trata a string de link do GitHub para limpar prefixos e renderiza o card clicável se houver conta inserida
+                if (!empty($usuario['github'])) {
+                ?>
+                    <a href="https://github.com/<?= str_replace(['https://github.com/', 'http://github.com/', 'github.com/'], '', trim($usuario['github'])) ?>" target="_blank" class="linkedin-feature-card">
                         <div class="linkedin-feature-icon github-bg">
                             <i class="bi bi-github"></i>
                         </div>
@@ -124,7 +146,10 @@ require_once('../app/view/navbar.phtml');
                 </span>
             </div>
 
-            <?php if ($usuario['tipo'] == 'estudante') { ?>
+            <?php
+            // Complementa o grid de dados geográficos caso o tipo de conta sob consulta seja um perfil de estudante
+            if ($usuario['tipo'] == 'estudante') {
+            ?>
                 <div class="linkedin-info-item">
                     <small>Cidade</small>
                     <span>
@@ -139,7 +164,10 @@ require_once('../app/view/navbar.phtml');
                 </div>
             <?php } ?>
 
-            <?php if ($usuario['tipo'] == 'recrutador') { ?>
+            <?php
+            // Complementa o grid de dados corporativos caso o tipo de conta sob consulta seja um perfil de recrutador
+            if ($usuario['tipo'] == 'recrutador') {
+            ?>
                 <div class="linkedin-info-item">
                     <small>Empresa</small>
                     <span>
@@ -150,7 +178,10 @@ require_once('../app/view/navbar.phtml');
         </div>
     </div>
 
-    <?php if ($usuario['tipo'] == 'estudante') { ?>
+    <?php
+    // Bloco estrutural condicional: renderiza as seções acadêmicas e de integração com a API do GitHub apenas se for um estudante
+    if ($usuario['tipo'] == 'estudante') {
+    ?>
         <div class="linkedin-section">
             <h4><i class="bi bi-mortarboard-fill"></i> Formação acadêmica</h4>
             <div class="linkedin-info-grid">
@@ -177,16 +208,18 @@ require_once('../app/view/navbar.phtml');
 
         <div class="linkedin-section">
             <h4><i class="bi bi-github"></i> Repositórios GitHub</h4>
-            <?php if (!empty($usuario['github'])) { ?>
-                <div id="githubRepos" class="github-repo-grid"
-                    data-github="<?= str_replace(['https://github.com/', 'http://github.com/', 'github.com/'], '', trim($usuario['github'])) ?>">
+            <?php
+            // Trata e limpa a URL do GitHub para repassar via dataset para consumo da API assíncrona de busca de repositórios
+            if (!empty($usuario['github'])) {
+            ?>
+                <div id="githubRepos" class="github-repo-grid" data-github="<?= str_replace(['https://github.com/', 'http://github.com/', 'github.com/'], '', trim($usuario['github'])) ?>">
                     <div class="text-muted">Carregando repositórios...</div>
                 </div>
             <?php } else { ?>
                 <div class="linkedin-empty-repo">
                     <i class="bi bi-github"></i>
                     <div>
-                        <strong>GitHub não cadastrado</strong>
+                        组织<strong>GitHub não cadastrado</strong>
                         <p>Preencha o campo GitHub futuramente para exibir os repositórios automaticamente no perfil.</p>
                     </div>
                 </div>
@@ -197,15 +230,20 @@ require_once('../app/view/navbar.phtml');
     <div class="linkedin-section">
         <h4><i class="bi bi-postcard"></i> Publicações</h4>
 
-        <?php if (!empty($this->view->publicacoes)) { ?>
+        <?php
+        // Condicional principal de listagem: renderiza e itera os cards de posts se a coleção não estiver vazia
+        if (!empty($this->view->publicacoes)) {
+        ?>
             <?php foreach ($this->view->publicacoes as $publicacao) { ?>
 
-                <?php if (!empty($publicacao['publicacao_original_id'])) { ?>
+                <?php
+                // Subcondicional de tipo: renderiza o layout específico de compartilhamentos se possuir ID original mapeado
+                if (!empty($publicacao['publicacao_original_id'])) {
+                ?>
                     <div class="post-card mb-3">
                         <div class="post-header d-flex align-items-center mb-3">
                             <div class="post-user-info d-flex align-items-center">
-                                <img src="<?= !empty($publicacao['foto']) ? '/uploads/fotos/' . $publicacao['foto'] : '/uploads/fotos/default-user.png' ?>"
-                                    class="post-avatar me-2" style="width:50px; height:50px; border-radius:50%; object-fit:cover;">
+                                <img src="<?= !empty($publicacao['foto']) ? '/uploads/fotos/' . $publicacao['foto'] : '/uploads/fotos/default-user.png' ?>" class="post-avatar me-2" style="width:50px; height:50px; border-radius:50%; object-fit:cover;">
                                 <div>
                                     <strong class="d-block">
                                         <?= htmlspecialchars($publicacao['nome']) ?>
@@ -222,16 +260,17 @@ require_once('../app/view/navbar.phtml');
                                 </div>
                             </div>
 
-                            <?php if ($publicacao['usuario_id'] == $_SESSION['id'] || (isset($_SESSION['tipo']) && $_SESSION['tipo'] == 'admin')) { ?>
+                            <?php
+                            // Concede privilégio de exclusão do compartilhamento se o usuário autenticado for o dono do post ou admin da plataforma
+                            if ($publicacao['usuario_id'] == $_SESSION['id'] || (isset($_SESSION['tipo']) && $_SESSION['tipo'] == 'admin')) {
+                            ?>
                                 <div class="dropdown ms-auto">
-                                    <button class="btn btn-link text-muted p-0 text-decoration-none" type="button"
-                                        data-bs-toggle="dropdown" aria-expanded="false">
+                                    <button class="btn btn-link text-muted p-0 text-decoration-none" type="button" data-bs-toggle="dropdown" aria-expanded="false">
                                         <i class="bi bi-three-dots-vertical fs-5"></i>
                                     </button>
                                     <ul class="dropdown-menu dropdown-menu-end shadow border-0">
                                         <li>
-                                            <a class="dropdown-item text-danger" href="/deletePost?id=<?= $publicacao['id'] ?>"
-                                                onclick="return confirm('Deseja excluir este compartilhamento?')">
+                                            <a class="dropdown-item text-danger" href="/deletePost?id=<?= $publicacao['id'] ?>" onclick="return confirm('Deseja excluir este compartilhamento?')">
                                                 <i class="bi bi-trash me-2"></i> Excluir
                                             </a>
                                         </li>
@@ -240,18 +279,23 @@ require_once('../app/view/navbar.phtml');
                             <?php } ?>
                         </div>
 
-                        <?php if (!empty($publicacao['conteudo'])) { ?>
+                        <?php
+                        // Renderiza o comentário opcional inserido pelo usuário ao realizar a ação de compartilhar
+                        if (!empty($publicacao['conteudo'])) {
+                        ?>
                             <div class="post-content mb-3">
                                 <?= nl2br(htmlspecialchars($publicacao['conteudo'])) ?>
                             </div>
                         <?php } ?>
 
                         <div class="border rounded-4 overflow-hidden mb-3 bg-white" style="border-color: #dee2e6;">
-                            <?php if (isset($publicacao['post_original_tipo']) && $publicacao['post_original_tipo'] == 'vaga') { ?>
+                            <?php
+                            // Identifica o tipo do post embutido no compartilhamento para renderizar o card de Vaga de emprego
+                            if (isset($publicacao['post_original_tipo']) && $publicacao['post_original_tipo'] == 'vaga') {
+                            ?>
                                 <div class="p-3 border-start border-success border-4 h-100">
                                     <div class="d-flex align-items-center mb-3">
-                                        <img src="<?= !empty($publicacao['autor_original_foto']) ? '/uploads/fotos/' . $publicacao['autor_original_foto'] : '/uploads/fotos/default-user.png' ?>"
-                                            class="rounded-circle me-2" style="width:45px; height:45px; object-fit:cover;">
+                                        <img src="<?= !empty($publicacao['autor_original_foto']) ? '/uploads/fotos/' . $publicacao['autor_original_foto'] : '/uploads/fotos/default-user.png' ?>" class="rounded-circle me-2" style="width:45px; height:45px; object-fit:cover;">
                                         <div>
                                             <strong class="d-block lh-1 text-dark">
                                                 <?= htmlspecialchars($publicacao['autor_original_nome'] ?? '') ?>
@@ -290,19 +334,18 @@ require_once('../app/view/navbar.phtml');
                                     </p>
 
                                     <?php if (!empty($publicacao['post_original_imagem'])) { ?>
-                                        <img src="/uploads/publicacoes/<?= $publicacao['post_original_imagem'] ?>"
-                                            class="img-fluid rounded-4 mb-3 w-100" style="max-height:400px; object-fit:cover;">
+                                        <img src="/uploads/publicacoes/<?= $publicacao['post_original_imagem'] ?>" class="img-fluid rounded-4 mb-3 w-100" style="max-height:400px; object-fit:cover;">
                                     <?php } ?>
 
-                                    <button class="btn btn-success rounded-pill px-4 mb-2">
+                                    <button class="btn btn-primary rounded-pill px-4 mb-2">
                                         <i class="bi bi-arrow-right-circle"></i> Ver vaga
                                     </button>
                                 </div>
                             <?php } else { ?>
+                                <!-- LAYOUT DO POST CONVENCIONAL EMBUTIDO NO COMPARTILHAMENTO -->
                                 <div class="p-3 h-100">
                                     <div class="d-flex align-items-center mb-3">
-                                        <img src="<?= !empty($publicacao['autor_original_foto']) ? '/uploads/fotos/' . $publicacao['autor_original_foto'] : '/uploads/fotos/default-user.png' ?>"
-                                            class="rounded-circle me-2" style="width:45px; height:45px; object-fit:cover;">
+                                        <img src="<?= !empty($publicacao['autor_original_foto']) ? '/uploads/fotos/' . $publicacao['autor_original_foto'] : '/uploads/fotos/default-user.png' ?>" class="rounded-circle me-2" style="width:45px; height:45px; object-fit:cover;">
                                         <div>
                                             <strong class="d-block lh-1 text-dark">
                                                 <?= htmlspecialchars($publicacao['autor_original_nome'] ?? '') ?>
@@ -316,8 +359,7 @@ require_once('../app/view/navbar.phtml');
                                     </p>
 
                                     <?php if (!empty($publicacao['post_original_imagem'])) { ?>
-                                        <img src="/uploads/publicacoes/<?= $publicacao['post_original_imagem'] ?>"
-                                            class="img-fluid rounded-4 w-100 mb-2" style="max-height:400px; object-fit:cover;">
+                                        <img src="/uploads/publicacoes/<?= $publicacao['post_original_imagem'] ?>" class="img-fluid rounded-4 w-100 mb-2" style="max-height:400px; object-fit:cover;">
                                     <?php } ?>
                                 </div>
                             <?php } ?>
@@ -326,13 +368,11 @@ require_once('../app/view/navbar.phtml');
                         <hr>
 
                         <div class="d-flex justify-content-around align-items-center post-actions py-2">
-                            <a href="#" class="post-action-btn btn btn-light text-muted d-flex align-items-center gap-2 btn-curtir border-0 bg-transparent"
-                                data-id="<?= $publicacao['id'] ?>" data-curtido="<?= $publicacao['curtido'] ? 1 : 0 ?>">
+                            <a href="#" class="post-action-btn btn btn-light text-muted d-flex align-items-center gap-2 btn-curtir border-0 bg-transparent" data-id="<?= $publicacao['id'] ?>" data-curtido="<?= $publicacao['curtido'] ? 1 : 0 ?>">
                                 <span class="icone"><?= $publicacao['curtido'] ? '❤️' : '🤍' ?></span>
                                 <span class="total"><?= $publicacao['curtidas'] ?></span>
                             </a>
-                            <button type="button" class="post-action-btn btn btn-light text-muted d-flex align-items-center gap-2 btn-comentario border-0 bg-transparent"
-                                data-id="<?= $publicacao['id'] ?>">
+                            <button type="button" class="post-action-btn btn btn-light text-muted d-flex align-items-center gap-2 btn-comentario border-0 bg-transparent" data-id="<?= $publicacao['id'] ?>">
                                 💬 <span><?= $publicacao['total_comentarios'] ?></span>
                             </button>
                             <a href="/share?id=<?= $publicacao['publicacao_original_id'] ?>" class="post-action-btn btn btn-light text-muted d-flex align-items-center gap-2 border-0 bg-transparent text-decoration-none">
@@ -342,14 +382,20 @@ require_once('../app/view/navbar.phtml');
 
                         <div class="comentarios-container d-none mt-3" id="comentarios-<?= $publicacao['id'] ?>">
                             <hr>
-                            <?php if (!empty($publicacao['comentarios'])) { ?>
+                            <?php
+                            // Varre e constrói a listagem de comentários indexados no card do compartilhamento
+                            if (!empty($publicacao['comentarios'])) {
+                            ?>
                                 <?php foreach ($publicacao['comentarios'] as $comentario) { ?>
                                     <div id="comentario-<?= $comentario['id'] ?>" class="d-flex mb-3 comentario-item">
                                         <img src="<?= !empty($comentario['foto']) ? '/uploads/fotos/' . $comentario['foto'] : '/uploads/fotos/default-user.png' ?>" class="rounded-circle me-2" style="width:40px; height:40px; object-fit:cover;">
                                         <div class="flex-grow-1">
                                             <div class="bg-light rounded-4 p-3 position-relative">
                                                 <strong><?= htmlspecialchars($comentario['nome']) ?></strong>
-                                                <?php if ($comentario['usuario_id'] == $_SESSION['id'] || (isset($_SESSION['tipo']) && $_SESSION['tipo'] == 'admin')) { ?>
+                                                <?php
+                                                // Exibe os controles de moderação e edição se o usuário logado for o autor do comentário ou admin do sistema
+                                                if ($comentario['usuario_id'] == $_SESSION['id'] || (isset($_SESSION['tipo']) && $_SESSION['tipo'] == 'admin')) {
+                                                ?>
                                                     <div class="dropdown position-absolute top-0 end-0 mt-2 me-2">
                                                         <button class="btn btn-sm border-0 bg-transparent text-muted p-0" data-bs-toggle="dropdown">
                                                             <i class="bi bi-three-dots-vertical"></i>
@@ -370,9 +416,7 @@ require_once('../app/view/navbar.phtml');
                                                         </ul>
                                                     </div>
                                                 <?php } ?>
-                                                <div class="mt-1" id="texto-comentario-<?= $comentario['id'] ?>">
-                                                    <?= nl2br(htmlspecialchars($comentario['comentario'])) ?>
-                                                </div>
+                                                <div class="mt-1" id="texto-comentario-<?= $comentario['id'] ?>"><?= nl2br(htmlspecialchars($comentario['comentario'])) ?></div>
                                             </div>
                                             <small class="text-muted"><?= date('d/m/Y H:i', strtotime($comentario['created_at'])) ?></small>
                                         </div>
@@ -388,7 +432,10 @@ require_once('../app/view/navbar.phtml');
                     </div>
 
                 <?php } else { ?>
-                    <?php if (!isset($publicacao['tipo']) || $publicacao['tipo'] == 'post') { ?>
+                    <?php
+                    // Subcondicional de tipo: se for um post nativo (tipo = post), renderiza a estrutura regular de posts de conteúdo
+                    if (!isset($publicacao['tipo']) || $publicacao['tipo'] == 'post') {
+                    ?>
                         <div class="post-card mb-3">
                             <div class="post-header d-flex align-items-center mb-3">
                                 <div class="post-user-info d-flex align-items-center">
@@ -398,7 +445,10 @@ require_once('../app/view/navbar.phtml');
                                         <div class="post-date text-muted small"><?= date('d/m/Y H:i', strtotime($publicacao['created_at'])) ?></div>
                                     </div>
                                 </div>
-                                <?php if ($publicacao['usuario_id'] == $_SESSION['id'] || (isset($_SESSION['tipo']) && $_SESSION['tipo'] == 'admin')) { ?>
+                                <?php
+                                // Insere o menu de três pontinhos para edição/exclusão se o usuário possuir a autoria do post ou privilégio admin
+                                if ($publicacao['usuario_id'] == $_SESSION['id'] || (isset($_SESSION['tipo']) && $_SESSION['tipo'] == 'admin')) {
+                                ?>
                                     <div class="dropdown ms-auto">
                                         <button class="btn btn-link text-muted p-0 text-decoration-none" type="button" data-bs-toggle="dropdown"><i class="bi bi-three-dots-vertical fs-5"></i></button>
                                         <ul class="dropdown-menu dropdown-menu-end shadow border-0">
@@ -420,12 +470,8 @@ require_once('../app/view/navbar.phtml');
                                 <?php } ?>
                             </div>
                             <div class="post-body">
-                                <?php if (!empty($publicacao['conteudo'])) { ?>
-                                    <div class="post-content mb-3"><?= nl2br(htmlspecialchars($publicacao['conteudo'])) ?></div>
-                                <?php } ?>
-                                <?php if (!empty($publicacao['imagem'])) { ?>
-                                    <div class="post-image-container mb-3"><img src="/uploads/publicacoes/<?= $publicacao['imagem'] ?>" class="post-image img-fluid rounded w-100" style="max-height: 500px; object-fit: cover;"></div>
-                                <?php } ?>
+                                <?php if (!empty($publicacao['conteudo'])) { ?><div class="post-content mb-3"><?= nl2br(htmlspecialchars($publicacao['conteudo'])) ?></div><?php } ?>
+                                <?php if (!empty($publicacao['imagem'])) { ?><div class="post-image-container mb-3"><img src="/uploads/publicacoes/<?= $publicacao['imagem'] ?>" class="post-image img-fluid rounded w-100" style="max-height: 500px; object-fit: cover;"></div><?php } ?>
                             </div>
                             <hr>
                             <div class="d-flex justify-content-around align-items-center post-actions py-2">
@@ -437,7 +483,10 @@ require_once('../app/view/navbar.phtml');
                             </div>
                             <div class="comentarios-container d-none mt-3" id="comentarios-<?= $publicacao['id'] ?>">
                                 <hr>
-                                <?php if (!empty($publicacao['comentarios'])) { ?>
+                                <?php
+                                // Realiza a listagem de comentários da publicação nativa se houver respostas
+                                if (!empty($publicacao['comentarios'])) {
+                                ?>
                                     <?php foreach ($publicacao['comentarios'] as $comentario) { ?>
                                         <div id="comentario-<?= $comentario['id'] ?>" class="d-flex mb-3 comentario-item">
                                             <img src="<?= !empty($comentario['foto']) ? '/uploads/fotos/' . $comentario['foto'] : '/uploads/fotos/default-user.png' ?>" class="rounded-circle me-2" style="width:40px; height:40px; object-fit:cover;">
@@ -471,8 +520,11 @@ require_once('../app/view/navbar.phtml');
                         </div>
                     <?php } ?>
 
-                    <?php if (isset($publicacao['tipo']) && $publicacao['tipo'] == 'vaga') { ?>
-                        <div class="post-card mb-3 border-start border-success border-4 p-3 shadow-sm bg-white rounded">
+                    <?php
+                    // Subcondicional de tipo: se for um anúncio de vaga (tipo = vaga), renderiza o layout customizado com tags corporativas
+                    if (isset($publicacao['tipo']) && $publicacao['tipo'] == 'vaga') {
+                    ?>
+                        <div class="post-card mb-3 border-start border-primary border-4 p-3 shadow-sm bg-white rounded">
                             <div class="post-header d-flex align-items-center mb-3">
                                 <div class="post-user-info d-flex align-items-center">
                                     <img src="<?= !empty($publicacao['foto']) ? '/uploads/fotos/' . $publicacao['foto'] : '/uploads/fotos/default-user.png' ?>" class="post-avatar me-2" style="width:50px; height:50px; border-radius:50%; object-fit:cover;">
@@ -496,7 +548,7 @@ require_once('../app/view/navbar.phtml');
                                 <?php } ?>
                             </div>
                             <div class="post-body">
-                                <span class="badge bg-success mb-3 px-3 py-2"><i class="bi bi-briefcase-fill"></i> Vaga publicada</span>
+                                <span class="badge bg-primary mb-3 px-3 py-2"><i class="bi bi-briefcase-fill"></i> Vaga publicada</span>
                                 <h5 class="fw-bold mb-3"><?= $publicacao['titulo'] ?? 'Título da Vaga' ?></h5>
                                 <div class="d-flex flex-wrap gap-2 mb-3">
                                     <?php if (!empty($publicacao['localizacao'])) { ?><span class="badge bg-light text-dark border"><i class="bi bi-geo-alt-fill"></i> <?= $publicacao['localizacao'] ?></span><?php } ?>
@@ -505,7 +557,7 @@ require_once('../app/view/navbar.phtml');
                                 </div>
                                 <?php if (!empty($publicacao['conteudo'])) { ?><div class="post-content mb-3"><?= nl2br(htmlspecialchars($publicacao['conteudo'])) ?></div><?php } ?>
                                 <?php if (!empty($publicacao['imagem'])) { ?><div class="post-image-container mb-3"><img src="/uploads/publicacoes/<?= $publicacao['imagem'] ?>" class="post-image img-fluid rounded w-100" style="max-height: 500px; object-fit: cover;"></div><?php } ?>
-                                <a href="/vacancyDetails?id=<?= $publicacao['id'] ?>" class="btn btn-success rounded-pill px-4 mb-3"><i class="bi bi-arrow-right-circle"></i> Ver vaga</a>
+                                <a href="/vacancyDetails?id=<?= $publicacao['id'] ?>" class="btn btn-primary rounded-pill px-4 mb-3"><i class="bi bi-arrow-right-circle"></i> Ver vaga</a>
                             </div>
                             <hr>
                             <div class="d-flex justify-content-around align-items-center post-actions py-2">
@@ -548,6 +600,7 @@ require_once('../app/view/navbar.phtml');
                             </div>
                         </div>
                     <?php } ?>
+
                 <?php } ?>
             <?php } ?>
         <?php } else { ?>
@@ -555,11 +608,17 @@ require_once('../app/view/navbar.phtml');
         <?php } ?>
     </div>
 
-    <?php if (isset($_GET['edit']) && $_GET['edit'] == 'post_sucesso') { ?>
+    <?php
+    // Injeta a janela modal indicando que a publicação convencional editada foi salva se a query string for informada
+    if (isset($_GET['edit']) && $_GET['edit'] == 'post_sucesso') {
+    ?>
         <div class="modal fade" id="modalEditPostSucesso" tabindex="-1"><div class="modal-dialog modal-dialog-centered"><div class="modal-content border-0 shadow-lg rounded-4"><div class="modal-body text-center p-5"><div class="success-icon mb-3"><i class="bi bi-check-circle-fill text-primary"></i></div><h3 class="fw-bold">Publicação updated!</h3><p class="text-muted">Sua publicação foi editada com sucesso 🚀</p><button class="btn btn-primary px-4" data-bs-dismiss="modal">Fechar</button></div></div></div></div>
     <?php } ?>
 
-    <?php if (isset($_GET['edit']) && $_GET['edit'] == 'vaga_sucesso') { ?>
+    <?php
+    // Injeta a janela modal indicando que o anúncio de vaga modificado foi salvo se a query string for informada
+    if (isset($_GET['edit']) && $_GET['edit'] == 'vaga_sucesso') {
+    ?>
         <div class="modal fade" id="modalEditVagaSucesso" tabindex="-1"><div class="modal-dialog modal-dialog-centered"><div class="modal-content border-0 shadow-lg rounded-4"><div class="modal-body text-center p-5"><div class="success-icon mb-3"><i class="bi bi-briefcase-fill text-success"></i></div><h3 class="fw-bold">Vaga updated!</h3><p class="text-muted">Sua vaga foi editada com sucesso 🎯</p><button class="btn btn-success px-4" data-bs-dismiss="modal">Fechar</button></div></div></div></div>
     <?php } ?>
 
@@ -580,12 +639,18 @@ require_once('../app/view/navbar.phtml');
             <div class="modal-content border-0 shadow-lg rounded-4">
                 <div class="modal-header">
                     <h5 class="modal-title fw-bold">
+                        <?php
+                        // Altera o título da modal de confirmação baseando-se na condicional de formatação do status atual da conta
+                        ?>
                         <?= ($statusFormatado === 'ativo') ? 'Bloquear conta' : 'Reativar conta' ?>
                     </h5>
                     <button class="btn-close" data-bs-dismiss="modal"></button>
                 </div>
                 <div class="modal-body p-4">
-                    <?php if ($statusFormatado === 'ativo') { ?>
+                    <?php
+                    // Altera os alertas informativos textuais da modal baseando-se se a ação atual é bloquear ou reativar o usuário
+                    if ($statusFormatado === 'ativo') {
+                    ?>
                         <p class="mb-2">Tem certeza que deseja bloquear esta conta?</p>
                         <div class="alert alert-warning mb-0 border-0">
                             O perfil ficará indisponível para outros usuários e somente um administrador poderá reativá-lo.
@@ -599,11 +664,10 @@ require_once('../app/view/navbar.phtml');
                 </div>
                 <div class="modal-footer border-0">
                     <button class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                    <button id="confirmarAlteracaoStatus" 
-                            class="btn <?= ($statusFormatado === 'ativo') ? 'btn-danger' : 'btn-success' ?>"
-                            data-usuario-id="<?= $usuario['id'] ?>" 
-                            data-session-id="<?= $_SESSION['id'] ?>"
-                            data-status-atual="<?= $statusFormatado ?>">
+                    <button id="confirmarAlteracaoStatus" class="btn <?= ($statusFormatado === 'ativo') ? 'btn-danger' : 'btn-success' ?>" data-usuario-id="<?= $usuario['id'] ?>" data-session-id="<?= $_SESSION['id'] ?>" data-status-atual="<?= $statusFormatado ?>">
+                        <?php
+                        // Altera o texto de ação do botão de confirmação baseando-se na condicional de formatação do status atual da conta
+                        ?>
                         <?= ($statusFormatado === 'ativo') ? 'Bloquear conta' : 'Ativar conta' ?>
                     </button>
                 </div>
@@ -613,11 +677,17 @@ require_once('../app/view/navbar.phtml');
 
     <script>
         document.addEventListener('DOMContentLoaded', () => {
-            <?php if (isset($_GET['edit']) && $_GET['edit'] == 'post_sucesso') { ?>
+            <?php
+            // Dispara via JS a abertura da modal se houver confirmação na query string de edição salva de post
+            if (isset($_GET['edit']) && $_GET['edit'] == 'post_sucesso') {
+            ?>
                 new bootstrap.Modal(document.getElementById('modalEditPostSucesso')).show();
             <?php } ?>
 
-            <?php if (isset($_GET['edit']) && $_GET['edit'] == 'vaga_sucesso') { ?>
+            <?php
+            // Dispara via JS a abertura da modal se houver confirmação na query string de edição salva de vaga
+            if (isset($_GET['edit']) && $_GET['edit'] == 'vaga_sucesso') {
+            ?>
                 new bootstrap.Modal(document.getElementById('modalEditVagaSucesso')).show();
             <?php } ?>
         });

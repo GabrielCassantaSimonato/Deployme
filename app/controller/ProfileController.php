@@ -8,24 +8,28 @@ use app\middleware\Auth;
 
 class ProfileController extends Action
 {
+    /**
+     * Renderiza o perfil de um usuário no sistema.
+     * 
+     * Identifica se a visualização é do próprio perfil logado ou de terceiros (modo leitura),
+     * busca as informações completas do usuário, carrega suas publicações com os dados
+     * associados de curtidas e comentários, e lista as contas que ele está seguindo.
+     */
     public function profile()
     {
         Auth::validarAutenticacao();
 
         $usuarioModel = Container::getModel('Usuario');
 
-        // PERFIL VIA URL
         if (isset($_GET['id']) && !empty($_GET['id'])) {
             $id = $_GET['id'];
 
-            // O modo leitura será FALSE se for o próprio perfil OU se quem está logado for Admin
             if ($id == $_SESSION['id'] || (isset($_SESSION['tipo']) && $_SESSION['tipo'] == 'admin')) {
                 $modoLeitura = false;
             } else {
                 $modoLeitura = true;
             }
         } else {
-            // PERFIL LOGADO
             $id = $_SESSION['id'];
             $modoLeitura = false;
         }
@@ -40,17 +44,11 @@ class ProfileController extends Action
         $this->view->dadosUsuario = $dadosUsuario;
         $this->view->modo_leitura = $modoLeitura;
 
-        // ==========================
-        // PUBLICAÇÕES
-        // ==========================
         $publicacao = Container::getModel('Publicacao');
         $publicacao->__set('usuario_id', $id);
 
         $publicacoes = $publicacao->getPublicacoesUsuario();
 
-        // ==========================
-        // CURTIDAS E COMENTÁRIOS
-        // ==========================
         $curtida = Container::getModel('Curtida');
         $comentario = Container::getModel('Comentario');
 
@@ -65,18 +63,18 @@ class ProfileController extends Action
 
         $this->view->publicacoes = $publicacoes;
 
-        // ==========================
-        // USUÁRIOS QUE ELE SEGUE
-        // ==========================
         $seguidor = Container::getModel('Seguidores');
         $this->view->seguindo = $seguidor->listarSeguindo($id);
 
-        // ==========================
-        // RENDER
-        // ==========================
         $this->render('profile');
     }
 
+    /**
+     * Renderiza o formulário de edição do perfil do usuário.
+     * 
+     * Carrega as informações do usuário logado na sessão ativa, além de buscar
+     * as listas globais de universidades, cursos e semestres para preenchimento dos campos.
+     */
     public function editProfile()
     {
         Auth::validarAutenticacao();
@@ -96,6 +94,13 @@ class ProfileController extends Action
         $this->render('editProfile');
     }
 
+    /**
+     * Processa a atualização de dados cadastrais e de mídia do usuário.
+     * 
+     * Valida a unicidade do e-mail de destino, gerencia o upload de novas fotos ou currículos,
+     * atualiza o registro do perfil no banco de dados com os dados específicos do tipo de usuário
+     * (estudante ou recrutador) e sincroniza as novas informações na sessão.
+     */
     public function updateProfile()
     {
         Auth::validarAutenticacao();
@@ -110,7 +115,6 @@ class ProfileController extends Action
             'email' => $email
         ];
 
-        // ESTUDANTE
         if ($_SESSION['tipo'] == 'estudante') {
             $dados['github'] = $_POST['github'];
             $dados['cep'] = $_POST['cep'];
@@ -124,12 +128,10 @@ class ProfileController extends Action
             $dados['semestre_id'] = $_POST['semestre_id'];
         }
 
-        // RECRUTADOR
         if ($_SESSION['tipo'] == 'recrutador') {
             $dados['empresa'] = $_POST['empresa'];
         }
 
-        // FOTO
         if (!empty($_FILES['foto']['name'])) {
             $extensaoFoto = pathinfo($_FILES['foto']['name'], PATHINFO_EXTENSION);
             $foto = uniqid() . '.' . $extensaoFoto;
@@ -143,7 +145,6 @@ class ProfileController extends Action
             $_SESSION['foto_perfil'] = $foto;
         }
 
-        // CURRÍCULO
         if ($_SESSION['tipo'] == 'estudante' && !empty($_FILES['curriculo']['name'])) {
             $extensaoCurriculo = pathinfo($_FILES['curriculo']['name'], PATHINFO_EXTENSION);
             $curriculo = uniqid() . '.' . $extensaoCurriculo;
@@ -168,16 +169,13 @@ class ProfileController extends Action
 
         $usuarioModel->updateProfile($dados);
 
-        // ATUALIZA SESSIONS
         $_SESSION['nome'] = $nome;
         $_SESSION['email'] = $email;
 
-        // FOTO
         if (isset($dados['foto'])) {
             $_SESSION['foto_perfil'] = $dados['foto'];
         }
 
-        // ESTUDANTE
         if ($_SESSION['tipo'] == 'estudante') {
             $_SESSION['github'] = $dados['github'];
             $_SESSION['cep'] = $dados['cep'];
@@ -192,7 +190,6 @@ class ProfileController extends Action
             }
         }
 
-        // RECRUTADOR
         if ($_SESSION['tipo'] == 'recrutador') {
             $_SESSION['empresa'] = $dados['empresa'];
         }
@@ -202,23 +199,26 @@ class ProfileController extends Action
         exit;
     }
 
+    /**
+     * Altera o status de ativação da conta de um usuário (bloquear ou reativar).
+     * 
+     * Identifica o destinatário da ação (uma requisição administrativa externa ou o próprio usuário),
+     * aplica a modificação para o novo status solicitado e encerra a sessão ativa caso
+     * o usuário logado tenha bloqueado a própria conta.
+     */
     public function deactivateAccount()
     {
         Auth::validarAutenticacao();
 
         $usuarioModel = Container::getModel('Usuario');
 
-        // Define qual ID será alterado (Se for admin altera o passado por query string, se não, altera o próprio)
         $idParaAlterar = isset($_REQUEST['id']) && $_SESSION['tipo'] == 'admin' ? $_REQUEST['id'] : $_SESSION['id'];
         $acao = isset($_GET['acao']) ? $_GET['acao'] : 'bloquear';
 
-        // Traduz o parâmetro recebido via JS para a string correta do Banco de Dados
         $novoStatus = ($acao === 'ativar') ? 'ativo' : 'bloqueado';
 
-        // Certifique-se de que seu método desativarConta trate o segundo parâmetro string ('ativo' / 'bloqueado')
         $usuarioModel->desativarConta($idParaAlterar, $novoStatus);
 
-        // Só destrói a sessão se a conta bloqueada for a do próprio usuário logado
         if ($idParaAlterar == $_SESSION['id'] && $novoStatus === 'bloqueado') {
             session_destroy();
             $logout = true;

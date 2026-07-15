@@ -6,6 +6,12 @@ use MF\Model\Model;
 
 class Candidatura extends Model
 {
+    /**
+     * Registra uma nova candidatura de um estudante a uma vaga.
+     * 
+     * Armazena as informações básicas de contato (e-mail e celular), link do GitHub
+     * e o arquivo do currículo na tabela candidaturas, associando-os aos identificadores da vaga e do estudante.
+     */
     public function salvar(
         $vaga_id,
         $estudante_id,
@@ -44,6 +50,12 @@ class Candidatura extends Model
         return $stmt->execute();
     }
 
+    /**
+     * Verifica se o estudante já possui uma candidatura ativa para uma vaga específica.
+     * 
+     * Realiza a contagem de registros correspondentes ao par vaga e estudante
+     * e retorna a quantidade encontrada para impedir duplicidade de inscrições.
+     */
     public function jaCandidatou($vaga_id, $estudante_id)
     {
         $query = "
@@ -63,6 +75,9 @@ class Candidatura extends Model
         return $stmt->fetch(\PDO::FETCH_ASSOC)['total'];
     }
 
+    /**
+     * Recupera o identificador da publicação associada a uma determinada vaga.
+     */
     public function buscarPublicacaoDaVaga($vaga_id)
     {
         $query = "
@@ -78,6 +93,12 @@ class Candidatura extends Model
         return $stmt->fetch(\PDO::FETCH_ASSOC);
     }
 
+    /**
+     * Retorna a lista de todas as candidaturas efetuadas por um estudante específico.
+     * 
+     * Consolida dados estruturados incluindo a data de envio da candidatura, o status atual,
+     * as informações da vaga e o nome da empresa recrutadora associada.
+     */
     public function listarMinhasCandidaturas($estudante_id)
     {
         $query = "
@@ -107,6 +128,12 @@ class Candidatura extends Model
         return $stmt->fetchAll(\PDO::FETCH_ASSOC);
     }
 
+    /**
+     * Lista todos os candidatos inscritos em uma vaga de trabalho anunciada.
+     * 
+     * Retorna os dados básicos fornecidos na inscrição juntamente com o nome,
+     * foto de perfil e o currículo do estudante cadastrado na tabela de perfil.
+     */
     public function listarCandidatos($vaga_id)
     {
         $query = "
@@ -129,6 +156,9 @@ class Candidatura extends Model
         return $stmt->fetchAll(\PDO::FETCH_ASSOC);
     }
 
+    /**
+     * Altera o status atual (ex: em análise, aprovado, reprovado) de uma candidatura.
+     */
     public function alterarStatus($candidatura_id, $status)
     {
         $query = "
@@ -145,6 +175,11 @@ class Candidatura extends Model
         return $stmt->execute();
     }
 
+    /**
+     * Exclui o registro de candidatura de um estudante em uma vaga específica.
+     * 
+     * Utilizado quando o candidato opta por desistir da candidatura no processo seletivo.
+     */
     public function desistir($vaga_id, $estudante_id)
     {
         $query = "

@@ -1,4 +1,5 @@
 <?php
+// Garante o início da sessão caso não esteja ativa, define as variáveis de escopo e injeta a navbar global
 if (session_status() !== PHP_SESSION_ACTIVE) {
     session_start();
 }
@@ -8,13 +9,19 @@ $publicacoes = $this->view->publicacoes;
 require_once('../app/view/navbar.phtml');
 ?>
 
-<?php if (isset($_GET['erro']) && $_GET['erro'] == 'sem_permissao') { ?>
+<?php
+// Renderiza um alerta de perigo caso o parâmetro de erro indique ausência de privilégios de acesso
+if (isset($_GET['erro']) && $_GET['erro'] == 'sem_permissao') {
+    ?>
     <div class="alert alert-danger">
         Você não possui permissão para acessar esta área.
     </div>
 <?php } ?>
 
-<?php if (isset($_GET['post']) && $_GET['post'] == 'sucesso') { ?>
+<?php
+// Renderiza a estrutura HTML do modal de confirmação de post criado com sucesso
+if (isset($_GET['post']) && $_GET['post'] == 'sucesso') {
+    ?>
     <div class="modal fade" id="modalPostSucesso" tabindex="-1">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content border-0 shadow-lg rounded-4">
@@ -31,7 +38,10 @@ require_once('../app/view/navbar.phtml');
     </div>
 <?php } ?>
 
-<?php if (isset($_GET['vaga']) && $_GET['vaga'] == 'sucesso') { ?>
+<?php
+// Renderiza a estrutura HTML do modal de confirmação de vaga anunciada com sucesso
+if (isset($_GET['vaga']) && $_GET['vaga'] == 'sucesso') {
+    ?>
     <div class="modal fade" id="modalVagaSucesso" tabindex="-1">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content border-0 shadow-lg rounded-4">
@@ -48,11 +58,10 @@ require_once('../app/view/navbar.phtml');
     </div>
 <?php } ?>
 
-<!-- INÍCIO DO CONTEÚDO PRINCIPAL (GRID) -->
 <div class="container mt-3">
     <div class="row">
 
-        <!-- LEFT SIDEBAR -->
+        <!-- SIDEBAR ESQUERDA -->
         <div class="col-md-3">
             <div class="card-custom text-center p-3">
                 <div class="cover"></div>
@@ -60,16 +69,19 @@ require_once('../app/view/navbar.phtml');
                     class="profile-img">
                 <h6 class="mt-2">
                     <a href="/profile" class="user-link">
+                        <?php
+                        // Exibe o nome do usuário logado na sessão ativa
+                        ?>
                         <?= $_SESSION['nome'] ?>
                     </a>
                 </h6>
             </div>
         </div>
 
-        <!-- FEED DE PUBLICAÇÕES -->
+        <!-- TIMELINE/FEED -->
         <div class="col-md-6">
 
-            <!-- CRIAR PUBLICAÇÃO -->
+            <!-- CONEXÃO DE ENTRADA PARA NOVA POSTAGEM -->
             <div class="card-custom p-3 mb-3">
                 <div class="d-flex align-items-center mb-2">
                     <img src="<?= !empty($_SESSION['foto_perfil']) ? '/uploads/fotos/' . $_SESSION['foto_perfil'] : '/uploads/fotos/default-user.png' ?>"
@@ -80,21 +92,27 @@ require_once('../app/view/navbar.phtml');
                 </div>
             </div>
 
-            <!-- LISTAGEM DE PUBLICAÇÕES -->
-            <?php if (count($publicacoes) > 0) { ?>
-                <?php foreach ($publicacoes as $publicacao) { ?>
+            <?php
+            // Condicional de controle: renderiza a lista de publicações caso o array de registros possua tamanho maior que zero
+            if (count($publicacoes) > 0) {
+                ?>
+                <?php
+                // Itera sobre a coleção de publicações retornadas pela view para construir os cards dinâmicos do feed
+                foreach ($publicacoes as $publicacao) {
+                    ?>
                     <?php
+                    // Executa a validação de escopo para verificar autoria e monta a URL correta do perfil associado
                     $isMeuPerfil = $publicacao['id'] == $_SESSION['id'];
                     $linkPerfil = $isMeuPerfil ? '/profile' : '/profile?id=' . $publicacao['usuario_id'];
                     ?>
 
-                    <!-- ============================================== -->
-                    <!-- CARD DE COMPARTILHAMENTO -->
-                    <!-- ============================================== -->
-                    <?php if (!empty($publicacao['publicacao_original_id'])) { ?>
+                    <?php
+                    // Condicional de Renderização: exibe o bloco específico caso o registro possua ID de publicação original (Compartilhamento)
+                    if (!empty($publicacao['publicacao_original_id'])) {
+                        ?>
                         <div class="card-custom p-3 mb-3">
 
-                            <!-- QUEM COMPARTILHOU -->
+                            <!-- CABEÇALHO DO COMPARTILHAMENTO -->
                             <div class="d-flex align-items-center mb-3">
                                 <a href="<?= $linkPerfil ?>" class="text-decoration-none">
                                     <img src="<?= !empty($publicacao['foto']) ? '/uploads/fotos/' . $publicacao['foto'] : '/uploads/fotos/default-user.png' ?>"
@@ -104,21 +122,30 @@ require_once('../app/view/navbar.phtml');
 
                                 <div>
                                     <a href="<?= $linkPerfil ?>" class="user-link fw-bold text-decoration-none">
+                                        <?php
+                                        // Imprime o nome tratado de quem realizou a ação de compartilhar
+                                        ?>
                                         <?= htmlspecialchars($publicacao['nome']) ?>
                                     </a>
                                     <div class="text-muted small">
                                         <i class="bi bi-arrow-repeat"></i> Compartilhou uma publicação de
                                         <strong>
+                                            <?php
+                                            // Imprime de forma segura o nome do autor original da postagem compartilhada
+                                            ?>
                                             <?= htmlspecialchars($publicacao['autor_original_nome'] ?? '') ?>
                                         </strong>
                                     </div>
                                     <div class="text-muted small">
                                         <i class="bi bi-clock"></i>
+                                        <?php
+                                        // Formata a data de envio do compartilhamento para o padrão brasileiro
+                                        ?>
                                         <?= date('d/m/Y H:i', strtotime($publicacao['created_at'])) ?>
                                     </div>
                                 </div>
 
-                                <!-- 3 PONTINHOS DO COMPARTILHAMENTO -->
+                                <!-- MENU DE OPÇÕES (MODERAÇÃO) -->
                                 <div class="dropdown ms-auto">
                                     <button class="btn btn-link text-muted p-0 text-decoration-none" type="button"
                                         data-bs-toggle="dropdown" aria-expanded="false">
@@ -128,41 +155,34 @@ require_once('../app/view/navbar.phtml');
                                         <li>
                                             <a href="#" class="dropdown-item text-danger btnExcluirPost"
                                                 data-id="<?= $publicacao['id'] ?>">
-
-                                                <i class="bi bi-trash me-2"></i>
-
-                                                Excluir publicação
-
+                                                <i class="bi bi-trash me-2"></i> Excluir publicação
                                             </a>
-
                                             <a href="#" class="dropdown-item text-warning btnBloquearUsuario"
                                                 data-id="<?= $publicacao['usuario_id'] ?>"
                                                 data-nome="<?= htmlspecialchars($publicacao['nome']) ?>">
-
-                                                <i class="bi bi-slash-circle me-2"></i>
-
-                                                Bloquear usuário
-
+                                                <i class="bi bi-slash-circle me-2"></i> Bloquear usuário
                                             </a>
                                         </li>
                                     </ul>
                                 </div>
                             </div>
 
-                            <!-- TEXTO DE QUEM COMPARTILHOU (OPCIONAL) -->
-                            <?php if (!empty($publicacao['conteudo'])) { ?>
+                            <?php
+                            // Exibe o texto opinativo digitado pelo usuário que compartilhou se o campo de conteúdo não estiver em branco
+                            if (!empty($publicacao['conteudo'])) {
+                                ?>
                                 <p class="mb-3 fs-6">
                                     <?= nl2br(htmlspecialchars($publicacao['conteudo'])) ?>
                                 </p>
                             <?php } ?>
 
-                            <!-- ============================================== -->
-                            <!-- POST ORIGINAL EMBUTIDO COMO UM CARD INTERNO -->
-                            <!-- ============================================== -->
+                            <!-- CARD INTERNO DO RECURSO COMPARTILHADO -->
                             <div class="border rounded-4 overflow-hidden mb-3 bg-white" style="border-color: #dee2e6;">
 
-                                <?php if (isset($publicacao['post_original_tipo']) && $publicacao['post_original_tipo'] == 'vaga') { ?>
-                                    <!-- LAYOUT ORIGINAL DE VAGA EMBUTIDO -->
+                                <?php
+                                // Estrutura condicional interna: renderiza o layout específico de vaga caso o recurso compartilhado seja desse tipo
+                                if (isset($publicacao['post_original_tipo']) && $publicacao['post_original_tipo'] == 'vaga') {
+                                    ?>
                                     <div class="p-3 border-start border-primary border-4 h-100">
                                         <div class="d-flex align-items-center mb-3">
                                             <img src="<?= !empty($publicacao['autor_original_foto']) ? '/uploads/fotos/' . $publicacao['autor_original_foto'] : '/uploads/fotos/default-user.png' ?>"
@@ -184,17 +204,26 @@ require_once('../app/view/navbar.phtml');
                                         </h5>
 
                                         <div class="d-flex flex-wrap gap-2 mb-3">
-                                            <?php if (!empty($publicacao['post_original_localizacao'])) { ?>
+                                            <?php
+                                            // Renderiza a badge de localização original caso esteja preenchida no banco
+                                            if (!empty($publicacao['post_original_localizacao'])) {
+                                                ?>
                                                 <span class="badge bg-light text-dark border"><i class="bi bi-geo-alt-fill"></i>
                                                     <?= $publicacao['post_original_localizacao'] ?>
                                                 </span>
                                             <?php } ?>
-                                            <?php if (!empty($publicacao['post_original_modalidade'])) { ?>
+                                            <?php
+                                            // Renderiza a badge da modalidade (Remoto, Híbrido, Presencial) com formatação de inicial maiúscula
+                                            if (!empty($publicacao['post_original_modalidade'])) {
+                                                ?>
                                                 <span class="badge bg-light text-dark border"><i class="bi bi-building"></i>
                                                     <?= ucfirst($publicacao['post_original_modalidade']) ?>
                                                 </span>
                                             <?php } ?>
-                                            <?php if (!empty($publicacao['post_original_salario'])) { ?>
+                                            <?php
+                                            // Renderiza a faixa ou valor salarial original do anúncio da vaga
+                                            if (!empty($publicacao['post_original_salario'])) {
+                                                ?>
                                                 <span class="badge bg-light text-success border"><i class="bi bi-cash"></i> R$
                                                     <?= $publicacao['post_original_salario'] ?>
                                                 </span>
@@ -205,18 +234,20 @@ require_once('../app/view/navbar.phtml');
                                             <?= nl2br(htmlspecialchars($publicacao['post_original_conteudo'] ?? '')) ?>
                                         </p>
 
-                                        <?php if (!empty($publicacao['post_original_imagem'])) { ?>
+                                        <?php
+                                        // Exibe a imagem de divulgação do anúncio original da vaga, se houver
+                                        if (!empty($publicacao['post_original_imagem'])) {
+                                            ?>
                                             <img src="/uploads/publicacoes/<?= $publicacao['post_original_imagem'] ?>"
                                                 class="img-fluid rounded-4 mb-3 w-100" style="max-height:400px; object-fit:cover;">
                                         <?php } ?>
 
                                         <button class="btn btn-success rounded-pill px-4 mb-2"><i class="bi bi-arrow-right-circle"></i>
-                                            Ver
-                                            vaga</button>
+                                            Ver vaga</button>
                                     </div>
 
                                 <?php } else { ?>
-                                    <!-- LAYOUT ORIGINAL DE POST NORMAL EMBUTIDO -->
+                                    <!-- LAYOUT DO POST CONVENCIONAL EMBUTIDO -->
                                     <div class="p-3 h-100">
                                         <div class="d-flex align-items-center mb-3">
                                             <img src="<?= !empty($publicacao['autor_original_foto']) ? '/uploads/fotos/' . $publicacao['autor_original_foto'] : '/uploads/fotos/default-user.png' ?>"
@@ -233,7 +264,10 @@ require_once('../app/view/navbar.phtml');
                                             <?= nl2br(htmlspecialchars($publicacao['post_original_conteudo'] ?? '')) ?>
                                         </p>
 
-                                        <?php if (!empty($publicacao['post_original_imagem'])) { ?>
+                                        <?php
+                                        // Renderiza a mídia visual anexada à postagem convencional original
+                                        if (!empty($publicacao['post_original_imagem'])) {
+                                            ?>
                                             <img src="/uploads/publicacoes/<?= $publicacao['post_original_imagem'] ?>"
                                                 class="img-fluid rounded-4 w-100 mb-2" style="max-height:400px; object-fit:cover;">
                                         <?php } ?>
@@ -243,7 +277,7 @@ require_once('../app/view/navbar.phtml');
 
                             <hr>
 
-                            <!-- AÇÕES -->
+                            <!-- BARRA DE INTERAÇÕES E ENGAJAMENTO -->
                             <div class="d-flex justify-content-around align-items-center post-actions py-2">
                                 <a href="#"
                                     class="post-action-btn btn btn-light text-muted d-flex align-items-center gap-2 btn-curtir border-0 bg-transparent"
@@ -270,10 +304,13 @@ require_once('../app/view/navbar.phtml');
                                 </a>
                             </div>
 
-                            <!-- COMENTÁRIOS DO COMPARTILHAMENTO -->
+                            <!-- BOX DE REPOSTAGEM DE COMENTÁRIOS -->
                             <div class="comentarios-container d-none mt-3" id="comentarios-<?= $publicacao['id'] ?>">
                                 <hr>
-                                <?php if (!empty($publicacao['comentarios'])) { ?>
+                                <?php
+                                // Valida e itera pelos comentários anexados ao compartilhamento, se houver algum
+                                if (!empty($publicacao['comentarios'])) {
+                                    ?>
                                     <?php foreach ($publicacao['comentarios'] as $comentario) { ?>
                                         <div id="comentario-<?= $comentario['id'] ?>" class="d-flex mb-3 comentario-item">
                                             <img src="<?= !empty($comentario['foto']) ? '/uploads/fotos/' . $comentario['foto'] : '/uploads/fotos/default-user.png' ?>"
@@ -309,7 +346,6 @@ require_once('../app/view/navbar.phtml');
                                                         </ul>
                                                     </div>
 
-
                                                     <div class="mt-1" id="texto-comentario-<?= $comentario['id'] ?>">
                                                         <?= nl2br(htmlspecialchars($comentario['comentario'])) ?>
                                                     </div>
@@ -330,17 +366,13 @@ require_once('../app/view/navbar.phtml');
                                     <button type="submit" class="btn btn-primary btn-sm">Comentar</button>
                                 </form>
                             </div>
-                        </div> <!-- FIM DO CARD DO COMPARTILHAMENTO -->
+                        </div>
 
-                        <!-- ============================================== -->
-                        <!-- SE NÃO FOR COMPARTILHAMENTO, É POST OU VAGA -->
-                        <!-- ============================================== -->
                     <?php } else { ?>
 
-                        <!-- POST NORMAL -->
+                        <!-- SE FOR POST CONVENCIONAL -->
                         <?php if (!isset($publicacao['tipo']) || $publicacao['tipo'] == 'post') { ?>
                             <div class="card-custom p-3 mb-3">
-                                <!-- HEADER -->
                                 <div class="d-flex align-items-center mb-3">
                                     <a href="<?= $linkPerfil ?>" class="text-decoration-none">
                                         <img src="<?= !empty($publicacao['foto']) ? '/uploads/fotos/' . $publicacao['foto'] : '/uploads/fotos/default-user.png' ?>"
@@ -352,7 +384,10 @@ require_once('../app/view/navbar.phtml');
                                             <?= $publicacao['nome'] ?>
                                         </a>
                                         <div class="text-muted small">
-                                            <?php if (!empty($publicacao['empresa'])) { ?>
+                                            <?php
+                                            // Se houver empresa do recrutador exibe o nome dela, caso contrário renderiza a cidade e UF do estudante
+                                            if (!empty($publicacao['empresa'])) {
+                                                ?>
                                                 <?= $publicacao['empresa'] ?>
                                             <?php } else { ?>
                                                 <?= $publicacao['cidade'] ?? '' ?>
@@ -365,7 +400,6 @@ require_once('../app/view/navbar.phtml');
                                         </div>
                                     </div>
 
-                                    <!-- 3 PONTINHOS -->
                                     <div class="dropdown ms-auto">
                                         <button class="btn btn-link text-muted p-0 text-decoration-none" type="button"
                                             data-bs-toggle="dropdown" aria-expanded="false">
@@ -375,40 +409,32 @@ require_once('../app/view/navbar.phtml');
                                             <li>
                                                 <a href="#" class="dropdown-item text-danger btnExcluirPost"
                                                     data-id="<?= $publicacao['id'] ?>">
-
-                                                    <i class="bi bi-trash me-2"></i>
-
-                                                    Excluir publicação
-
+                                                    <i class="bi bi-trash me-2"></i> Excluir publicação
                                                 </a>
-
                                                 <a href="#" class="dropdown-item text-warning btnBloquearUsuario"
                                                     data-id="<?= $publicacao['usuario_id'] ?>"
                                                     data-nome="<?= htmlspecialchars($publicacao['nome']) ?>">
-
-                                                    <i class="bi bi-slash-circle me-2"></i>
-
-                                                    Bloquear usuário
-
+                                                    <i class="bi bi-slash-circle me-2"></i> Bloquear usuário
                                                 </a>
                                             </li>
                                         </ul>
                                     </div>
                                 </div>
 
-                                <!-- CONTEÚDO -->
                                 <p class="mb-3 fs-6">
                                     <?= nl2br(htmlspecialchars($publicacao['conteudo'])) ?>
                                 </p>
 
-                                <?php if (!empty($publicacao['imagem'])) { ?>
+                                <?php
+                                // Exibe a imagem adicionada à publicação regular do feed, se houver
+                                if (!empty($publicacao['imagem'])) {
+                                    ?>
                                     <img src="/uploads/publicacoes/<?= $publicacao['imagem'] ?>" class="img-fluid rounded-4 mb-3 w-100"
                                         style="max-height:500px; object-fit:cover;">
                                 <?php } ?>
 
                                 <hr>
 
-                                <!-- AÇÕES -->
                                 <div class="d-flex justify-content-around align-items-center post-actions py-2">
                                     <a href="#"
                                         class="post-action-btn btn btn-light text-muted d-flex align-items-center gap-2 btn-curtir border-0 bg-transparent"
@@ -433,124 +459,73 @@ require_once('../app/view/navbar.phtml');
                                     </a>
                                 </div>
 
-                                <!-- COMENTÁRIOS -->
                                 <div class="comentarios-container d-none mt-3" id="comentarios-<?= $publicacao['id'] ?>">
-
                                     <hr>
-
-                                    <?php if (!empty($publicacao['comentarios'])) { ?>
-
+                                    <?php
+                                    // Itera pelos comentários da publicação convencional se ela possuir conteúdo de respostas registrado
+                                    if (!empty($publicacao['comentarios'])) {
+                                        ?>
                                         <?php foreach ($publicacao['comentarios'] as $comentario) { ?>
-
                                             <div id="comentario-<?= $comentario['id'] ?>" class="d-flex mb-3 comentario-item">
-
-                                                <img src="<?= !empty($comentario['foto'])
-                                                    ? '/uploads/fotos/' . $comentario['foto']
-                                                    : '/uploads/fotos/default-user.png' ?>" class="rounded-circle me-2"
-                                                    style="
-                          width:40px;
-                          height:40px;
-                          object-fit:cover;
-                      ">
+                                                <img src="<?= !empty($comentario['foto']) ? '/uploads/fotos/' . $comentario['foto'] : '/uploads/fotos/default-user.png' ?>"
+                                                    class="rounded-circle me-2" style="width:40px; height:40px; object-fit:cover;">
 
                                                 <div class="flex-grow-1">
-
                                                     <div class="bg-light rounded-4 p-3 position-relative">
-
                                                         <strong>
                                                             <?= htmlspecialchars($comentario['nome']) ?>
                                                         </strong>
 
-
                                                         <div class="dropdown position-absolute top-0 end-0 mt-2 me-2">
-
                                                             <button class="btn btn-sm border-0 bg-transparent text-muted p-0"
                                                                 data-bs-toggle="dropdown">
                                                                 <i class="bi bi-three-dots-vertical"></i>
                                                             </button>
-
                                                             <ul class="dropdown-menu dropdown-menu-end shadow border-0">
-
                                                                 <li>
-
                                                                     <button class="dropdown-item editar-comentario-btn"
                                                                         data-id="<?= $comentario['id'] ?>"
                                                                         data-publicacao="<?= $publicacao['id'] ?>"
                                                                         data-comentario="<?= htmlspecialchars($comentario['comentario']) ?>">
-
-                                                                        <i class="bi bi-pencil me-2"></i>
-                                                                        Editar
-
+                                                                        <i class="bi bi-pencil me-2"></i> Editar
                                                                     </button>
-
                                                                 </li>
-
-
                                                                 <li>
                                                                     <a class="dropdown-item text-danger btn-excluir-comentario" href="#"
                                                                         data-id="<?= $comentario['id'] ?>"
                                                                         data-publicacao="<?= $publicacao['id'] ?>">
-
-                                                                        <i class="bi bi-trash me-2"></i>
-                                                                        Excluir
-
+                                                                        <i class="bi bi-trash me-2"></i> Excluir
                                                                     </a>
-
                                                                 </li>
-
                                                             </ul>
-
                                                         </div>
-
-
 
                                                         <div class="mt-1" id="texto-comentario-<?= $comentario['id'] ?>">
-
                                                             <?= nl2br(htmlspecialchars($comentario['comentario'])) ?>
-
                                                         </div>
-
                                                     </div>
 
                                                     <small class="text-muted">
-
-                                                        <?= date(
-                                                            'd/m/Y H:i',
-                                                            strtotime($comentario['created_at'])
-                                                        ) ?>
-
+                                                        <?= date('d/m/Y H:i', strtotime($comentario['created_at'])) ?>
                                                     </small>
-
                                                 </div>
-
                                             </div>
-
                                         <?php } ?>
-
                                     <?php } ?>
 
                                     <form class="form-comentario" action="/comment" method="POST">
-
                                         <input type="hidden" name="publicacao_id" value="<?= $publicacao['id'] ?>">
-
-                                        <textarea class="form-control mb-2" name="comentario" rows="2"
-                                            placeholder="Escreva um comentário..." required></textarea>
-
-                                        <button type="submit" class="btn btn-primary btn-sm">
-                                            Comentar
-                                        </button>
-
+                                        <textarea class="form-control mb-2" name="comentario" placeholder="Escreva um comentário..."
+                                            rows="2" required></textarea>
+                                        <button type="submit" class="btn btn-primary btn-sm">Comentar</button>
                                     </form>
-
                                 </div>
-
-                            </div> <!-- FIM DO CARD DO POST NORMAL -->
+                            </div>
                         <?php } ?>
 
-                        <!-- POST VAGA -->
+                        <!-- SE FOR ANÚNCIO DE VAGA -->
                         <?php if (isset($publicacao['tipo']) && $publicacao['tipo'] == 'vaga') { ?>
                             <div class="card-custom p-3 mb-3 border-start border-primary border-4">
-                                <!-- HEADER -->
                                 <div class="d-flex align-items-center mb-3">
                                     <a href="<?= $linkPerfil ?>" class="text-decoration-none">
                                         <img src="<?= !empty($publicacao['foto']) ? '/uploads/fotos/' . $publicacao['foto'] : '/uploads/fotos/default-user.png' ?>"
@@ -569,7 +544,6 @@ require_once('../app/view/navbar.phtml');
                                         </div>
                                     </div>
 
-                                    <!-- 3 PONTINHOS -->
                                     <div class="dropdown ms-auto">
                                         <button class="btn btn-link text-muted p-0 text-decoration-none" type="button"
                                             data-bs-toggle="dropdown" aria-expanded="false">
@@ -579,67 +553,66 @@ require_once('../app/view/navbar.phtml');
                                             <li>
                                                 <a class="dropdown-item text-danger"
                                                     href="/deletePostAdmin?id=<?= $publicacao['id'] ?>">
-
-                                                    <i class="bi bi-trash me-2"></i>
-
-                                                    Excluir publicação
-
+                                                    <i class="bi bi-trash me-2"></i> Excluir publicação
                                                 </a>
-
                                                 <a class="dropdown-item text-warning"
                                                     href="/blockUserTimeline?id=<?= $publicacao['usuario_id'] ?>">
-
-                                                    <i class="bi bi-slash-circle me-2"></i>
-
-                                                    Bloquear usuário
-
+                                                    <i class="bi bi-slash-circle me-2"></i> Bloquear usuário
                                                 </a>
                                             </li>
                                         </ul>
                                     </div>
                                 </div>
 
-                                <!-- TAGS DA VAGA -->
                                 <span class="badge bg-primary mb-3 px-3 py-2"><i class="bi bi-briefcase-fill"></i> Vaga publicada</span>
                                 <h5 class="fw-bold mb-3">
                                     <?= $publicacao['titulo'] ?>
                                 </h5>
 
                                 <div class="d-flex flex-wrap gap-2 mb-3">
-                                    <?php if (!empty($publicacao['localizacao'])) { ?>
+                                    <?php
+                                    // Renderiza o marcador geográfico de localidade da oportunidade direta no card da linha do tempo
+                                    if (!empty($publicacao['localizacao'])) {
+                                        ?>
                                         <span class="badge bg-light text-dark border"><i class="bi bi-geo-alt-fill"></i>
                                             <?= $publicacao['localizacao'] ?>
                                         </span>
                                     <?php } ?>
-                                    <?php if (!empty($publicacao['modalidade'])) { ?>
+                                    <?php
+                                    // Renderiza a badge da modalidade (Presencial/Híbrido/Remoto) na linha do tempo principal
+                                    if (!empty($publicacao['modalidade'])) {
+                                        ?>
                                         <span class="badge bg-light text-dark border"><i class="bi bi-building"></i>
                                             <?= ucfirst($publicacao['modalidade']) ?>
                                         </span>
                                     <?php } ?>
-                                    <?php if (!empty($publicacao['salario'])) { ?>
+                                    <?php
+                                    // Renderiza o salário atribuído pelo recrutador diretamente no card da vaga do feed
+                                    if (!empty($publicacao['salario'])) {
+                                        ?>
                                         <span class="badge bg-light text-success border"><i class="bi bi-cash"></i> R$
                                             <?= $publicacao['salario'] ?>
                                         </span>
                                     <?php } ?>
                                 </div>
 
-                                <!-- DESCRIÇÃO -->
                                 <p class="mb-3">
                                     <?= nl2br(htmlspecialchars($publicacao['conteudo'])) ?>
                                 </p>
 
-                                <?php if (!empty($publicacao['imagem'])) { ?>
+                                <?php
+                                // Exibe a imagem incorporada pelo recrutador no anúncio de vaga, se houver
+                                if (!empty($publicacao['imagem'])) {
+                                    ?>
                                     <img src="/uploads/publicacoes/<?= $publicacao['imagem'] ?>" class="img-fluid rounded-4 mb-3 w-100"
                                         style="max-height:500px; object-fit:cover;">
                                 <?php } ?>
 
                                 <a href="/vacancyDetails?id=<?= $publicacao['id'] ?>" class="btn btn-primary rounded-pill px-4 mb-3">
-                                    <i class="bi bi-arrow-right-circle"></i>
-                                    Ver vaga
+                                    <i class="bi bi-arrow-right-circle"></i> Ver vaga
                                 </a>
                                 <hr>
 
-                                <!-- AÇÕES -->
                                 <div class="d-flex justify-content-around align-items-center post-actions py-2">
                                     <a href="#"
                                         class="post-action-btn btn btn-light text-muted d-flex align-items-center gap-2 btn-curtir border-0 bg-transparent"
@@ -663,101 +636,58 @@ require_once('../app/view/navbar.phtml');
                                     </a>
                                 </div>
 
-                                <!-- COMENTÁRIOS -->
                                 <div class="comentarios-container d-none mt-3" id="comentarios-<?= $publicacao['id'] ?>">
-
                                     <hr>
-
-                                    <?php if (!empty($publicacao['comentarios'])) { ?>
-
+                                    <?php
+                                    // Percorre e constrói a listagem de comentários indexados no card do anúncio da vaga
+                                    if (!empty($publicacao['comentarios'])) {
+                                        ?>
                                         <?php foreach ($publicacao['comentarios'] as $comentario) { ?>
-
                                             <div id="comentario-<?= $comentario['id'] ?>" class="d-flex mb-3">
-
-                                                <img src="<?= !empty($comentario['foto'])
-                                                    ? '/uploads/fotos/' . $comentario['foto']
-                                                    : '/uploads/fotos/default-user.png' ?>" class="rounded-circle me-2"
-                                                    style="
-                          width:40px;
-                          height:40px;
-                          object-fit:cover;
-                      ">
+                                                <img src="<?= !empty($comentario['foto']) ? '/uploads/fotos/' . $comentario['foto'] : '/uploads/fotos/default-user.png' ?>"
+                                                    class="rounded-circle me-2" style="width:40px; height:40px; object-fit:cover;">
 
                                                 <div class="flex-grow-1">
-
                                                     <div class="bg-light rounded-4 p-3 position-relative">
-
                                                         <strong>
                                                             <?= htmlspecialchars($comentario['nome']) ?>
                                                         </strong>
 
-
-
                                                         <div class="dropdown position-absolute top-0 end-0 mt-2 me-2">
-
                                                             <button class="btn btn-sm border-0 bg-transparent text-muted p-0"
                                                                 data-bs-toggle="dropdown">
                                                                 <i class="bi bi-three-dots-vertical"></i>
                                                             </button>
-
                                                             <ul class="dropdown-menu dropdown-menu-end shadow border-0">
-
                                                                 <li>
-
                                                                     <button class="dropdown-item editar-comentario-btn"
                                                                         data-id="<?= $comentario['id'] ?>"
                                                                         data-publicacao="<?= $publicacao['id'] ?>"
                                                                         data-comentario="<?= htmlspecialchars($comentario['comentario']) ?>">
-
-                                                                        <i class="bi bi-pencil me-2"></i>
-                                                                        Editar
-
+                                                                        <i class="bi bi-pencil me-2"></i> Editar
                                                                     </button>
-
                                                                 </li>
-
                                                                 <li>
-
                                                                     <a class="dropdown-item text-danger btn-excluir-comentario" href="#"
                                                                         data-id="<?= $comentario['id'] ?>"
                                                                         data-publicacao="<?= $publicacao['id'] ?>">
-
-                                                                        <i class="bi bi-trash me-2"></i>
-                                                                        Excluir
-
+                                                                        <i class="bi bi-trash me-2"></i> Excluir
                                                                     </a>
-
                                                                 </li>
-
                                                             </ul>
-
                                                         </div>
-
-
 
                                                         <div class="mt-1" id="texto-comentario-<?= $comentario['id'] ?>">
-
                                                             <?= nl2br(htmlspecialchars($comentario['comentario'])) ?>
-
                                                         </div>
-
                                                     </div>
 
                                                     <small class="text-muted">
-
-                                                        <?= date(
-                                                            'd/m/Y H:i',
-                                                            strtotime($comentario['created_at'])
-                                                        ) ?>
-
+                                                        <?= date('d/m/Y H:i', strtotime($comentario['created_at'])) ?>
                                                     </small>
-
                                                 </div>
-
                                             </div>
-
                                         <?php } ?>
-
                                     <?php } ?>
 
                                     <form class="form-comentario" action="/comment" method="POST">
@@ -767,15 +697,14 @@ require_once('../app/view/navbar.phtml');
                                         <button type="submit" class="btn btn-primary btn-sm">Comentar</button>
                                     </form>
                                 </div>
-
-                            </div> <!-- FIM DO CARD DA VAGA -->
+                            </div>
                         <?php } ?>
 
-                    <?php } ?> <!-- FIM DA CONDICIONAL (COMPARTILHAMENTO VS NORMAL/VAGA) -->
-                <?php } ?> <!-- FIM DO FOREACH -->
+                    <?php } ?>
+                <?php } ?>
 
             <?php } else { ?>
-                <!-- SEM POSTS -->
+                <!-- LAYOUT ALTERNATIVO DE FEED SE SEU CONTEÚDO FOR ZERO -->
                 <div class="card-custom p-5 text-center">
                     <i class="bi bi-chat-square-text display-3 text-muted"></i>
                     <h4 class="mt-3 fw-bold">Nenhuma publicação ainda</h4>
@@ -783,16 +712,11 @@ require_once('../app/view/navbar.phtml');
                 </div>
             <?php } ?>
 
-        </div> <!-- FIM DA COL-MD-6 (COLUNA DO MEIO) -->
-    </div> <!-- FIM DA ROW -->
-</div> <!-- FIM DO CONTAINER PRINCIPAL -->
+        </div>
+    </div>
+</div>
 
-
-<!-- ========================================== -->
-<!-- MODAIS DA PÁGINA (FORA DO CONTAINER GRID)  -->
-<!-- ========================================== -->
-
-<!-- MODAL CRIAR PUBLICAÇÃO -->
+<!-- CONTAINER DE MODAIS GLOBAIS DA PÁGINA -->
 <div class="modal fade" id="publicacaoModal" tabindex="-1">
     <div class="modal-dialog modal-dialog-centered modal-lg">
         <div class="modal-content border-0 shadow-lg">
@@ -801,7 +725,10 @@ require_once('../app/view/navbar.phtml');
                 <button class="btn-close" data-bs-dismiss="modal"></button>
             </div>
             <div class="modal-body pt-2">
-                <?php if ($tipo == 'recrutador') { ?>
+                <?php
+                // Se o perfil logado for um recrutador, exibe a barra superior de alternância entre criação de post tradicional ou vagas de emprego
+                if ($tipo == 'recrutador') {
+                    ?>
                     <div class="publication-toggle mb-4">
                         <button type="button" class="toggle-btn active" onclick="showPost()" id="btnPost"><i
                                 class="bi bi-chat-left-text-fill"></i> Publicação</button>
@@ -820,11 +747,17 @@ require_once('../app/view/navbar.phtml');
                                 <?= $_SESSION['nome'] ?>
                             </strong>
                             <small class="text-muted">
-                                <?php if ($tipo == 'estudante') { ?>
+                                <?php
+                                // Insere dinamicamente os dados de cidade e UF na identificação caso o usuário seja um estudante cadastrado
+                                if ($tipo == 'estudante') {
+                                    ?>
                                     <?= $_SESSION['cidade'] ?? '' ?> -
                                     <?= $_SESSION['uf'] ?? '' ?>
                                 <?php } ?>
-                                <?php if ($tipo == 'recrutador') { ?>
+                                <?php
+                                // Insere dinamicamente o nome da empresa corporativa parceira vinculada se for um perfil corporativo recrutador
+                                if ($tipo == 'recrutador') {
+                                    ?>
                                     <?= $_SESSION['empresa'] ?? '' ?>
                                 <?php } ?>
                             </small>
@@ -844,7 +777,10 @@ require_once('../app/view/navbar.phtml');
                         Publicar</button>
                 </form>
 
-                <?php if ($tipo == 'recrutador') { ?>
+                <?php
+                // Se o perfil for de recrutador, injeta em paralelo a estrutura oculta do formulário de criação de oportunidades de emprego
+                if ($tipo == 'recrutador') {
+                    ?>
                     <form id="vagaForm" action="/vacancy" method="POST" enctype="multipart/form-data" style="display:none;">
                         <input type="hidden" name="tipo" value="vaga">
                         <div class="d-flex align-items-center mb-3">
@@ -888,14 +824,16 @@ require_once('../app/view/navbar.phtml');
     </div>
 </div>
 
-<!-- OUTROS MODAIS E SCRIPTS -->
-<?php if (isset($_GET['edit']) && $_GET['edit'] == 'post_sucesso') { ?>
+<?php
+// Renderiza a janela modal indicando que a publicação convencional foi atualizada com sucesso
+if (isset($_GET['edit']) && $_GET['edit'] == 'post_sucesso') {
+    ?>
     <div class="modal fade" id="modalEditPostSucesso" tabindex="-1">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content border-0 shadow-lg rounded-4">
                 <div class="modal-body text-center p-5">
                     <div class="success-icon mb-3"><i class="bi bi-check-circle-fill text-primary"></i></div>
-                    <h3 class="fw-bold">Publicação atualizada!</h3>
+                    <h3 class="fw-bold">Publicação actualizada!</h3>
                     <p class="text-muted">Sua publicação foi editada com sucesso 🚀</p>
                     <button class="btn btn-primary px-4" data-bs-dismiss="modal">Fechar</button>
                 </div>
@@ -904,7 +842,6 @@ require_once('../app/view/navbar.phtml');
     </div>
 <?php } ?>
 
-<!-- MODAL EDITAR COMENTÁRIO -->
 <div class="modal fade" id="editarComentarioModal" tabindex="-1">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content border-0 shadow-lg rounded-4">
@@ -927,7 +864,10 @@ require_once('../app/view/navbar.phtml');
     </div>
 </div>
 
-<?php if (isset($_GET['edit']) && $_GET['edit'] == 'vaga_sucesso') { ?>
+<?php
+// Renderiza a janela modal informando que os dados modificados da vaga corporativa foram salvos
+if (isset($_GET['edit']) && $_GET['edit'] == 'vaga_sucesso') {
+    ?>
     <div class="modal fade" id="modalEditVagaSucesso" tabindex="-1">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content border-0 shadow-lg rounded-4">
@@ -954,8 +894,7 @@ require_once('../app/view/navbar.phtml');
                     <input type="hidden" name="id" id="editPostId">
                     <textarea name="conteudo" id="editPostTexto" class="form-control mb-3" rows="5"></textarea>
                     <div id="editPreviewContainer" class="mb-3 d-none"><img id="editPreviewImagem"
-                            class="img-fluid rounded">
-                    </div>
+                            class="img-fluid rounded"></div>
                     <label class="btn btn-light border w-100"><i class="bi bi-image"></i> Alterar imagem<input
                             type="file" name="imagem" id="editPostFileInput" hidden accept="image/*"></label>
                 </div>
@@ -1009,7 +948,10 @@ require_once('../app/view/navbar.phtml');
     </div>
 </div>
 
-<?php if (isset($_GET['delete']) && $_GET['delete'] == 'success') { ?>
+<?php
+// Renderiza o modal confirmando a remoção física de uma publicação ou histórico do feed do sistema
+if (isset($_GET['delete']) && $_GET['delete'] == 'success') {
+    ?>
     <div class="modal fade" id="modalDeleteSucesso" tabindex="-1">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content border-0 shadow-lg rounded-4">
@@ -1024,7 +966,10 @@ require_once('../app/view/navbar.phtml');
     </div>
 <?php } ?>
 
-<?php if (isset($_GET['moderacao'])) { ?>
+<?php
+// Renderiza o modal de recusa e barreira da IA se o post contiver trechos barrados pela moderação inteligente
+if (isset($_GET['moderacao'])) {
+    ?>
     <div class="modal fade" id="modalModeracao" tabindex="-1">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content border-0 shadow-lg rounded-4">
@@ -1041,7 +986,10 @@ require_once('../app/view/navbar.phtml');
     </div>
 <?php } ?>
 
-<?php if (isset($_GET['share']) && $_GET['share'] == 'sucesso') { ?>
+<?php
+// Renderiza o modal de confirmação de compartilhamento enviado com sucesso para o feed dos seguidores
+if (isset($_GET['share']) && $_GET['share'] == 'sucesso') {
+    ?>
     <div class="modal fade" id="modalShareSucesso" tabindex="-1">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content border-0 shadow-lg rounded-4">
@@ -1057,147 +1005,100 @@ require_once('../app/view/navbar.phtml');
         </div>
     </div>
 <?php } ?>
+
 <div class="modal fade" id="modalExcluirPost" tabindex="-1">
-
     <div class="modal-dialog modal-dialog-centered">
-
         <div class="modal-content">
-
             <div class="modal-header">
-                <h5 class="modal-title">
-
-                    Excluir publicação
-                </h5>
-
+                <h5 class="modal-title">Excluir publicação</h5>
             </div>
             <div class="modal-body">
-
                 Esta publicação será excluída permanentemente.
             </div>
-
             <div class="modal-footer">
-                <button class="btn btn-secondary" data-bs-dismiss="modal">
-
-                    Cancelar
-
-                </button>
-
-                <a id="btnConfirmarExcluir" class="btn btn-danger">
-
-                    Excluir
-
-                </a>
-
+                <button class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                <a id="btnConfirmarExcluir" class="btn btn-danger">Excluir</a>
             </div>
-
         </div>
-
     </div>
-
 </div>
+
 <div class="modal fade" id="modalBloquearUsuario" tabindex="-1">
-
     <div class="modal-dialog modal-dialog-centered">
-
         <div class="modal-content">
-
             <div class="modal-header">
-
-                <h5 class="modal-title">
-
-                    Bloquear usuário
-
-                </h5>
-
+                <h5 class="modal-title">Bloquear usuário</h5>
             </div>
-
             <div class="modal-body">
-
-                <p>
-
-                    O usuário
-
-                    <strong id="nomeUsuarioBloquear"></strong>
-
-                    ficará impossibilitado de acessar o sistema.
-
-                </p>
-
-                <p class="text-danger mb-0">
-
-                    Esta ação poderá ser revertida posteriormente.
-
-                </p>
-
+                <p>O usuário <strong id="nomeUsuarioBloquear"></strong> ficará impossibilitado de acessar o sistema.</p>
+                <p class="text-danger mb-0">Esta ação poderá ser revertida posteriormente.</p>
             </div>
-
             <div class="modal-footer">
-
-                <button class="btn btn-secondary" data-bs-dismiss="modal">
-
-                    Cancelar
-
-                </button>
-
-                <a id="btnConfirmarBloqueio" class="btn btn-warning">
-
-                    Bloquear
-
-                </a>
-
+                <button class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                <a id="btnConfirmarBloqueio" class="btn btn-warning">Bloquear</a>
             </div>
-
         </div>
-
     </div>
-
 </div>
 
-<!-- SCRIPTS UNIFICADOS NO FINAL DA PÁGINA -->
 <script>
     document.addEventListener('DOMContentLoaded', () => {
-        <?php if (isset($_GET['post']) && $_GET['post'] == 'sucesso') { ?>
-            new bootstrap.Modal(document.getElementById('modalPostSucesso')).show();
+        <?php
+        // Script inline: dispara de forma imediata o gatilho visual do modal se houver confirmação de nova postagem normal
+        if (isset($_GET['post']) && $_GET['post'] == 'sucesso') {
+            ?>
+                    new bootstrap.Modal(document.getElementById('modalPostSucesso')).show();
         <?php } ?>
 
-        <?php if (isset($_GET['vaga']) && $_GET['vaga'] == 'sucesso') { ?>
-            new bootstrap.Modal(document.getElementById('modalVagaSucesso')).show();
+        <?php
+        // Script inline: dispara de forma imediata o gatilho visual do modal se houver confirmação de nova vaga corporativa
+        if (isset($_GET['vaga']) && $_GET['vaga'] == 'sucesso') {
+            ?>
+                    new bootstrap.Modal(document.getElementById('modalVagaSucesso')).show();
         <?php } ?>
 
-        <?php if (isset($_GET['edit']) && $_GET['edit'] == 'post_sucesso') { ?>
-            new bootstrap.Modal(document.getElementById('modalEditPostSucesso')).show();
+        <?php
+        // Script inline: dispara de forma imediata o gatilho visual do modal se houver confirmação de edição salva do post regular
+        if (isset($_GET['edit']) && $_GET['edit'] == 'post_sucesso') {
+            ?>
+                    new bootstrap.Modal(document.getElementById('modalEditPostSucesso')).show();
         <?php } ?>
 
-        <?php if (isset($_GET['edit']) && $_GET['edit'] == 'vaga_sucesso') { ?>
-            new bootstrap.Modal(document.getElementById('modalEditVagaSucesso')).show();
+        <?php
+        // Script inline: dispara de forma imediata o gatilho visual do modal se houver confirmação de edição salva do post de vaga
+        if (isset($_GET['edit']) && $_GET['edit'] == 'vaga_sucesso') {
+            ?>
+                    new bootstrap.Modal(document.getElementById('modalEditVagaSucesso')).show();
         <?php } ?>
 
-        <?php if (isset($_GET['delete']) && $_GET['delete'] == 'success') { ?>
-            new bootstrap.Modal(document.getElementById('modalDeleteSucesso')).show();
+        <?php
+        // Script inline: dispara de forma imediata o gatilho visual do modal se houver confirmação de exclusão física efetuada
+        if (isset($_GET['delete']) && $_GET['delete'] == 'success') {
+            ?>
+                    new bootstrap.Modal(document.getElementById('modalDeleteSucesso')).show();
         <?php } ?>
 
-        <?php if (isset($_GET['moderacao'])) { ?>
-            new bootstrap.Modal(document.getElementById('modalModeracao')).show();
+        <?php
+        // Script inline: dispara de forma imediata o gatilho de bloqueio visual se a publicação tiver violado regras da IA
+        if (isset($_GET['moderacao'])) {
+            ?>
+                    new bootstrap.Modal(document.getElementById('modalModeracao')).show();
         <?php } ?>
 
-        <?php if (isset($_GET['share']) && $_GET['share'] == 'sucesso') { ?>
-            new bootstrap.Modal(document.getElementById('modalShareSucesso')).show();
+        <?php
+        // Script inline: dispara de forma imediata o gatilho do modal de sucesso se houver confirmação de compartilhamento efetuado
+        if (isset($_GET['share']) && $_GET['share'] == 'sucesso') {
+            ?>
+                    new bootstrap.Modal(document.getElementById('modalShareSucesso')).show();
         <?php } ?>
     });
 
-    // Abertura do modal de edição (Funciona para comentários antigos e novos!)
     document.addEventListener('click', function (e) {
-        // O closest garante que funciona mesmo se clicar no ícone ✏️ dentro do botão
         const btnEditar = e.target.closest('.editar-comentario-btn');
-
         if (btnEditar) {
-            e.preventDefault(); // Evita que o link faça a página pular
-
-            // Preenche os dados no modal
+            e.preventDefault();
             document.getElementById('editComentarioId').value = btnEditar.dataset.id;
             document.getElementById('editComentarioTexto').value = btnEditar.dataset.comentario;
-
-            // Abre o modal de forma segura
             const modalElement = document.getElementById('editarComentarioModal');
             const modalInstance = bootstrap.Modal.getOrCreateInstance(modalElement);
             modalInstance.show();

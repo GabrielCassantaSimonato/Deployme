@@ -1,4 +1,5 @@
 <?php
+
 namespace app\controller;
 
 use MF\controller\Action;
@@ -8,9 +9,15 @@ use Smalot\PdfParser\Parser;
 
 class IAController extends Action
 {
+    /**
+     * Realiza a extração de texto e análise de um currículo em formato PDF.
+     * 
+     * Valida o upload do arquivo, extrai seu conteúdo textual utilizando a biblioteca PdfParser,
+     * submete as informações para a inteligência artificial para análise estruturada
+     * e devolve o diagnóstico do perfil profissional em formato JSON.
+     */
     public function resumeAnalyzer()
     {
-
         header('Content-Type: application/json');
 
         if (!isset($_FILES['curriculo'])) {

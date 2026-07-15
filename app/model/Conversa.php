@@ -6,6 +6,13 @@ use MF\Model\Model;
 
 class Conversa extends Model
 {
+    /**
+     * Busca um canal de conversa ativa entre dois usuários ou cria um novo registro caso não exista.
+     * 
+     * Realiza uma busca na tabela de conversas testando as duas combinações possíveis de remetente
+     * e destinatário. Se encontrar, retorna o identificador do chat; caso contrário, insere
+     * uma nova linha na tabela e retorna o ID gerado na inserção.
+     */
     public function buscarOuCriarConversa($usuario1, $usuario2)
     {
         $query = "
@@ -55,6 +62,11 @@ class Conversa extends Model
         return $this->db->lastInsertId();
     }
 
+    /**
+     * Recupera as informações de registro de uma conversa específica utilizando seu identificador único.
+     * 
+     * Retorna colunas como o ID da conversa e os identificadores dos dois usuários participantes da conversa.
+     */
     public function buscarPorId($id)
     {
         $query = "

@@ -1,203 +1,99 @@
 <?php
-
+// Carrega o tipo de acesso do usuário armazenado na sessão e inclui o componente global de navegação (navbar)
 $tipo = $_SESSION['tipo'];
-
-require_once(
-    '../app/view/navbar.phtml'
-);
-
+require_once('../app/view/navbar.phtml');
 ?>
 
 <div class="container py-4">
 
     <div class="card border-0 shadow-sm rounded-4 mb-4">
-
         <div class="card-body">
-
             <h2 class="fw-bold">
-
                 Minhas candidaturas
-
             </h2>
-
             <p class="text-muted mb-0">
-
                 Acompanhe o andamento das vagas em que você se candidatou.
-
             </p>
-
         </div>
-
     </div>
 
-    <?php if (
-
-        !empty(
-        $this->view->candidaturas
-    )
-
-    ) { ?>
-
-        <?php foreach (
-
-            $this->view->candidaturas
-
-            as $vaga
-
-        ) { ?>
-
+    <?php
+    // Condicional principal de controle: verifica se o array de candidaturas enviadas pelo estudante não está vazio antes de iniciar o laço
+    if (!empty($this->view->candidaturas)) {
+        ?>
+        <?php
+        // Itera sobre a coleção de vagas aplicadas para construir dinamicamente os cards de acompanhamento do processo seletivo
+        foreach ($this->view->candidaturas as $vaga) {
+            ?>
             <div class="card border-0 shadow-sm rounded-4 mb-3">
-
                 <div class="card-body">
-
                     <div class="d-flex justify-content-between">
 
                         <div>
-
                             <h5 class="fw-bold">
-
-                                <?= htmlspecialchars(
-
-                                    $vaga['titulo']
-
-                                ) ?>
-
+                                <?= htmlspecialchars($vaga['titulo']) ?>
                             </h5>
-
                             <div class="text-muted">
-
-                                <?= htmlspecialchars(
-
-                                    $vaga['empresa']
-
-                                ) ?>
-
+                                <?= htmlspecialchars($vaga['empresa']) ?>
                             </div>
-
                             <div class="small text-muted mt-2">
-
                                 📍
-
-                                <?= htmlspecialchars(
-
-                                    $vaga['localizacao']
-
-                                ) ?>
-
+                                <?= htmlspecialchars($vaga['localizacao']) ?>
                             </div>
-
                             <div class="small text-muted">
-
                                 💻
-
-                                <?= htmlspecialchars(
-
-                                    $vaga['modalidade']
-
-                                ) ?>
-
+                                <?= htmlspecialchars($vaga['modalidade']) ?>
                             </div>
-
                             <div class="small text-muted">
-
                                 📅
-
-                                <?= date(
-
-                                    'd/m/Y',
-
-                                    strtotime(
-
-                                        $vaga['created_at']
-
-                                    )
-
-                                ) ?>
-
+                                <?= date('d/m/Y', strtotime($vaga['created_at'])) ?>
                             </div>
-
                         </div>
 
                         <div class="text-end">
-
                             <?php
-
+                            // Mapeia de forma dinâmica a classe de estilo CSS do badge de acordo com o status atual de triagem
                             $badgeClass = 'bg-primary';
-
                             switch ($vaga['status']) {
-
                                 case 'Em análise':
-
                                     $badgeClass = 'bg-warning';
-
                                     break;
-
                                 case 'Entrevista':
-
                                     $badgeClass = 'bg-purple';
-
                                     break;
-
                                 case 'Aprovado':
-
                                     $badgeClass = 'bg-success';
-
                                     break;
-
                                 case 'Rejeitado':
-
                                     $badgeClass = 'bg-danger';
-
                                     break;
-
                             }
-
                             ?>
 
                             <div class="mb-4">
-
                                 <span class="badge <?= $badgeClass ?> px-3 py-2 fs-6">
-
-                                    <?= htmlspecialchars(
-
-                                        $vaga['status']
-
-                                    ) ?>
-
+                                    <?= htmlspecialchars($vaga['status']) ?>
                                 </span>
-
                             </div>
 
                             <br>
 
                             <a href="/vacancyDetails?id=<?= $vaga['publicacao_id'] ?>"
                                 class="btn btn-outline-primary rounded-pill">
-
                                 Ver vaga
-
                             </a>
 
-                            <?php if (
-                                in_array(
-                                    $vaga['status'],
-                                    [
-                                        'Enviada',
-                                        'Em análise',
-                                        'Entrevista'
-                                    ]
-                                )
-                            ) { ?>
-
-                                <form action="/withdrawApplication" method="POST" onsubmit="return confirm(
-                                'Deseja realmente desistir desta candidatura?'
-                            );">
+                            <?php
+                            // Condicional de controle de desistência: exibe o formulário de remoção apenas se o processo ainda estiver nas etapas iniciais
+                            if (in_array($vaga['status'], ['Enviada', 'Em análise', 'Entrevista'])) {
+                                ?>
+                                <form action="/withdrawApplication" method="POST"
+                                    onsubmit="return confirm('Deseja realmente desistir desta candidatura?');">
                                     <input type="hidden" name="vaga_id" value="<?= $vaga['vaga_id'] ?>">
                                     <button type="submit" class="btn btn-outline-danger rounded-pill mt-2">
-                                        <i class="bi bi-x-circle"></i>
-                                        Desistir da candidatura
+                                        <i class="bi bi-x-circle"></i> Desistir da candidatura
                                     </button>
                                 </form>
-
                             <?php } else { ?>
                                 <div>
                                     <button class="btn btn-outline-secondary rounded-pill mt-2" disabled>
@@ -206,12 +102,14 @@ require_once(
                                 </div>
                             <?php } ?>
                         </div>
+
                     </div>
                 </div>
             </div>
-        <?php } // Fim do foreach/loop que renderiza as candidaturas ?>
+        <?php } ?>
 
     <?php } else { ?>
+        <!-- LAYOUT ALTERNATIVO (EMPTY STATE) -->
         <div class="card border-0 shadow-sm rounded-4">
             <div class="card-body text-center text-muted">
                 Você ainda não realizou nenhuma candidatura.

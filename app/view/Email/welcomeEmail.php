@@ -3,7 +3,6 @@
 
 <head>
     <meta charset="UTF-8">
-
     <style>
         body {
             margin: 0;
@@ -108,32 +107,28 @@
             font-size: 13px;
         }
     </style>
-
 </head>
 
 <body>
 
     <div class="email-wrapper">
-
         <div class="email-container">
 
             <!-- HEADER -->
             <div class="email-header">
-
-
                 <h1>Bem-vindo à Deployme 🚀</h1>
-
                 <p>
                     A plataforma inteligente para talentos tech
                 </p>
-
             </div>
 
             <!-- BODY -->
             <div class="email-body">
-
                 <h2>
                     Olá,
+                    <?php
+                    // Imprime de forma dinâmica o nome do usuário recém-cadastrado recebido por parâmetro do EmailService
+                    ?>
                     <?= $nome ?>
                 </h2>
 
@@ -143,46 +138,39 @@
                 </p>
 
                 <p>
-                    Agora você já pode acessar a plataforma,
-                    completar seu perfil e explorar oportunidades
-                    incríveis na área de tecnologia.
+                    Agora você já pode acessar a plataforma, completando seu perfil e explorando oportunidades incríveis
+                    na área de tecnologia.
                 </p>
 
                 <div class="feature-card">
-
                     <h3>
                         O que você já pode fazer:
                     </h3>
-
                     <ul>
                         <li>Completar perfil profissional</li>
                         <li>Analisar currículo com IA</li>
                         <li>Explorar vagas tech</li>
                         <li>Conectar-se com recrutadores e estudantes de TI</li>
                     </ul>
-
                 </div>
 
                 <div class="btn-area">
-
                     <a href="http://localhost:8080/" class="btn">
                         Acessar Deployme
                     </a>
-
                 </div>
-
             </div>
 
             <!-- FOOTER -->
             <div class="email-footer">
-
                 ©
+                <?php
+                // Renderiza dinamicamente o ano corrente no rodapé do e-mail de notificação
+                ?>
                 <?= date('Y') ?> Deployme • Todos os direitos reservados
-
             </div>
 
         </div>
-
     </div>
 
 </body>
