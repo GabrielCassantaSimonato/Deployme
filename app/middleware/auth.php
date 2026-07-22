@@ -54,4 +54,25 @@ class Auth
             exit;
         }
     }
+
+    public static function validarPermissao($tiposPermitidos)
+    {
+        self::validarAutenticacao();
+        // Garante que seja sempre um array
+        $tiposPermitidos = (array) $tiposPermitidos;
+
+        if (!in_array($_SESSION['tipo'], $tiposPermitidos)) {
+
+            $_SESSION['erro_permissao'] = "Você não possui permissão para acessar esta página.";
+
+            // Volta para a página anterior
+            if (!empty($_SERVER['HTTP_REFERER'])) {
+                header('Location: ' . $_SERVER['HTTP_REFERER']);
+            } else {
+                header('Location: /timeline');
+            }
+
+            exit;
+        }
+    }
 }

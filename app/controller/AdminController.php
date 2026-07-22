@@ -16,7 +16,7 @@ class AdminController extends Action
      */
     public function admin()
     {
-        Auth::validarAutenticacao();
+        Auth::validarPermissao('admin');
 
         if ($_SESSION['tipo'] != 'admin') {
             header('Location: /');

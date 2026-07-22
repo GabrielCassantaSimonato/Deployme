@@ -88,3 +88,20 @@
     </div>
 
 </nav>
+<?php if (isset($_SESSION['erro_permissao'])) { ?>
+
+    <script>
+
+        Swal.fire({
+            icon: 'warning',
+            title: 'Acesso negado',
+            text: '<?= $_SESSION['erro_permissao']; ?>',
+            confirmButtonText: 'OK'
+        });
+
+    </script>
+
+    <?php
+    unset($_SESSION['erro_permissao']);
+}
+?>
