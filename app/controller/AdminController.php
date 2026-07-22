@@ -39,7 +39,7 @@ class AdminController extends Action
      */
     public function timelineAdmin()
     {
-        Auth::validarAutenticacao();
+        Auth::validarPermissao('admin');
 
         $publicacao = Container::getModel('Publicacao');
 
@@ -71,12 +71,7 @@ class AdminController extends Action
      */
     public function deletePostAdmin()
     {
-        Auth::validarAutenticacao();
-
-        if ($_SESSION['tipo'] != 'admin') {
-            header('Location: /');
-            exit;
-        }
+        Auth::validarPermissao('admin');
 
         $publicacao = Container::getModel('Publicacao');
 
@@ -96,12 +91,7 @@ class AdminController extends Action
      */
     public function blockUserTimeline()
     {
-        Auth::validarAutenticacao();
-
-        if ($_SESSION['tipo'] != 'admin') {
-            header('Location: /');
-            exit;
-        }
+        Auth::validarPermissao('admin');
 
         $usuario = Container::getModel('Usuario');
 
@@ -119,12 +109,7 @@ class AdminController extends Action
      */
     public function adminUsers()
     {
-        Auth::validarAutenticacao();
-
-        if ($_SESSION['tipo'] != 'admin') {
-            header('Location: /');
-            exit;
-        }
+        Auth::validarPermissao('admin');
 
         $admin = Container::getModel('Admin');
 
@@ -141,12 +126,7 @@ class AdminController extends Action
      */
     public function blockUser()
     {
-        Auth::validarAutenticacao();
-
-        if ($_SESSION['tipo'] != 'admin') {
-            header('Location: /');
-            exit;
-        }
+        Auth::validarPermissao('admin');
 
         $usuario = Container::getModel('Usuario');
 
@@ -164,12 +144,7 @@ class AdminController extends Action
      */
     public function unblockUser()
     {
-        Auth::validarAutenticacao();
-
-        if ($_SESSION['tipo'] != 'admin') {
-            header('Location: /');
-            exit;
-        }
+        Auth::validarPermissao('admin');
 
         $usuario = Container::getModel('Usuario');
 
